@@ -1,0 +1,12 @@
+/Users/yahong/dotnet/Imms/Imms.Logic/bin/Debug/netstandard2.0/Imms.Logic.deps.json
+/Users/yahong/dotnet/Imms/Imms.Logic/bin/Debug/netstandard2.0/Imms.Logic.dll
+/Users/yahong/dotnet/Imms/Imms.Logic/bin/Debug/netstandard2.0/Imms.Logic.pdb
+/Users/yahong/dotnet/Imms/Imms.Logic/bin/Debug/netstandard2.0/Imms.Core.dll
+/Users/yahong/dotnet/Imms/Imms.Logic/bin/Debug/netstandard2.0/Imms.Core.pdb
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.csprojAssemblyReference.cache
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.csproj.CoreCompileInputs.cache
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.AssemblyInfoInputs.cache
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.AssemblyInfo.cs
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.csproj.CopyComplete
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.dll
+/Users/yahong/dotnet/Imms/Imms.Logic/obj/Debug/netstandard2.0/Imms.Logic.pdb
