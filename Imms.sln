@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imms.Service", "Imms.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imms.Api", "Imms.Api\Imms.Api.csproj", "{F9401190-BE09-478A-9B5E-98F895C6FB47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imms.Data", "Imms.Data\Imms.Data.csproj", "{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{F9401190-BE09-478A-9B5E-98F895C6FB47}.Release|x64.Build.0 = Release|Any CPU
 		{F9401190-BE09-478A-9B5E-98F895C6FB47}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9401190-BE09-478A-9B5E-98F895C6FB47}.Release|x86.Build.0 = Release|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Debug|x64.Build.0 = Debug|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Debug|x86.Build.0 = Debug|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Release|x64.ActiveCfg = Release|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Release|x64.Build.0 = Release|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Release|x86.ActiveCfg = Release|Any CPU
+		{776A6852-3D7A-4BE4-A92C-0ECE7F91442A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
