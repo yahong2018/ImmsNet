@@ -11,7 +11,7 @@
 /Imms.Data/obj/
 
 /Imms.Test/bin/
-/Imms.Testc/obj/
+/Imms.Test/obj/
 
 *.cache
 *.props
