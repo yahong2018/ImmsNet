@@ -5,7 +5,7 @@ namespace Imms.Test
 {
     public class DbContextTest
     {
-        [Fact]
+        [Fact]        
         public void Test2()
         {
             Imms.Data.Class1 test_01 = new Imms.Data.Class1();
