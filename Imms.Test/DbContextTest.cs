@@ -5,12 +5,18 @@ namespace Imms.Test
 {
     public class DbContextTest
     {
-        [Fact]        
+        [Fact]
         public void Test2()
         {
             Imms.Data.Class1 test_01 = new Imms.Data.Class1();
-           // test_01.TestInsert_01(4);
+            // test_01.TestInsert_01(4);
             test_01.TestInsert_02();
+        }
+
+        [Fact]
+        public void Test1()
+        {
+            Assert.True(true);
         }
 
         // [Theory]
