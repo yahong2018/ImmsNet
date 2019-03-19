@@ -6,14 +6,14 @@ CREATE TABLE system_user
   pwd                       VARCHAR(50)                NOT NULL,
   user_status               TINYINT                    NOT NULL,
   email                     VARCHAR(255)               NOT NULL,
-  online                    BIT                        NOT NULL DEFAULT 0, -- 0.离线  1.在线
+  is_online                 BIT                        NOT NULL DEFAULT 0, -- 0.离线  1.在线
   last_login_time           DATETIME                   NULL ,              -- 最后登录时间
 
   PRIMARY KEY (record_id),
   index IDX_SYSTEM_USER_0(user_code),
   index IDX_SYSTEM_USER_1(user_name),
   index IDX_SYSTEM_USER_2(user_status),
-  index IDX_SYSTEM_USER_3(online)
+  index IDX_SYSTEM_USER_3(is_online)
 );
 
 

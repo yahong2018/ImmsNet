@@ -35,7 +35,7 @@ INSERT INTO program_privilege (program_id, privilege_code, privilege_name) VALUE
 
 -- ----------------------------------------------------------------------------------------------------------------------
 
-INSERT INTO system_program (record_id,program_code, program_name, url, show_order, parameters, parent, glyph)VALUES ('SYS02','SYS02', '工厂', '', 1, '', 'SYS02', '0xf1ad');
+INSERT INTO system_program (record_id,program_code, program_name, url, show_order, parameters, parent_id, glyph)VALUES ('SYS02','SYS02', '工厂', '', 1, '', 'SYS02', '0xf1ad');
 INSERT INTO program_privilege (program_id, privilege_code, privilege_name) VALUES ('SYS02', 'RUN', '运行');
 
 INSERT INTO system_program (record_id,program_code, program_name, url, show_order, parameters, parent_id, glyph) VALUES ('SYS02_01', 'SYS02_01', '编码', '', 0, '',  'SYS02', '0xf029');

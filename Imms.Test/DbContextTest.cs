@@ -8,16 +8,16 @@ namespace Imms.Test
         [Fact]
         public void Test2()
         {
-            Imms.Data.Class1 test_01 = new Imms.Data.Class1();
-            // test_01.TestInsert_01(4);
-            test_01.TestInsert_02();
+            // Imms.Data.Class1 test_01 = new Imms.Data.Class1();
+            // test_01.TestInsert_01(10);
+            //test_01.TestInsert_02();
         }
 
-        [Fact]
-        public void Test1()
-        {
-            Assert.True(true);
-        }
+        // [Fact]
+        // public void Test1()
+        // {
+        //     Assert.True(true);
+        // }
 
         // [Theory]
         // [InlineData(3, 3, 6)]
