@@ -20,8 +20,19 @@ namespace Imms.Test
             {
                 foreach (SystemUser user in dbContext.SystemUser)
                 {
-                    Console.WriteLine($"userCode:{user.UserCode},userName:{user.UserName}");
+                    Console.WriteLine($"userId:{user.RecordId}, userCode:{user.UserCode},userName:{user.UserName}");
                 }
+
+                foreach (SystemRole role in dbContext.SystemRole)
+                {
+                    Console.WriteLine($"roleId:{role.RecordId}, roleCode:{role.RoleCode},roleName:{role.RoleName}");
+                }
+
+                foreach (SystemProgram program in dbContext.SystemProgram)
+                {
+                    Console.WriteLine($"programId:{program.RecordId}, programCode:{program.ProgramCode},programName:{program.ProgramName}");
+                }
+
             }
         }
 
