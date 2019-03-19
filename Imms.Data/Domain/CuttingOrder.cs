@@ -31,7 +31,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<CuttingOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("cutting_order");
 

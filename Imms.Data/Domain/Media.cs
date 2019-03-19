@@ -19,7 +19,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<Media> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("media");
 
             builder.Property(e => e.BelongToId)

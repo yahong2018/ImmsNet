@@ -17,7 +17,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<RolePrivilege> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("role_privilege");
 
             builder.Property(e => e.PrivilegeCode)

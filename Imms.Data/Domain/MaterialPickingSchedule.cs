@@ -14,7 +14,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<MaterialPickingSchedule> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("material_picking_schedule");
 

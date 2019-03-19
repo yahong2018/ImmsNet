@@ -21,7 +21,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<RequirementOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("requirement_order");
 
             builder.Property(e => e.FgMaterialId)

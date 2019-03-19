@@ -15,7 +15,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<BomOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("bom_order");
             builder.Property(e => e.BomOrderType).HasColumnName("bom_order_type");

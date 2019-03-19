@@ -23,7 +23,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<ProductionWorkOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("production_work_order");
 
             builder.Property(e => e.ActualEndDate).HasColumnName("actual_end_date");

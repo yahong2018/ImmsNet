@@ -23,7 +23,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<Bom> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("bom");
 

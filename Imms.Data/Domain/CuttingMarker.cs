@@ -17,7 +17,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<CuttingMarker> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("cutting_marker");
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id");

@@ -17,7 +17,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<WorkstationCheckIn> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("workstation_check_in");
 
             builder.Property(e => e.CheckInTime).HasColumnName("check_in_time");

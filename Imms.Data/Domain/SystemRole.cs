@@ -15,7 +15,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<SystemRole> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("system_role");
 
             builder.Property(e => e.RoleCode)

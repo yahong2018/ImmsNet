@@ -26,7 +26,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<ScheduleOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("schedule_order");
 
             builder.Property(e => e.DateActualEnd).HasColumnName("date_actual_end");

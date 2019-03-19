@@ -20,7 +20,8 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<SystemUser> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
+            
             builder.ToTable("system_user");
 
             builder.Property(e => e.Email)

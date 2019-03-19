@@ -17,7 +17,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<OperationRouting> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("operation_routing");
 
             builder.Property(e => e.OperationId)

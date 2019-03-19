@@ -18,7 +18,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<MaterialPickingOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("material_picking_order");
             builder.Property(e => e.ContainerNo)

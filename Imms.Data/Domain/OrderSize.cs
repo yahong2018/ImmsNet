@@ -18,7 +18,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<OrderSize> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("order_size");
 
             builder.Property(e => e.OrderId)

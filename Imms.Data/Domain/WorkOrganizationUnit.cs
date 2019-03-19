@@ -19,7 +19,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<WorkOrganizationUnit> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("work_organization_unit");
 
             builder.Property(e => e.Description)

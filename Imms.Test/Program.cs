@@ -1,0 +1,66 @@
+﻿using System;
+using System.Transactions;
+using Imms.Data;
+using Imms.Data.Domain;
+
+namespace Imms.Test
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Program program = new Program();
+            // program.doInsert(0);
+            program.doQuery();
+        }
+
+        private void doQuery(){
+            
+            using (ImmsDbContext dbContext = new ImmsDbContext())
+            {
+                foreach (SystemUser user in dbContext.SystemUser)
+                {
+                    Console.WriteLine($"userCode:{user.UserCode},userName:{user.UserName}");
+                }
+            }
+        }
+
+        private void doInsert(int i)
+        {
+            bool error = i > 100;
+            int end = i + 3;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
+            {
+                System.Console.WriteLine("Start Insert");
+                using (ImmsDbContext dbContext = new ImmsDbContext())
+                {
+                    for (; i < end; i++)
+                    {
+                        SystemUser user = new SystemUser();
+                        user.UserCode = $"U_{i}";
+                        user.UserName = $"U_NAME_{i}";
+                        user.Pwd = "1234";
+                        user.UserStatus = 0;
+                        user.Email = "aaa";
+                        user.IsOnline = 0;
+
+                        dbContext.SystemUser.Add(user);
+                    }
+                    dbContext.SaveChanges();
+                }
+
+                System.Console.WriteLine("Insert finished");
+
+                if (error)
+                {
+                    throw new Exception("error");
+                }
+
+                scope.Complete();
+            }
+
+            this.doQuery();
+
+        }
+    }
+}

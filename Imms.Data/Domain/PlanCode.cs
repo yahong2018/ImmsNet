@@ -17,7 +17,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<PlanCode> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("plan_code");
 
             builder.Property(e => e.CodeName)

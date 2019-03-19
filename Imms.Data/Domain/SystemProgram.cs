@@ -20,7 +20,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<SystemProgram> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("system_program");
 
             builder.Property(e => e.Glyph)

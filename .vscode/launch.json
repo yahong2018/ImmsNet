@@ -4,15 +4,17 @@
    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
    "version": "0.2.0",
    "configurations": [
+       
+
         {
-            "name": ".NET Core Launch (web)",
+            "name": "Test",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Imms.Api/bin/Debug/netcoreapp2.2/Imms.Api.dll",
+            "program": "${workspaceFolder}/Imms.Test/bin/Debug/netcoreapp2.2/Imms.Test.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Imms.Api",
+            "cwd": "${workspaceFolder}/Imms.Test",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {

@@ -23,7 +23,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<ProductionWorkOrderRouting> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("production_work_order_routing");
 
             builder.Property(e => e.CompleteQty)

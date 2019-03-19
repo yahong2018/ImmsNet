@@ -16,7 +16,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<OperatorCapability> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("operator_capability");
 
             builder.Property(e => e.OperationId)

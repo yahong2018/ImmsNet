@@ -20,7 +20,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<TreeCode> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("tree_code");
 
             builder.Property(e => e.CodeName)

@@ -15,7 +15,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<OperationRoutingOrder> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("operation_routing_order");
 
             builder.Property(e => e.MaterialId)

@@ -19,7 +19,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<CodeSeed> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
 
             builder.ToTable("code_seed");
             builder.Property(e => e.InitialValue).HasColumnName("initial_value");

@@ -16,7 +16,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<OrderMeasure> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("order_measure");
 
             builder.Property(e => e.BodyNo)

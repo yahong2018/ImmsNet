@@ -19,7 +19,7 @@ namespace Imms.Data.Domain
     {
         protected override void InternalConfigure(EntityTypeBuilder<CuttingOrderSize> builder)
         {
-            base.Configure(builder);
+            base.InternalConfigure(builder);
             builder.ToTable("cutting_order_size");
 
             builder.Property(e => e.ActualQty)
