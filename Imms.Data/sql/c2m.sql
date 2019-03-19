@@ -476,7 +476,7 @@ create table material_picking_schedule_bom  (
   material_picking_order_id            bigint                       not null,
   component_material_id                bigint                       not null,
   qty                                  double(8,2)                  not null,
-  component_material_uom_id            bigint                       null,
+  component_material_unit_id           bigint                       null,
   picked_qty                           double(8,2)                  not null,
 
   create_by                            bigint                       not null,
