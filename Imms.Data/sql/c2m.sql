@@ -367,42 +367,42 @@ create table order_measure  (
   index idx_order_measure_01(order_id)  
 );
 
---
--- 生产排程
---
-create table schedule_order(
-  record_id                       bigint       auto_increment        not null,
+-- --
+-- -- 生产排程
+-- --
+-- create table schedule_order(
+--   record_id                       bigint       auto_increment        not null,
   
-  order_no                        varchar(12)                        not null,
-  order_status                    int                                not null,
+--   order_no                        varchar(12)                        not null,
+--   order_status                    int                                not null,
 
-  requirement_order_id            bigint                             null,
-  priority                        tinyint                            not null,
+--   requirement_order_id            bigint                             null,
+--   priority                        tinyint                            not null,
     
-  plan_id                         bigint                             not null,  
-  work_center_id                  bigint                             not null,  
-  fg_material_id                  bigint                             not null,
+--   plan_id                         bigint                             not null,  
+--   work_center_id                  bigint                             not null,  
+--   fg_material_id                  bigint                             not null,
     
-  qty_planned                     int                                not null,
-  qty_actual                      int                                null,
+--   qty_planned                     int                                not null,
+--   qty_actual                      int                                null,
   
-  date_plan_start                 datetime                           not null,
-  date_plan_end                   datetime                           not null,
-  date_actual_start               datetime                           null,
-  date_actual_end                 datetime                           null,
+--   date_plan_start                 datetime                           not null,
+--   date_plan_end                   datetime                           not null,
+--   date_actual_start               datetime                           null,
+--   date_actual_end                 datetime                           null,
   
-  create_by                       bigint                             not null,
-  create_date                     datetime                           not null,
-  update_by                       bigint                             null,
-  update_date                     datetime                           null,
-  opt_flag                        int                                not null default 0,
+--   create_by                       bigint                             not null,
+--   create_date                     datetime                           not null,
+--   update_by                       bigint                             null,
+--   update_date                     datetime                           null,
+--   opt_flag                        int                                not null default 0,
 
-  primary key (record_id),
-  index idx_schedule_order_01(order_no),
-  index idx_schedule_order_02(requirement_order_id),
-  index idx_schedule_order_03(fg_material_id),
-  index idx_schedule_order_04(order_status)
-);
+--   primary key (record_id),
+--   index idx_schedule_order_01(order_no),
+--   index idx_schedule_order_02(requirement_order_id),
+--   index idx_schedule_order_03(fg_material_id),
+--   index idx_schedule_order_04(order_status)
+-- );
 
 
 --
@@ -414,7 +414,7 @@ create table production_order  (
   order_status                int               not null   default 0,
 
   requirement_order_id        bigint            null,
-  schedule_order_id           bigint            null, 
+  -- schedule_order_id           bigint            null, 
   
   fg_material_id              bigint            not null, -- 成品物料
   priority                    tinyint           not null,

@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Imms.Core\Imms.Core.csproj" />
+    <ProjectReference Include="..\Imms.Data\Imms.Data.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

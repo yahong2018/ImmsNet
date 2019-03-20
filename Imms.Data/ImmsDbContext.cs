@@ -24,10 +24,11 @@ namespace Imms.Data
         private void ProcessDataStateChanged(object objEvent)
         {
             EntityStateChangedEventArgs eventArgs = (EntityStateChangedEventArgs)objEvent;
+            DataChangedEvent changedEvent = new DataChangedEvent();
+            changedEvent.Entity = (IEntity) eventArgs.Entry.Entity;
+            changedEvent.State = eventArgs.NewState;
 
-            //
-            //TODO:在这里跟踪所有的状态更改
-            //
+            DataChangeEventDispatcher.Instance.OnDateChanged(changedEvent);
         }
 
 
@@ -63,7 +64,7 @@ namespace Imms.Data
         public virtual DbSet<RequirementOrder> RequirementOrder { get; set; }
         public virtual DbSet<RolePrivilege> RolePrivilege { get; set; }
         public virtual DbSet<RoleUser> RoleUser { get; set; }
-        public virtual DbSet<ScheduleOrder> ScheduleOrder { get; set; }
+        // public virtual DbSet<ScheduleOrder> ScheduleOrder { get; set; }
         public virtual DbSet<SystemProgram> SystemProgram { get; set; }
         public virtual DbSet<SystemRole> SystemRole { get; set; }
         public virtual DbSet<SystemUser> SystemUser { get; set; }
@@ -107,7 +108,7 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
             modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
             modelBuilder.ApplyConfiguration(new RequirementOrderConfigure());
-            modelBuilder.ApplyConfiguration(new ScheduleOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new ScheduleOrderConfigure());
             modelBuilder.ApplyConfiguration(new TreeCodeConfigure());
             modelBuilder.ApplyConfiguration(new WorkOrganizationUnitConfigure());
             modelBuilder.ApplyConfiguration(new WorkstationCheckInConfigure());

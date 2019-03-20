@@ -74,7 +74,7 @@ CREATE TABLE system_program
 CREATE TABLE program_privilege
 (
   record_id                  BIGINT AUTO_INCREMENT      NOT NULL,
-  program_id                 VARCHAR(50)                   NOT NULL,
+  program_id                 VARCHAR(50)                NOT NULL,
   privilege_code             VARCHAR(50)                NOT NULL,
   privilege_name             VARCHAR(120)               NOT NULL,
 
@@ -83,6 +83,43 @@ CREATE TABLE program_privilege
   index IDX_PROGRAM_PRIVILEGE_1(privilege_code)
 );
 
+
+create table system_app(
+   record_id               BIGINT AUTO_INCREMENT        NOT NULL,
+   system_code             varchar(50)                  NOT NULL,
+   system_name             varchar(120)                 NOT NULL,
+   ip                      varchar(50)                  NOT NULL,
+   status                  int                          not NULL,
+
+   PRIMARY key(record_id)             
+);
+
+create table system_data_exchange_rule(
+  record_id               BIGINT  AUTO_INCREMENT       not null,
+  exchange_rule_code      varchar(255)                 not null,
+  src_system_id           BIGINT                       not null,
+  dest_system_id          BIGINT                       not null,
+  data_format             int                          not null,
+
+  status                  int                          not null,
+
+  PRIMARY key(record_id)
+);
+
+create table system_exchange_data_log
+(
+    record_id               BIGINT   AUTO_INCREMENT    NOT NULL,    
+    exchange_rule_code      varchar(255)               not null,
+    message_id              char(36)                   not null,
+    src_ip                  varchar(50)                not null,
+    dest_ip                 varchar(50)                not null,
+    create_time             DATETIME                   null,    
+    receive_time            DATETIME                   null,
+    send_time               DATETIME                   not null,
+    raw_data                varchar(3000)              not null,
+
+    PRIMARY key(record_id)
+);
 
 
 

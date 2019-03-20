@@ -5,21 +5,47 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Imms.Data
 {
-    public class Entity<T>
-    {
-        public T RecordId { get; set; }
+    public interface IEntity:IComparable{
+        IComparable RecordId{get;set;}
     }
 
-    public class TrackableEntity<T> : Entity<T>
+    public class Entity<T>:IEntity where T: IComparable
+    {
+        public T RecordId { get; set; }
+        IComparable IEntity.RecordId { get => this.RecordId; set => this.RecordId = (T) value; }
+
+        int IComparable.CompareTo(object obj)
+        {
+            if(obj==null){
+                return 1;
+            }
+
+            if(((IEntity)this).RecordId==null){
+                return -1;
+            }
+
+            if(!(obj is IEntity)){
+                return -1;
+            }
+
+            if(((IEntity)obj).RecordId==null){
+                return -1;
+            }
+
+            return ((IComparable) this.RecordId).CompareTo(((IEntity)obj).RecordId);
+        }
+    }
+
+    public class TrackableEntity<T> : Entity<T> where T:IComparable
     {
         public long CreateBy { get; set; }
         public DateTime CreateDate { get; set; }        
         public long? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int OptFlag { get; set; }
-    }    
+    }
 
-    public class OrderEntity<T>:TrackableEntity<T>
+    public class OrderEntity<T>:TrackableEntity<T> where T:IComparable
     {
         public string OrderNo { get; set; }
         public int OrderStatus{get;set;}
