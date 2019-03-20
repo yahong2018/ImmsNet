@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Imms.Logic
+namespace Imms.Logic.Exchange
 {
     public class SystemDataExchangeListener : IDataChangeEventListener
     {
