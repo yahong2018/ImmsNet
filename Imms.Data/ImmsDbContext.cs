@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Imms.Data.Domain;
 using System.Reflection;
+using System.Threading;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Imms.Data
 {
@@ -10,7 +12,24 @@ namespace Imms.Data
     {
         public ImmsDbContext()
         {
+            this.ChangeTracker.StateChanged += ChangeTracker_StateChanged;
         }
+        
+
+        private void ChangeTracker_StateChanged(object sender, EntityStateChangedEventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem(this.ProcessDataStateChanged,e);
+        }
+
+        private void ProcessDataStateChanged(object objEvent)
+        {
+            EntityStateChangedEventArgs eventArgs = (EntityStateChangedEventArgs)objEvent;
+
+            //
+            //TODO:在这里跟踪所有的状态更改
+            //
+        }
+
 
         public ImmsDbContext(DbContextOptions<ImmsDbContext> options)
             : base(options)
