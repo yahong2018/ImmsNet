@@ -71,6 +71,9 @@ namespace Imms.Data
         public virtual DbSet<TreeCode> TreeCode { get; set; }
         public virtual DbSet<WorkOrganizationUnit> WorkOrganizationUnit { get; set; }
         public virtual DbSet<WorkstationCheckIn> WorkstationCheckIn { get; set; }
+        public virtual DbSet<SystemApp> SystemApp{get;set;}
+        public virtual DbSet<SystemDataExcahngeRule> SystemDataExcahngeRule{get;set;}
+        public virtual DbSet<SystemExchangeDataLog> SystemExchangeDataLog{get;set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -119,6 +122,9 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new SystemProgramConfigure());
             modelBuilder.ApplyConfiguration(new SystemRoleConfigure());
             modelBuilder.ApplyConfiguration(new SystemUserConfigure());
+            modelBuilder.ApplyConfiguration(new SysetmAppConfigure());
+            modelBuilder.ApplyConfiguration(new SystemDataExcahngeRuleConfigure());
+            modelBuilder.ApplyConfiguration(new SystemExchangeDataLogConfigure());
         }
     }
 }
