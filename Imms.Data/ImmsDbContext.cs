@@ -5,6 +5,7 @@ using Imms.Data.Domain;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 
 namespace Imms.Data
 {
@@ -14,18 +15,18 @@ namespace Imms.Data
         {
             this.ChangeTracker.StateChanged += ChangeTracker_StateChanged;
         }
-        
+
 
         private void ChangeTracker_StateChanged(object sender, EntityStateChangedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(this.ProcessDataStateChanged,e);
+            ThreadPool.QueueUserWorkItem(this.ProcessDataStateChanged, e);
         }
 
         private void ProcessDataStateChanged(object objEvent)
         {
             EntityStateChangedEventArgs eventArgs = (EntityStateChangedEventArgs)objEvent;
             DataChangedEvent changedEvent = new DataChangedEvent();
-            changedEvent.Entity = (IEntity) eventArgs.Entry.Entity;
+            changedEvent.Entity = (IEntity)eventArgs.Entry.Entity;
             changedEvent.State = eventArgs.NewState;
 
             DataChangeEventDispatcher.Instance.OnDateChanged(changedEvent);
@@ -70,10 +71,13 @@ namespace Imms.Data
         public virtual DbSet<SystemUser> SystemUser { get; set; }
         public virtual DbSet<TreeCode> TreeCode { get; set; }
         public virtual DbSet<WorkOrganizationUnit> WorkOrganizationUnit { get; set; }
+        public virtual DbSet<Plant> Plants { get; set; }
+        public virtual DbSet<WorkCenter> WorkCenters { get; set; }
+
         public virtual DbSet<WorkstationCheckIn> WorkstationCheckIn { get; set; }
-        public virtual DbSet<SystemApp> SystemApp{get;set;}
-        public virtual DbSet<SystemDataExcahngeRule> SystemDataExcahngeRule{get;set;}
-        public virtual DbSet<SystemExchangeDataLog> SystemExchangeDataLog{get;set;}
+        public virtual DbSet<SystemApp> SystemApp { get; set; }
+        public virtual DbSet<SystemDataExcahngeRule> SystemDataExcahngeRule { get; set; }
+        public virtual DbSet<SystemExchangeDataLog> SystemExchangeDataLog { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -81,6 +85,10 @@ namespace Imms.Data
             {
                 optionsBuilder.UseMySQL("server=localhost;user=root;database=Imms_Dev;port=3306;password=root");
             }
+
+            var loggerFactory = new LoggerFactory();
+            loggerFactory.AddProvider(new EFLoggerProvider());
+            optionsBuilder.UseLoggerFactory(loggerFactory);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -125,6 +133,8 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new SysetmAppConfigure());
             modelBuilder.ApplyConfiguration(new SystemDataExcahngeRuleConfigure());
             modelBuilder.ApplyConfiguration(new SystemExchangeDataLogConfigure());
+
+           
         }
     }
 }

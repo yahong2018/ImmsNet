@@ -11,6 +11,8 @@ namespace Imms.Data.Domain{
 
     public class SysetmAppConfigure:EntityConfigure<SystemApp>{
         protected override void InternalConfigure(EntityTypeBuilder<SystemApp> builder){
+            base.InternalConfigure(builder);
+
             builder.ToTable("system_app");
             
             builder.Property(e=>e.SystemCode).HasColumnName("system_code");

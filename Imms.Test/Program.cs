@@ -11,11 +11,24 @@ namespace Imms.Test
         {
             Program program = new Program();
             // program.doInsert(0);
-            program.doQuery();
+            // program.doQuery();
+            program.testGetPlantByCode();
         }
 
-        private void doQuery(){
-            
+        private void testGetPlantByCode()
+        {
+            Plant plant = Imms.Data.DAO.OrganizationDAO.GetPlantByCode("A");
+            if (plant != null)
+            {
+                Console.WriteLine($"PlantCode:{plant.PlantCode},PlantName:{plant.PlantName}");
+            }else{
+                Console.WriteLine("nothing find");
+            }
+        }
+
+        private void doQuery()
+        {
+
             using (ImmsDbContext dbContext = new ImmsDbContext())
             {
                 foreach (SystemUser user in dbContext.SystemUser)

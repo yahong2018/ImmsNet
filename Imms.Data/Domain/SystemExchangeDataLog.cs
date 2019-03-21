@@ -18,6 +18,8 @@ namespace Imms.Data.Domain
 
     public class SystemExchangeDataLogConfigure:EntityConfigure<SystemExchangeDataLog>{
         protected override void InternalConfigure(EntityTypeBuilder<SystemExchangeDataLog> builder){
+            base.InternalConfigure(builder);
+
             builder.ToTable("system_exchange_data_log");
             
             builder.Property(e=>e.ExchangeRuleCode).HasColumnName("exchange_rule_code");

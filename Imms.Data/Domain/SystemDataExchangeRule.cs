@@ -12,6 +12,8 @@ namespace Imms.Data.Domain{
 
     public class SystemDataExcahngeRuleConfigure:EntityConfigure<SystemDataExcahngeRule>{
         protected override void InternalConfigure(EntityTypeBuilder<SystemDataExcahngeRule> builder){
+            base.InternalConfigure(builder);
+
             builder.ToTable("system_data_exchange_rule");
             builder.Property(e=>e.ExchangeRuleCode).HasColumnName("exchange_rule_code");
             builder.Property(e=>e.SrcSystemId).HasColumnName("src_system_id");

@@ -86,7 +86,7 @@ insert into tree_code (code_type, code_no,code_name, description, parent_id, cod
 --
 CREATE TABLE work_organization_unit  (
   record_id                BIGINT AUTO_INCREMENT           NOT NULL,
-  organization_type        int                             NOT NULL,  -- 生产组织单元类别：  0 工厂  1 工作中心   2 生产线   3 工位
+  organization_type        varchar(128)                    NOT NULL,  -- 生产组织单元类别：工厂,工作中心,生产线,工位
   organization_code        varchar(10)                     NOT NULL,
   organization_name        varchar(50)                     NOT NULL,
   description              varchar(250)                    NULL ,

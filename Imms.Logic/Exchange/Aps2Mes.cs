@@ -36,6 +36,7 @@ namespace Imms.Logic.Exchange
                     {
                         return;
                     }
+                    
 
                     ProductionOrder productionOrder = new ProductionOrder();
                     productionOrder.RequirementOrderNo = shceduleOrder.RequirementOrderNo;
