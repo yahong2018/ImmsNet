@@ -54,14 +54,14 @@ namespace Imms.Data
         public virtual DbSet<OperationRoutingOrder> OperationRoutingOrder { get; set; }
         public virtual DbSet<Operator> Operator { get; set; }
         public virtual DbSet<OperatorCapability> OperatorCapability { get; set; }
-        public virtual DbSet<OrderMeasure> OrderMeasure { get; set; }
-        public virtual DbSet<OrderSize> OrderSize { get; set; }
+        public virtual DbSet<ProductionOrderMeasure> OrderMeasure { get; set; }
+        public virtual DbSet<ProducitonOrderSize> OrderSize { get; set; }
         public virtual DbSet<PlanCode> PlanCode { get; set; }
         public virtual DbSet<ProductionOrder> ProductionOrder { get; set; }
         public virtual DbSet<ProductionWorkOrder> ProductionWorkOrder { get; set; }
         public virtual DbSet<ProductionWorkOrderRouting> ProductionWorkOrderRouting { get; set; }
         public virtual DbSet<ProgramPrivilege> ProgramPrivilege { get; set; }
-        public virtual DbSet<RequirementOrder> RequirementOrder { get; set; }
+        // public virtual DbSet<RequirementOrder> RequirementOrder { get; set; }
         public virtual DbSet<RolePrivilege> RolePrivilege { get; set; }
         public virtual DbSet<RoleUser> RoleUser { get; set; }
         // public virtual DbSet<ScheduleOrder> ScheduleOrder { get; set; }
@@ -104,13 +104,13 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new OperationRoutingOrderConfigure());
             modelBuilder.ApplyConfiguration(new OperatorConfigure());
             modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
-            modelBuilder.ApplyConfiguration(new OrderMeasureConfigure());
-            modelBuilder.ApplyConfiguration(new OrderSizeConfigure());
+            modelBuilder.ApplyConfiguration(new ProductionOrderMeasureConfigure());
+            modelBuilder.ApplyConfiguration(new ProducitonOrderSizeConfigure());
             modelBuilder.ApplyConfiguration(new PlanCodeConfigure());
             modelBuilder.ApplyConfiguration(new ProductionOrderConfigure());
             modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
             modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
-            modelBuilder.ApplyConfiguration(new RequirementOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new RequirementOrderConfigure());
             // modelBuilder.ApplyConfiguration(new ScheduleOrderConfigure());
             modelBuilder.ApplyConfiguration(new TreeCodeConfigure());
             modelBuilder.ApplyConfiguration(new WorkOrganizationUnitConfigure());

@@ -300,72 +300,33 @@ CREATE TABLE operation_routing  (
 );
 
 
---
--- 需求订单
---
-create table requirement_order  (
-   record_id                       bigint    auto_increment                     not null,
-   order_no                        varchar(12)           not null  ,             -- 需求订单号
-   order_status                    int                   not null  ,             -- 状态
-   order_type                      int                   not null  ,             -- 需求订单类型
+-- --
+-- -- 需求订单
+-- --
+-- create table requirement_order  (
+--    record_id                       bigint    auto_increment                     not null,
+--    order_no                        varchar(12)           not null  ,             -- 需求订单号
+--    order_status                    int                   not null  ,             -- 状态
+--    order_type                      int                   not null  ,             -- 需求订单类型
    
-   priority                        int                   not null  ,             -- 优先级
-   work_center_id                  bigint                not null  ,             -- 工作中心主键
-   fg_material_id                  bigint                not null  ,             -- 物料号
-   planned_qty                     int                   not null  ,             -- 计划生产数量
-   required_delivery_date          datetime              not null  ,             -- 需求交期
-   sale_order_no                   varchar(64)           null ,                  -- 销售订单号
-   repeat_type                     int                   not null default 0,     -- 重复类型:0.首单 1.返单 2.补单
+--    priority                        int                   not null  ,             -- 优先级
+--    work_center_id                  bigint                not null  ,             -- 工作中心主键
+--    fg_material_id                  bigint                not null  ,             -- 物料号
+--    planned_qty                     int                   not null  ,             -- 计划生产数量
+--    required_delivery_date          datetime              not null  ,             -- 需求交期
+--    sale_order_no                   varchar(64)           null ,                  -- 销售订单号
+--    repeat_type                     int                   not null default 0,     -- 重复类型:0.首单 1.返单 2.补单
 
-  create_by                            bigint                       not null,
-  create_date                          datetime                     not null,
-  update_by                            bigint                       null,
-  update_date                          datetime                     null,
-  opt_flag                             int                          not null default 0,
+--   create_by                            bigint                       not null,
+--   create_date                          datetime                     not null,
+--   update_by                            bigint                       null,
+--   update_date                          datetime                     null,
+--   opt_flag                             int                          not null default 0,
 
-   primary key (record_id) ,
-   index idx_requirement_order_01(order_no) ,
-   index idx_requirement_order_02(work_center_id)
- ) ;
-
---
--- 订单尺码明细
---
-create table order_size  (
-  record_id                    bigint  auto_increment  not null ,
-  order_id                     bigint                  not null,  
-  size_id                      bigint                  not null,
-  size_code                    varchar(10)             not null,
-  qyt_planned                  int                     null,
-
-  create_by                    bigint                  not null,
-  create_date                  datetime                not null,
-  update_by                    bigint                  null,
-  update_date                  datetime                null,
-  opt_flag                     int                     not null default 0,
-
-  primary key (record_id),
-  index idx_order_size_01(order_id)  
-) ;
-
---
--- 订单量体数据
---
-create table order_measure  (
-  record_id                    bigint   auto_increment  not null,
-  order_id                     bigint                   not null ,  
-  body_no                      varchar(20)              not null ,
-  measure_data                 int                      not null ,
-
-  create_by                    bigint                   not null,
-  create_date                  datetime                 not null,
-  update_by                    bigint                   null,
-  update_date                  datetime                 null,
-  opt_flag                     int                      not null default 0,
-
-  primary key (record_id) ,
-  index idx_order_measure_01(order_id)  
-);
+--    primary key (record_id) ,
+--    index idx_requirement_order_01(order_no) ,
+--    index idx_requirement_order_02(work_center_id)
+--  ) ;
 
 -- --
 -- -- 生产排程
@@ -413,8 +374,8 @@ create table production_order  (
   order_no                    varchar(12)       not null,
   order_status                int               not null   default 0,
 
-  requirement_order_id        bigint            null,
-  -- schedule_order_id           bigint            null, 
+  requirement_order_no        varchar(12)       null,
+  schedule_order_no           varchar(12)       null, 
   
   fg_material_id              bigint            not null, -- 成品物料
   priority                    tinyint           not null,
@@ -442,10 +403,52 @@ create table production_order  (
 
   primary key (record_id),
   index idx_production_order_01(order_no),
-  index idx_production_order_02(requirement_order_id),
-  index idx_production_order_03(fg_material_id),
-  index idx_production_order_04(order_status)
+  index idx_production_order_02(requirement_order_no),
+  index idx_production_order_03(schedule_order_no),
+  index idx_production_order_04(fg_material_id),
+  index idx_production_order_05(order_status)
 );
+
+--
+-- 订单尺码明细
+--
+create table production_order_size  (
+  record_id                    bigint  auto_increment  not null ,
+  production_order_id          bigint                  not null,  
+  size_id                      bigint                  not null,
+  size_code                    varchar(10)             not null,
+  qyt_planned                  int                     null,
+
+  create_by                    bigint                  not null,
+  create_date                  datetime                not null,
+  update_by                    bigint                  null,
+  update_date                  datetime                null,
+  opt_flag                     int                     not null default 0,
+
+  primary key (record_id),
+  index idx_order_size_01(production_order_id)  
+) ;
+
+--
+-- 订单量体数据
+--
+create table production_order_measure  (
+  record_id                    bigint   auto_increment  not null,
+  production_order_id          bigint                   not null ,  
+  body_no                      varchar(20)              not null ,
+  measure_data                 varchar(10)              not null ,
+  garment_size                 varchar(10)              not null , 
+
+  create_by                    bigint                   not null,
+  create_date                  datetime                 not null,
+  update_by                    bigint                   null,
+  update_date                  datetime                 null,
+  opt_flag                     int                      not null default 0,
+
+  primary key (record_id) ,
+  index idx_order_measure_01(production_order_id)  
+);
+
 
 --
 -- 领料计划

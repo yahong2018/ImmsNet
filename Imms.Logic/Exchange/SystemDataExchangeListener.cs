@@ -39,4 +39,18 @@ namespace Imms.Logic.Exchange
         string[] ExchangeRules { get; set; }
         void Process(SystemExchangeDataLog log);
     }
+
+    /*
+    数据交换采用json，格式如下：
+    {
+        "MessageId":"xxxx-xxxx-xxxxx-xxxx-xxxx",
+        "ExchangeRuleCode":"DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES",
+        "CreateTime":"2019-03-21 14:40:36 339",   // 发送方填写
+        "ReceiveTime":"0000-00-00 00:00:00 000",  // 接收方填写
+        "SendTime":"2019-03-21 14:40:36 341",     // 发送方填写
+        "RawData":"{
+            具体的数据
+        }"
+    }    
+     */
 }

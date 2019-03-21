@@ -7,8 +7,8 @@ namespace Imms.Data.Domain
 {
     public partial class ProductionOrder : OrderEntity<long>
     {
-        public long? RequirementOrderId { get; set; }
-        public long? ScheduleOrderId { get; set; }
+        public string RequirementOrderNo { get; set; }
+        public string ScheduleOrderNo { get; set; }
         public long FgMaterialId { get; set; }
         public byte Priority { get; set; }
         public long? WorkCenterId { get; set; }
@@ -68,17 +68,17 @@ namespace Imms.Data.Domain
                 .HasColumnName("priority")
                 .HasColumnType("tinyint(4)");
 
-            builder.Property(e => e.RequirementOrderId)
-                .HasColumnName("requirement_order_id")
-                .HasColumnType("bigint(20)");
+            builder.Property(e => e.RequirementOrderNo)
+                .HasColumnName("requirement_order_no")
+                .HasColumnType("varchar(12)");
 
             builder.Property(e => e.RoutingOrderId)
                 .HasColumnName("routing_order_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.ScheduleOrderId)
-                .HasColumnName("schedule_order_id")
-                .HasColumnType("bigint(20)");
+            builder.Property(e => e.ScheduleOrderNo)
+                .HasColumnName("schedule_order_no")
+                .HasColumnType("varchar(12)");
 
             builder.Property(e => e.SecondQualityQty)
                 .HasColumnName("second_quality_qty")

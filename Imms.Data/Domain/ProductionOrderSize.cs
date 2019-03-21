@@ -5,24 +5,24 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Imms.Data.Domain
 {
-    public partial class OrderSize : TrackableEntity<long>
+    public partial class ProducitonOrderSize : TrackableEntity<long>
     {
-        public long OrderId { get; set; }
+        public long ProducitonOrderId { get; set; }
         public long SizeId { get; set; }
         public string SizeCode { get; set; }
         public int? QytPlanned { get; set; }
     }
 
 
-    public class OrderSizeConfigure : TrackableEntityConfigure<OrderSize>
+    public class ProducitonOrderSizeConfigure : TrackableEntityConfigure<ProducitonOrderSize>
     {
-        protected override void InternalConfigure(EntityTypeBuilder<OrderSize> builder)
+        protected override void InternalConfigure(EntityTypeBuilder<ProducitonOrderSize> builder)
         {
             base.InternalConfigure(builder);
-            builder.ToTable("order_size");
+            builder.ToTable("produciton_order_size");
 
-            builder.Property(e => e.OrderId)
-                   .HasColumnName("order_id")
+            builder.Property(e => e.ProducitonOrderId)
+                   .HasColumnName("produciton_order_id")
                    .HasColumnType("bigint(20)");
 
             builder.Property(e => e.QytPlanned)
