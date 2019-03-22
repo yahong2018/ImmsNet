@@ -29,7 +29,7 @@ insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_len
 */
 CREATE TABLE plan_code  (
   record_id                          BIGINT AUTO_INCREMENT          NOT NULL ,
-  code_type                          int                            NOT NULL,        -- 编码类型
+  code_type                          varchar(128)                   NOT NULL,        -- 编码类型
   code_no                            varchar(10)                    NOT NULL,         -- 编码
   code_name                          varchar(30)                    NOT NULL,         -- 名称
   description                        varchar(250)                   NULL,            -- 描述
@@ -54,7 +54,7 @@ tree_code：树形编码
 
 CREATE TABLE tree_code  (
   record_id                          BIGINT AUTO_INCREMENT          NOT NULL,
-  code_type                          int                            NOT NULL,        -- 编码类型
+  code_type                          varchar(128)                   NOT NULL,        -- 编码类型
   code_no                            varchar(10)                    NOT NULL,         -- 编码
   code_name                          varchar(30)                    NOT NULL,         -- 名称
   description                        varchar(250)                   NULL,            -- 描述
@@ -416,7 +416,7 @@ create table production_order_size  (
   record_id                    bigint  auto_increment  not null ,
   production_order_id          bigint                  not null,  
   size_id                      bigint                  not null,
-  size_code                    varchar(10)             not null,
+--  size_code                    varchar(10)             not null,
   qyt_planned                  int                     null,
 
   create_by                    bigint                  not null,

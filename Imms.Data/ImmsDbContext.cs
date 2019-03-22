@@ -12,26 +12,8 @@ namespace Imms.Data
     public partial class ImmsDbContext : DbContext
     {
         public ImmsDbContext()
-        {
-            this.ChangeTracker.StateChanged += ChangeTracker_StateChanged;
-        }
-
-
-        private void ChangeTracker_StateChanged(object sender, EntityStateChangedEventArgs e)
-        {
-            ThreadPool.QueueUserWorkItem(this.ProcessDataStateChanged, e);
-        }
-
-        private void ProcessDataStateChanged(object objEvent)
-        {
-            EntityStateChangedEventArgs eventArgs = (EntityStateChangedEventArgs)objEvent;
-            DataChangedEvent changedEvent = new DataChangedEvent();
-            changedEvent.Entity = (IEntity)eventArgs.Entry.Entity;
-            changedEvent.State = eventArgs.NewState;
-
-            DataChangeEventDispatcher.Instance.OnDateChanged(changedEvent);
-        }
-
+        {            
+        }       
 
         public ImmsDbContext(DbContextOptions<ImmsDbContext> options)
             : base(options)
@@ -56,7 +38,7 @@ namespace Imms.Data
         public virtual DbSet<Operator> Operator { get; set; }
         public virtual DbSet<OperatorCapability> OperatorCapability { get; set; }
         public virtual DbSet<ProductionOrderMeasure> OrderMeasure { get; set; }
-        public virtual DbSet<ProducitonOrderSize> OrderSize { get; set; }
+        public virtual DbSet<ProductionOrderSize> OrderSize { get; set; }
         public virtual DbSet<PlanCode> PlanCode { get; set; }
         public virtual DbSet<ProductionOrder> ProductionOrder { get; set; }
         public virtual DbSet<ProductionWorkOrder> ProductionWorkOrder { get; set; }
@@ -113,7 +95,7 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new OperatorConfigure());
             modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
             modelBuilder.ApplyConfiguration(new ProductionOrderMeasureConfigure());
-            modelBuilder.ApplyConfiguration(new ProducitonOrderSizeConfigure());
+            modelBuilder.ApplyConfiguration(new ProductionOrderSizeConfigure());
             modelBuilder.ApplyConfiguration(new PlanCodeConfigure());
             modelBuilder.ApplyConfiguration(new ProductionOrderConfigure());
             modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());

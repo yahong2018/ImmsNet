@@ -15,7 +15,7 @@ namespace Imms.Logic.Exchange
 
         public void ProcessEvent(DataChangedEvent e)
         {
-            if (e.State != EntityState.Added)
+            if (e.DMLType != DMLType.Insert)
             {
                 return;
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,7 +8,8 @@ namespace Imms.Data.Domain
 {
     public partial class TreeCode : TrackableEntity<long>
     {
-        public int CodeType { get; set; }
+      //  public string CodeType { get; set; }
+  
         public string CodeNo { get; set; }
         public string CodeName { get; set; }
         public string Description { get; set; }
@@ -16,12 +18,24 @@ namespace Imms.Data.Domain
         public string CodeNamePath { get; set; }
     }
 
+    public class Size : TreeCode
+    {
+        [NotMapped]
+        public string SizeCode { get { return base.CodeNo; } set { base.CodeNo = value; } }
+        [NotMapped]
+        public string SizeName { get { return base.CodeName; } set { base.CodeName = value; } }
+    }
+
     public class TreeCodeConfigure : TrackableEntityConfigure<TreeCode>
     {
         protected override void InternalConfigure(EntityTypeBuilder<TreeCode> builder)
         {
             base.InternalConfigure(builder);
             builder.ToTable("tree_code");
+
+            builder.HasDiscriminator("code_type", typeof(string))
+                .HasValue<Size>(Imms.Core.GlobalConstants.CODE_TABLE_TYPE_SIZE)
+                ;
 
             builder.Property(e => e.CodeName)
                     .IsRequired()
@@ -47,9 +61,9 @@ namespace Imms.Data.Domain
                 .HasMaxLength(110)
                 .IsUnicode(false);
 
-            builder.Property(e => e.CodeType)
-                .HasColumnName("code_type")
-                .HasColumnType("int(11)");
+            //builder.Property(e => e.CodeType)
+            //    .HasColumnName("code_type")
+            //    .HasColumnType("int(11)");
 
             builder.Property(e => e.Description)
                    .HasColumnName("description")

@@ -12,16 +12,22 @@ namespace Imms.Test
             Program program = new Program();
             // program.doInsert(0);
             // program.doQuery();
-            program.testGetPlantByCode();
+            // program.testGetPlantByCode();
+            program.testGetPlantByProperty();
+
+            Console.Read();
         }
 
-        private void testGetPlantByCode()
+       
+        private void testGetPlantByProperty()
         {
-            Plant plant = Imms.Data.DAO.OrganizationDAO.GetPlantByCode("A");
+            Plant plant = CommonDAO.GetByProperty<Plant>("OrganizationCode", "A");
             if (plant != null)
             {
                 Console.WriteLine($"PlantCode:{plant.PlantCode},PlantName:{plant.PlantName}");
-            }else{
+            }
+            else
+            {
                 Console.WriteLine("nothing find");
             }
         }

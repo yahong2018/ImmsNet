@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Imms.Data.Domain
 {
     public partial class Material : TrackableEntity<long>
-    {
+    {     
         public string MaterialNo { get; set; }
         public string MaterialName { get; set; }
         public long MaterialTypeId { get; set; }

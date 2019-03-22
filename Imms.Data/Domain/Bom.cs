@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -7,12 +8,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Imms.Data.Domain
 {
     public partial class Bom : TrackableEntity<long>
-    {
+    {           
         public long BomOrderId { get; set; }
         public long ComponentMaterialId { get; set; }
         public long? ComponentAbstractMaterialId { get; set; }
         public float ComponentQty { get; set; }
-        public int ComponentUnitId { get; set; }
+        public long ComponentUnitId { get; set; }
         public string ComponentMaterialNoPath { get; set; }
         public string ComponentMaterialNamePath { get; set; }
         public short IsFabric { get; set; }

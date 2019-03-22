@@ -29,25 +29,25 @@ namespace Imms.Data
             }
         }
 
-        public void start()
+        public void Start()
         {
             if (!this.teriminated)
             {
                 return;
             }
             this.teriminated = false;
-            this.thread = new Thread(this.dispatch);
+            this.thread = new Thread(this.Dispatch);
             this.thread.Start();
             this.waitLock.Reset();
         }
 
-        public void stop()
+        public void Stop()
         {
             this.teriminated = true;
             waitLock.WaitOne();
         }
 
-        private void dispatch()
+        private void Dispatch()
         {
             while (!teriminated)
             {
@@ -102,7 +102,7 @@ namespace Imms.Data
     public class DataChangedEvent : IComparable
     {
         public IEntity Entity { get; set; }
-        public EntityState State { get; set; }
+        public DMLType DMLType { get; set; }
 
         public int CompareTo(object obj)
         {
