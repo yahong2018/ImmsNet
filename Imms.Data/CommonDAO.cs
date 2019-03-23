@@ -17,7 +17,7 @@ namespace Imms.Data
         private static readonly SortedList<Guid, string> _TypeKeyPropertyNameList = new SortedList<Guid, string>();
         private static readonly SortedDictionary<Guid, string> _TableDisplayLabelList = new SortedDictionary<Guid, string>();
         private static readonly SortedList<Guid, SortedDictionary<string, string>> _TypePropertyDisplayLabelList = new SortedList<Guid, SortedDictionary<string, string>>();
-                
+
         public static T GetByProperty<T>(string propertyName, object propertyValue) where T : class
         {
             using (ImmsDbContext dbContext = new ImmsDbContext())
@@ -26,7 +26,7 @@ namespace Imms.Data
             }
         }
 
-        public static T CheckExistsByProperty<T>(string propertyName,object propertyValue) where T : class
+        public static T CheckExistsByProperty<T>(string propertyName, object propertyValue) where T : class
         {
             T result = GetByProperty<T>(propertyName, propertyValue);
             if (result == null)
@@ -50,19 +50,20 @@ namespace Imms.Data
                 }
 
                 lock (_TypePropertyDisplayLabelList)
-                {                    
-                    string propertyDisplayName= propertyName;
+                {
+                    string propertyDisplayName = propertyName;
                     if (!_TypePropertyDisplayLabelList.ContainsKey(typeKey))
                     {
                         _TypePropertyDisplayLabelList.Add(typeKey, new SortedDictionary<string, string>());
-                    }else if (!_TypePropertyDisplayLabelList[typeKey].ContainsKey(propertyName))
+                    }
+                    else if (!_TypePropertyDisplayLabelList[typeKey].ContainsKey(propertyName))
                     {
-                        PropertyInfo property = itemType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);                       
-                        DisplayAttribute displayAttribute = (DisplayAttribute) property.GetCustomAttribute(typeof(DisplayAttribute));
+                        PropertyInfo property = itemType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+                        DisplayAttribute displayAttribute = (DisplayAttribute)property.GetCustomAttribute(typeof(DisplayAttribute));
                         if (displayAttribute != null)
                         {
                             propertyDisplayName = displayAttribute.Name;
-                        }                                         
+                        }
 
                         _TypePropertyDisplayLabelList[typeKey].Add(propertyName, propertyDisplayName);
                     }
@@ -110,38 +111,55 @@ namespace Imms.Data
                         throw businessException;
                     }
                     return oldItem;
-                }                
+                }
             }
             return null;
         }
 
-        public static int Insert<T>(T item, DMLGenericHandler<T> handlerBeforeInsert=null, DMLGenericHandler<T> handlerAfterInsert = null,bool notifyChangeEvent=false) where T:class,IEntity
+        public static int Insert<T>(T[] items, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null, bool notifyChangeEvent = false) where T : class, IEntity
         {
             using (ImmsDbContext dbContext = new ImmsDbContext())
             {
-                AssureNotExists<T>(item);
-                GetCustomDataVerifyHandler(typeof(T), DMLType.Insert)?.Invoke(item, DMLType.Insert);
-                handlerBeforeInsert?.Invoke(item, DMLType.Insert);
-                try
+                foreach (T item in items)
                 {
-                    dbContext.Set<T>().Add(item);
-                    return dbContext.SaveChanges();
+                    DoSingleInsert(dbContext, item, handlerBeforeInsert, handlerAfterInsert, notifyChangeEvent);
                 }
-                finally
+            }
+            return items.Length;
+        }
+
+        public static int Insert<T>(T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null, bool notifyChangeEvent = false) where T : class, IEntity
+        {
+            using (ImmsDbContext dbContext = new ImmsDbContext())
+            {
+                return DoSingleInsert(dbContext, item, handlerBeforeInsert, handlerAfterInsert, notifyChangeEvent);
+            }
+        }
+
+        private static int DoSingleInsert<T>(ImmsDbContext dbContext, T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null, bool notifyChangeEvent = false) where T : class, IEntity
+        {
+            AssureNotExists<T>(item);
+            GetCustomDataVerifyHandler(typeof(T), DMLType.Insert)?.Invoke(item, DMLType.Insert);
+            handlerBeforeInsert?.Invoke(item, DMLType.Insert);
+            try
+            {
+                dbContext.Set<T>().Add(item);
+                return dbContext.SaveChanges();
+            }
+            finally
+            {
+                if (notifyChangeEvent)
                 {
-                    if (notifyChangeEvent)
+                    DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
                     {
-                        DataChangedEvent changedEvent = new DataChangedEvent
-                        {
-                            Entity = item,
-                            DMLType = DMLType.Insert
-                        };
+                        Entity = item,
+                        DMLType = DMLType.Insert
+                    };
 
-                        ThreadPool.QueueUserWorkItem<DataChangedEvent>(DataChangeEventDispatcher.Instance.OnDateChanged, changedEvent,false);
-                    }
-
-                    handlerAfterInsert?.Invoke(item, DMLType.Insert);
+                    ThreadPool.QueueUserWorkItem<DataChangedNotifyEvent>(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, changedEvent, false);
                 }
+
+                handlerAfterInsert?.Invoke(item, DMLType.Insert);
             }
         }
 
@@ -163,13 +181,13 @@ namespace Imms.Data
                 {
                     if (notifyChangeEvent)
                     {
-                        DataChangedEvent changedEvent = new DataChangedEvent
+                        DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
                         {
                             Entity = item,
                             DMLType = DMLType.Update
                         };
 
-                        ThreadPool.QueueUserWorkItem<DataChangedEvent>(DataChangeEventDispatcher.Instance.OnDateChanged, changedEvent, false);
+                        ThreadPool.QueueUserWorkItem<DataChangedNotifyEvent>(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, changedEvent, false);
                     }
 
                     handlerAfterUpdate?.Invoke(item, DMLType.Update);
@@ -182,7 +200,7 @@ namespace Imms.Data
         {
             using (ImmsDbContext dbContext = new ImmsDbContext())
             {
-                T dbItem =  AssureExists<T>(item);
+                T dbItem = AssureExists<T>(item);
                 GetCustomDataVerifyHandler(typeof(T), DMLType.Delete)?.Invoke(dbItem, DMLType.Delete);
                 handlerBeforeDelete?.Invoke(dbItem, DMLType.Delete);
                 try
@@ -195,13 +213,13 @@ namespace Imms.Data
                 {
                     if (notifyChangeEvent)
                     {
-                        DataChangedEvent changedEvent = new DataChangedEvent
+                        DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
                         {
                             Entity = dbItem,
                             DMLType = DMLType.Delete
                         };
 
-                        ThreadPool.QueueUserWorkItem<DataChangedEvent>(DataChangeEventDispatcher.Instance.OnDateChanged, changedEvent, false);
+                        ThreadPool.QueueUserWorkItem<DataChangedNotifyEvent>(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, changedEvent, false);
                     }
 
                     handlerAfterDelete?.Invoke(dbItem, DMLType.Delete);
@@ -210,7 +228,7 @@ namespace Imms.Data
         }
 
 
-        public static void RegisterDMLCommonHandler(Type itemType,DMLType dmlType, DMLCommonHandler handler)
+        public static void RegisterDMLCommonHandler(Type itemType, DMLType dmlType, DMLCommonHandler handler)
         {
             Guid key = itemType.GUID;
             lock (_CustomDataVerifyHandlers)
@@ -226,17 +244,17 @@ namespace Imms.Data
                 else
                 {
                     _CustomDataVerifyHandlers[key][dmlType] = handler;
-                }               
+                }
             }
         }
 
 
-        private static DMLCommonHandler GetCustomDataVerifyHandler(Type itemType,DMLType dmlType)
+        private static DMLCommonHandler GetCustomDataVerifyHandler(Type itemType, DMLType dmlType)
         {
             Guid key = itemType.GUID;
 
             lock (_CustomDataVerifyHandlers)
-            {                
+            {
                 if (_CustomDataVerifyHandlers.ContainsKey(key) && _CustomDataVerifyHandlers[key].ContainsKey(dmlType))
                 {
                     return _CustomDataVerifyHandlers[key][dmlType];
@@ -255,5 +273,5 @@ namespace Imms.Data
     }
 
     public delegate void DMLCommonHandler(object item, DMLType dmlType);
-    public delegate void DMLGenericHandler<T>(T item,DMLType dmlType);
+    public delegate void DMLGenericHandler<T>(T item, DMLType dmlType);
 }

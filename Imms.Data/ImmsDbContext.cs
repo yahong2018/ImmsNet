@@ -37,8 +37,8 @@ namespace Imms.Data
         public virtual DbSet<OperationRoutingOrder> OperationRoutingOrder { get; set; }
         public virtual DbSet<Operator> Operator { get; set; }
         public virtual DbSet<OperatorCapability> OperatorCapability { get; set; }
-        public virtual DbSet<ProductionOrderMeasure> OrderMeasure { get; set; }
-        public virtual DbSet<ProductionOrderSize> OrderSize { get; set; }
+        public virtual DbSet<ProductionOrderMeasure> ProductionOrderMeasure { get; set; }
+        public virtual DbSet<ProductionOrderSize> ProductionOrderSize { get; set; }
         public virtual DbSet<PlanCode> PlanCode { get; set; }
         public virtual DbSet<ProductionOrder> ProductionOrder { get; set; }
         public virtual DbSet<ProductionWorkOrder> ProductionWorkOrder { get; set; }

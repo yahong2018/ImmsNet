@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Logic.Exchange
 {
-    public class SystemDataExchangeListener : IDataChangeEventListener
+    public class SystemDataExchangeListener : IDataChangeNotifyEventListener
     {
         public Type MonitorType { get { return typeof(SystemExchangeDataLog); } set => throw new NotImplementedException(); }
 
-        public void ProcessEvent(DataChangedEvent e)
+        public void ProcessEvent(DataChangedNotifyEvent e)
         {
             if (e.DMLType != DMLType.Insert)
             {

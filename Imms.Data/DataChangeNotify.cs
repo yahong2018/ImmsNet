@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Data
 {
-    public class DataChangeEventDispatcher
+    public class DataChangeNotifyEventDispatcher
     {
-        protected internal void OnDateChanged(DataChangedEvent e)
+        protected internal void OnDateChanged(DataChangedNotifyEvent e)
         {
             if (e.Entity != null || e.Entity.RecordId == null)
             {
@@ -53,16 +53,16 @@ namespace Imms.Data
             {
                 Thread.Sleep(30);
 
-                DataChangedEvent[] changedEvents;
+                DataChangedNotifyEvent[] changedEvents;
                 lock (this)
                 {
                     changedEvents = this.changedEvents.ToArray();
                     this.changedEvents.Clear();
                 }
 
-                foreach (DataChangedEvent e in changedEvents)
+                foreach (DataChangedNotifyEvent e in changedEvents)
                 {                     
-                    foreach (IDataChangeEventListener listener in this.listeners)
+                    foreach (IDataChangeNotifyEventListener listener in this.listeners)
                     {
                         if (listener.MonitorType == e.Entity.GetType())
                         {
@@ -74,18 +74,18 @@ namespace Imms.Data
             waitLock.Set();
         }
 
-        private readonly List<DataChangedEvent> changedEvents = new List<DataChangedEvent>();
+        private readonly List<DataChangedNotifyEvent> changedEvents = new List<DataChangedNotifyEvent>();
         public bool teriminated { get; private set; }
         private Thread thread;
         private AutoResetEvent waitLock = new AutoResetEvent(true);
-        private readonly List<IDataChangeEventListener> listeners = new List<IDataChangeEventListener>();
+        private readonly List<IDataChangeNotifyEventListener> listeners = new List<IDataChangeNotifyEventListener>();
 
-        public static readonly DataChangeEventDispatcher Instance = new DataChangeEventDispatcher();
-        protected DataChangeEventDispatcher()
+        public static readonly DataChangeNotifyEventDispatcher Instance = new DataChangeNotifyEventDispatcher();
+        protected DataChangeNotifyEventDispatcher()
         {
             this.teriminated = false;
         }
-        public void RegisterListener(IDataChangeEventListener listener)
+        public void RegisterListener(IDataChangeNotifyEventListener listener)
         {
             lock (this)
             {
@@ -99,14 +99,14 @@ namespace Imms.Data
         }
     }
 
-    public class DataChangedEvent : IComparable
+    public class DataChangedNotifyEvent : IComparable
     {
         public IEntity Entity { get; set; }
         public DMLType DMLType { get; set; }
 
         public int CompareTo(object obj)
         {
-            if (!(obj is DataChangedEvent))
+            if (!(obj is DataChangedNotifyEvent))
             {
                 return 1;
             }
@@ -116,7 +116,7 @@ namespace Imms.Data
                 return -1;
             }
 
-            if (((DataChangedEvent)obj).Entity == null)
+            if (((DataChangedNotifyEvent)obj).Entity == null)
             {
                 return 1;
             }
@@ -125,9 +125,9 @@ namespace Imms.Data
         }
     }
 
-    public interface IDataChangeEventListener
+    public interface IDataChangeNotifyEventListener
     {
         Type MonitorType { get; set; }
-        void ProcessEvent(DataChangedEvent e);
+        void ProcessEvent(DataChangedNotifyEvent e);
     }
 }

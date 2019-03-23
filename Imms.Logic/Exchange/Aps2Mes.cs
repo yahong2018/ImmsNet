@@ -27,21 +27,69 @@ namespace Imms.Logic.Exchange
 
         private void ImportScheduleOrder(ScheduleOrderDTO scheduleOrder)
         {
+            ProductionOrder productionOrder = this.ConvertProductionOrder(scheduleOrder);
+            Bom[] boms = ConvertBoms(scheduleOrder.Boms);
+            BomOrder bomOrder = new BomOrder
+            {
+                BomOrderType = GlobalConstants.BOM_ORDER_TYPE_PRODUCTION_ORDER,
+                OrderStatus = GlobalConstants.BOM_ORDER_STATUS_NORMAL
+            };
+            ProductionOrderSize[] sizes = ConvertSizes(scheduleOrder.OrderSizes);
+            ProductionOrderMeasure[] measures = ConvertMeasures(scheduleOrder.BodyDatas);
+
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
-                using (ImmsDbContext dbContext = new ImmsDbContext())
-                {
-                    ProductionOrder productionOrder = this.ConvertProductionOrder(scheduleOrder);                    
-                    Bom[] boms = ConvertBoms(scheduleOrder.Boms);
-                    //ProductionOrderSize
+                CommonDAO.Insert<BomOrder>(bomOrder);
 
-                    BomOrder bomOrder = new BomOrder
-                    {
-                        BomOrderType = GlobalConstants.BOM_ORDER_TYPE_PRODUCTION_ORDER,
-                        OrderStatus = GlobalConstants.BOM_ORDER_STATUS_NORMAL
-                    };
+                foreach (Bom bom in boms)
+                {
+                    bom.BomOrderId = bomOrder.RecordId;
                 }
+                CommonDAO.Insert<Bom>(boms);
+
+                productionOrder.BomOrderId = bomOrder.RecordId;
+                CommonDAO.Insert<ProductionOrder>(productionOrder,notifyChangeEvent:true);
+
+                foreach (ProductionOrderSize size in sizes)
+                {
+                    size.ProducitonOrderId = productionOrder.RecordId;
+                }
+                CommonDAO.Insert<ProductionOrderSize>(sizes);
+
+                foreach (ProductionOrderMeasure measure in measures)
+                {
+                    measure.ProductionOrderId = productionOrder.RecordId;
+                }
+                CommonDAO.Insert<ProductionOrderMeasure>(measures);
+
+                scope.Complete();
             }
+        }
+
+        private ProductionOrderMeasure[] ConvertMeasures(BodyMeasureDTO[] dtos)
+        {
+            if (dtos == null || dtos.Length == 0)
+            {
+                return new ProductionOrderMeasure[] { };
+            }
+
+            ProductionOrderMeasure[] result = new ProductionOrderMeasure[dtos.Length];
+            for (int i = 0; i < dtos.Length; i++)
+            {
+                result[i] = ConvertMeasure(dtos[i]);
+            }
+
+            return result;
+        }
+
+        private ProductionOrderMeasure ConvertMeasure(BodyMeasureDTO dto)
+        {
+            return new ProductionOrderMeasure()
+            {
+                BodyNo = dto.BodyCode,
+                MeasureData = dto.MeasureData,
+                GarmentSize = dto.GarmentSize
+            };
         }
 
         private ProductionOrderSize[] ConvertSizes(OrderSizeDTO[] dtos)
@@ -74,10 +122,10 @@ namespace Imms.Logic.Exchange
 
         private ProductionOrder ConvertProductionOrder(ScheduleOrderDTO scheduleOrder)
         {
-            Material fgMaterial = CommonDAO.CheckExistsByProperty<Material>("MaterialNo", scheduleOrder.MaterialCode);            
-            Plant plant = CommonDAO.CheckExistsByProperty<Plant>("OrganizationCode",scheduleOrder.Plant);            
-            WorkCenter workCenter = CommonDAO.CheckExistsByProperty<WorkCenter>("OrganizationCode", scheduleOrder.WorkCenter);           
-            BomOrder bomOrder = CommonDAO.CheckExistsByProperty<BomOrder>("BomOrderNo",scheduleOrder.BomOrderNo);            
+            Material fgMaterial = CommonDAO.CheckExistsByProperty<Material>("MaterialNo", scheduleOrder.MaterialCode);
+            Plant plant = CommonDAO.CheckExistsByProperty<Plant>("OrganizationCode", scheduleOrder.Plant);
+            WorkCenter workCenter = CommonDAO.CheckExistsByProperty<WorkCenter>("OrganizationCode", scheduleOrder.WorkCenter);
+            BomOrder bomOrder = CommonDAO.CheckExistsByProperty<BomOrder>("BomOrderNo", scheduleOrder.BomOrderNo);
 
             ProductionOrder productionOrder = new ProductionOrder
             {
@@ -113,15 +161,15 @@ namespace Imms.Logic.Exchange
         private Bom ConvertBom(BomDTO dto)
         {
             Material abstractMaterial = CommonDAO.CheckExistsByProperty<Material>("ComponentAbstractMaterial", dto.ComponentAbstractMaterial);
-            Material componentMaterial = CommonDAO.CheckExistsByProperty<Material>("MaterialCode",dto.MaterialCode);
+            Material componentMaterial = CommonDAO.CheckExistsByProperty<Material>("MaterialCode", dto.MaterialCode);
             MaterialUnit unit = CommonDAO.CheckExistsByProperty<MaterialUnit>("CodeNo", dto.ComponentMaterialUnit);
 
             Bom bom = new Bom()
             {
-                ComponentAbstractMaterialId=abstractMaterial.RecordId,
+                ComponentAbstractMaterialId = abstractMaterial.RecordId,
                 ComponentMaterialId = componentMaterial.RecordId,
                 ComponentQty = dto.Qty,
-                IsFabric = (short)(dto.IsMainFabric?1:0),
+                IsFabric = (short)(dto.IsMainFabric ? 1 : 0),
                 ComponentUnitId = unit.RecordId
             };
 
@@ -208,7 +256,7 @@ namespace Imms.Logic.Exchange
 
         public OrderSizeDTO[] OrderSizes { get; set; }
         public BomDTO[] Boms { get; set; }
-        public BodyMeasureDTO BodyDatas { get; set; }
+        public BodyMeasureDTO[] BodyDatas { get; set; }
     }
 
     public class OrderSizeDTO
@@ -231,7 +279,7 @@ namespace Imms.Logic.Exchange
     {
         public string BodyCode { get; set; }
         public string BodyName { get; set; }
-        public double MeasureData { get; set; }   //静体尺寸   
+        public string MeasureData { get; set; }   //静体尺寸   
         public string GarmentSize { get; set; }  //成衣尺寸
     }
 }
