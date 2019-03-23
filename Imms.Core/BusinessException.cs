@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Imms.Core
+namespace Imms
 {
     public class BusinessException:Exception
     {

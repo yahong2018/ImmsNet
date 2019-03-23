@@ -1,4 +1,4 @@
-namespace Imms.Core
+namespace Imms
 {
     public static class GlobalConstants
     {
@@ -15,7 +15,7 @@ namespace Imms.Core
         public const int EXCEPTION_CODE_NO_ERROR = 0;
         public const int EXCEPTION_CODE_DATA_ALREADY_EXISTS = 1;
         public const int EXCEPTION_CODE_DATA_NOT_FOUND = 1;
-        
+
         public const int BOM_ORDER_TYPE_PART = 1;
         public const int BOM_ORDER_TYPE_STANDARD = 2;
         public const int BOM_ORDER_TYPE_ORDER = 3;
@@ -23,8 +23,14 @@ namespace Imms.Core
         public const int BOM_ORDER_TYPE_PRODUCTION_ORDER = 5;
         public const int BOM_ORDER_TYPE_WORK_ORDER = 6;
 
-
         public const int BOM_ORDER_STATUS_NORMAL = 0;
         public const int BOM_ORDER_STATUS_DEPRECATED = 1;
+
+        public const int SYSTEM_ID_MES = 1;
+        public const int SYSTEM_ID_APS = 2;
+        public const int SYSTEM_ID_MCS = 3;
+        public const int SYSTEM_ID_KANBAN = 4;
+
+        public static Imms.Data.IDbContextFactory DbContextFactory=null;
     }
 }

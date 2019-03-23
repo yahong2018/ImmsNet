@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\Imms.Data\Imms.Data.csproj" />
+  <ItemGroup>    
     <ProjectReference Include="..\Imms.Core\Imms.Core.csproj" />
-    <ProjectReference Include="..\Imms.Logic\Imms.Logic.csproj" />
-    <ProjectReference Include="..\Imms.Api\Imms.Api.csproj" />
+    <ProjectReference Include="..\Imms.Mes\Imms.Mes.csproj" />
+    <ProjectReference Include="..\Imms.Aps\Imms.Aps.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -2,6 +2,8 @@
 using System.Transactions;
 using Imms.Data;
 using Imms.Data.Domain;
+using Imms.Mes;
+using Imms.Mes.Domain;
 
 namespace Imms.Test
 {
@@ -10,6 +12,8 @@ namespace Imms.Test
         static void Main(string[] args)
         {
             Program program = new Program();
+            Imms.GlobalConstants.DbContextFactory = new ImmsDbContextFactory();
+
             // program.doInsert(0);
             // program.doQuery();
             // program.testGetPlantByCode();

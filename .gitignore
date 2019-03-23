@@ -1,14 +1,11 @@
-/Imms.Api/bin/
-/Imms.Api/obj/
+/Imms.Aps/bin/
+/Imms.Aps/obj/
 
-/Imms.Logic/bin/
-/Imms.Logic/obj/
+/Imms.Mes/bin/
+/Imms.Mes/obj/
 
 /Imms.Core/bin/
 /Imms.Core/obj/
-
-/Imms.Data/bin/
-/Imms.Data/obj/
 
 /Imms.Test/bin/
 /Imms.Test/obj/
