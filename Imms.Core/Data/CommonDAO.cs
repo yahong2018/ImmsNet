@@ -73,7 +73,7 @@ namespace Imms.Data
                     }
 
                     string log = $"系统错误:{tableDisplayName}中没有找到条件为{propertyDisplayName}='{propertyValue}'的数据！";
-                    Logger.DefaultLogger.Error(log);
+                    GlobalConstants.DefaultLogger.Error(log);
                     throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, log);
                 }
             }

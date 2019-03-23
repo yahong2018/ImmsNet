@@ -33,5 +33,6 @@ namespace Imms
         public const int SYSTEM_ID_KANBAN = 4;
 
         public static Imms.Data.IDbContextFactory DbContextFactory=null;
+        public static Logger DefaultLogger = new Logger();
     }
 }

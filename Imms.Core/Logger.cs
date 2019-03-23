@@ -7,8 +7,6 @@ namespace Imms
 {
     public class Logger :TextWriter
     {
-        public readonly static Logger DefaultLogger = new Logger();
-
         public LoggerLevel LoggerLevel { get; set; }        
 
         protected internal Logger()
