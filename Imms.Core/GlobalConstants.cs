@@ -3,6 +3,7 @@ namespace Imms
     public static class GlobalConstants
     {
         public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES = "PRODUCITON_ORDER_APS_2_MES";
+        public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES = "PRODUCITON_ORDER_CAD_2_MES";
 
         public const string ORG_TYPE_PLANT = "PLANT";
         public const string ORG_TYPE_WORK_CENTER = "WORK_CENTER";

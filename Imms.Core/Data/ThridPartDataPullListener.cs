@@ -6,12 +6,14 @@ using System.Collections;
 using System.Collections.Generic;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Imms.Data
 {
     public class ThridPartDataPullListener : IDataChangeNotifyEventListener
     {
-        public Type[] ListenTypes { get { return new Type[]{typeof(ThirdPartDataExchange)}; } set => throw new NotImplementedException(); }
+        public Type[] ListenTypes { get { return new Type[] { typeof(ThirdPartDataExchange) }; } set => throw new NotImplementedException(); }
 
         public void ProcessEvent(DataChangedNotifyEvent e)
         {
@@ -26,7 +28,28 @@ namespace Imms.Data
                 bool isMatch = (from r in logic.ExchangeRules where r == log.ExchangeRuleCode select r).Count() > 0;
                 if (isMatch)
                 {
-                    logic.Process(log);
+                    if (!logic.DTOTypes.ContainsKey(log.ExchangeRuleCode))
+                    {
+                        throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, $"指定的ExchangeRule:{log.ExchangeRuleCode}不被支持.");
+                    }
+                    if(!logic.Handlers.ContainsKey(log.ExchangeRuleCode)){
+                        throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, $"指定的ExchangeRule:{log.ExchangeRuleCode}无处理程序.");
+                    }
+
+                    Type dtoType = logic.DTOTypes[log.ExchangeRuleCode];
+                    using (StringReader strReader = new StringReader(log.RawData))
+                    {
+                        using (JsonTextReader reader = new JsonTextReader(strReader))
+                        {
+                            JsonSerializer serializer = new JsonSerializer();
+                            if (log.ExchangeRuleCode == GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES)
+                            {
+                                object dto = serializer.Deserialize(reader, dtoType);
+                                ThirdPartDataPullProcessHandler handler = logic.Handlers[log.ExchangeRuleCode];
+                                handler(dto);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -37,8 +60,11 @@ namespace Imms.Data
     public interface IThirdPartDataPullLogic
     {
         string[] ExchangeRules { get; set; }
-        void Process(ThirdPartDataExchange log);
+        SortedDictionary<string, Type> DTOTypes { get; }
+        SortedDictionary<string, ThirdPartDataPullProcessHandler> Handlers { get; }
     }
+
+    public delegate void ThirdPartDataPullProcessHandler(object dto);
 
     /*
     数据交换采用json，格式如下：

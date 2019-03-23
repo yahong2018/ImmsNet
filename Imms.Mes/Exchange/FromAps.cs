@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Transactions;
 using Imms.Data;
 using Imms.Data.Domain;
@@ -10,22 +11,30 @@ namespace Imms.Mes.Exchange
 {
     public class FromAps : IThirdPartDataPullLogic
     {
-        public void Process(ThirdPartDataExchange log)
+        public SortedDictionary<string, ThirdPartDataPullProcessHandler> Handlers
         {
-            using (StringReader strReader = new StringReader(log.RawData))
+            get
             {
-                using (JsonTextReader reader = new JsonTextReader(strReader))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    ScheduleOrderDTO shceduleOrder = (ScheduleOrderDTO)serializer.Deserialize(reader, typeof(ScheduleOrderDTO));
-
-                    this.ImportScheduleOrder(shceduleOrder);
-                }
+                return new SortedDictionary<string, ThirdPartDataPullProcessHandler>(){
+                    {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES,this.ImportScheduleOrder}
+                };
             }
         }
 
-        private void ImportScheduleOrder(ScheduleOrderDTO scheduleOrder)
+        public SortedDictionary<string, Type> DTOTypes
         {
+            get
+            {
+                return new SortedDictionary<string, Type>(){
+                    {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES,typeof(ScheduleOrderDTO)}
+                };
+            }
+        }
+
+        private void ImportScheduleOrder(object dto)
+        {
+            ScheduleOrderDTO scheduleOrder = (ScheduleOrderDTO)dto;
+
             ProductionOrder productionOrder = this.ConvertProductionOrder(scheduleOrder);
             Bom[] boms = ConvertBoms(scheduleOrder.Boms);
             BomOrder bomOrder = new BomOrder
@@ -47,7 +56,7 @@ namespace Imms.Mes.Exchange
                 CommonDAO.Insert<Bom>(boms);
 
                 productionOrder.BomOrderId = bomOrder.RecordId;
-                CommonDAO.Insert<ProductionOrder>(productionOrder,notifyChangeEvent:true);
+                CommonDAO.Insert<ProductionOrder>(productionOrder, notifyChangeEvent: true);
 
                 foreach (ProductionOrderSize size in sizes)
                 {
@@ -277,7 +286,7 @@ namespace Imms.Mes.Exchange
     {
         public string BodyCode { get; set; }
         public string BodyName { get; set; }
-        public string MeasureData { get; set; }   //静体尺寸   
+        public string MeasureData { get; set; }  //静体尺寸   
         public string GarmentSize { get; set; }  //成衣尺寸
     }
 }
