@@ -118,7 +118,7 @@ namespace Imms.Mes.Exchange
 
         private ProductionOrderSize ConvertSize(OrderSizeDTO dto)
         {
-            Size size = CommonDAO.AssureExistsByProperty<Size>("CodeNo", dto.Size);
+            Size size = CommonDAO.AssureExistsByFilter<Size>("CodeNo == @0",dto.Size);
             ProductionOrderSize orderSize = new ProductionOrderSize
             {
                 SizeId = size.RecordId,
@@ -129,10 +129,10 @@ namespace Imms.Mes.Exchange
 
         private ProductionOrder ConvertProductionOrder(ScheduleOrderDTO scheduleOrder)
         {
-            Material fgMaterial = CommonDAO.AssureExistsByProperty<Material>("MaterialNo", scheduleOrder.MaterialCode);
-            Plant plant = CommonDAO.AssureExistsByProperty<Plant>("OrganizationCode", scheduleOrder.Plant);
-            WorkCenter workCenter = CommonDAO.AssureExistsByProperty<WorkCenter>("OrganizationCode", scheduleOrder.WorkCenter);
-            BomOrder bomOrder = CommonDAO.AssureExistsByProperty<BomOrder>("BomOrderNo", scheduleOrder.BomOrderNo);
+            Material fgMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",scheduleOrder.MaterialCode);
+            Plant plant = CommonDAO.AssureExistsByFilter<Plant>("OrganizationCode == @0",scheduleOrder.Plant);
+            WorkCenter workCenter = CommonDAO.AssureExistsByFilter<WorkCenter>("OrganizationCode == @0",scheduleOrder.WorkCenter);
+            BomOrder bomOrder = CommonDAO.AssureExistsByFilter<BomOrder>("OrderNo == @0",scheduleOrder.BomOrderNo);
 
             ProductionOrder productionOrder = new ProductionOrder
             {
@@ -167,9 +167,9 @@ namespace Imms.Mes.Exchange
 
         private Bom ConvertBom(BomDTO dto)
         {
-            Material abstractMaterial = CommonDAO.AssureExistsByProperty<Material>("ComponentAbstractMaterial", dto.ComponentAbstractMaterial);
-            Material componentMaterial = CommonDAO.AssureExistsByProperty<Material>("MaterialCode", dto.MaterialCode);
-            MaterialUnit unit = CommonDAO.AssureExistsByProperty<MaterialUnit>("CodeNo", dto.ComponentMaterialUnit);
+            Material abstractMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",dto.ComponentAbstractMaterial);
+            Material componentMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",dto.MaterialCode);
+            MaterialUnit unit = CommonDAO.AssureExistsByFilter<MaterialUnit>("CodeNo == @0",dto.ComponentMaterialUnit);
 
             Bom bom = new Bom()
             {

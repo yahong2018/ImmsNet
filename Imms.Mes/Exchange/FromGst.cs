@@ -30,8 +30,8 @@ namespace Imms.Mes.Exchange
         public void ImportProducitonOrderRouting(object dtoObj)
         {
             ProductionOrderRoutingDTO dto = (ProductionOrderRoutingDTO)dtoObj;
-            ProductionOrder productionOrder = CommonDAO.AssureExistsByProperty<ProductionOrder>("ProducitonOrderNo", dto.ProductionOrderNo);
-            Material material = CommonDAO.AssureExistsByProperty<Material>("MaterialNo", dto.MaterialNo);
+            ProductionOrder productionOrder = CommonDAO.AssureExistsByFilter<ProductionOrder>("OrderNo == @0", dto.ProductionOrderNo);
+            Material material = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",dto.MaterialNo);
             if (material.RecordId != productionOrder.FgMaterialId)
             {
                 throw new BusinessException(GlobalConstants.EXCEPTION_CODE_NOT_EXCEPTED_DATA, $"Gst返回工艺的物料Id{material.RecordId}与Id为{productionOrder.RecordId}的生产订单的物料编号{productionOrder.FgMaterialId}不一致!");
@@ -70,8 +70,8 @@ namespace Imms.Mes.Exchange
         private OperationRouting ConvertOperationRouting(OperationRoutingDTO dto)
         {
             OperationRouting routing = new OperationRouting();
-            Operation operation = CommonDAO.AssureExistsByProperty<Operation>("OperationNo", dto.OperationNo);
-            MachineType machineType = CommonDAO.AssureExistsByProperty<MachineType>("CodeNo", dto.MachineType);
+            Operation operation = CommonDAO.AssureExistsByFilter<Operation>("OperationNo == @0",dto.OperationNo);
+            MachineType machineType = CommonDAO.AssureExistsByFilter<MachineType>("CodeNo == @0",dto.MachineType);
 
             routing.OperationId = operation.RecordId;
             routing.OperationNo = operation.OperationNo;

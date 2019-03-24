@@ -19,6 +19,7 @@ namespace Imms
         public const int EXCEPTION_CODE_DATA_ALREADY_EXISTS = 1;
         public const int EXCEPTION_CODE_DATA_NOT_FOUND = 2;
         public const int EXCEPTION_CODE_NOT_EXCEPTED_DATA = 3;
+        public const int EXCEPTION_CODE_DATA_REPEATED = 4;
 
         public const int BOM_ORDER_TYPE_PART = 1;
         public const int BOM_ORDER_TYPE_STANDARD = 2;

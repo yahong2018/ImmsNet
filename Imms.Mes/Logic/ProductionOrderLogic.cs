@@ -1,6 +1,7 @@
 
 using System.Transactions;
 using Imms.Data;
+using System.Linq;
 using Imms.Mes.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,6 +56,26 @@ namespace Imms.Mes.Logic
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
                 dbContext.Database.ExecuteSqlCommand(sql);
+            }
+        }
+
+        private bool CheckCuttingMarkerExists(long producitonOrderId)
+        {
+            // string sql =
+            //  $@"select 1 from cutting_marker 
+            //      where cutting_order_id in(
+            //          select record_id from cutting_order
+            //             where production_order_id = {producitonOrderId}
+            //      )";
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                bool exists = (from m in dbContext.Set<CuttingMarker>()
+                               join o in dbContext.Set<CuttingOrder>() on m.CuttingOrderId equals o.RecordId
+                               where o.ProductionOrderId == producitonOrderId
+                               select m
+                        ).Count() > 0;
+
+                return exists;
             }
         }
     }

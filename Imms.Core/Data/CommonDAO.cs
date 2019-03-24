@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Transactions;
 
@@ -18,64 +20,65 @@ namespace Imms.Data
         private static readonly SortedDictionary<Guid, string> _TableDisplayLabelList = new SortedDictionary<Guid, string>();
         private static readonly SortedList<Guid, SortedDictionary<string, string>> _TypePropertyDisplayLabelList = new SortedList<Guid, SortedDictionary<string, string>>();
 
-        public static T GetByProperty<T>(string propertyName, object propertyValue) where T : class
+        public static T GetByFilter<T>(Expression<Func<T, bool>> filter) where T : class
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
-                return dbContext.Set<T>().Where($"{propertyName}=@0", propertyValue).FirstOrDefault();
+                return dbContext.Set<T>().Where(filter).FirstOrDefault();
             }
         }
 
-        public static T AssureExistsByProperty<T>(string propertyName, object propertyValue) where T : class
+        public static T GetByWhere<T>(string where, params object[] parameters) where T : class
         {
-            T result = GetByProperty<T>(propertyName, propertyValue);
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                return dbContext.Set<T>().Where(where, parameters).FirstOrDefault();
+            }
+        }
+
+        public static T AssureExistsByFilter<T>(string where, params object[] parameters) where T : class
+        {
+            T result = GetByWhere<T>(where, parameters);
             if (result == null)
             {
-                Type itemType = typeof(T);
-                Guid typeKey = itemType.GUID;
+                string tableName = typeof(T).Name;
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach(object obj in parameters){
+                    stringBuilder.Append(obj.ToString());
+                    stringBuilder.Append(",");
+                }               
 
-                string tableDisplayName = itemType.Name;
-                lock (_TableDisplayLabelList)
-                {
-                    if (!_TableDisplayLabelList.ContainsKey(typeKey))
-                    {
-                        DisplayAttribute displayAttribute = (DisplayAttribute)itemType.GetCustomAttribute(typeof(DisplayAttribute));
-                        if (displayAttribute != null)
-                        {
-                            tableDisplayName = displayAttribute.Name;
-                        }
-                        _TableDisplayLabelList.Add(typeKey, tableDisplayName);
-                    }
-                    tableDisplayName = _TableDisplayLabelList[typeKey];
-                }
+                string log = $"系统错误:{tableName}中没有找到条件为{where},值为{stringBuilder.ToString()}'的数据！";
+                GlobalConstants.DefaultLogger.Error(log);
+                throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, log);
+            }
+            return result;
+        }
 
-                lock (_TypePropertyDisplayLabelList)
-                {
-                    string propertyDisplayName = propertyName;
-                    if (!_TypePropertyDisplayLabelList.ContainsKey(typeKey))
-                    {
-                        _TypePropertyDisplayLabelList.Add(typeKey, new SortedDictionary<string, string>());
-                    }
-                    else if (!_TypePropertyDisplayLabelList[typeKey].ContainsKey(propertyName))
-                    {
-                        PropertyInfo property = itemType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-                        DisplayAttribute displayAttribute = (DisplayAttribute)property.GetCustomAttribute(typeof(DisplayAttribute));
-                        if (displayAttribute != null)
-                        {
-                            propertyDisplayName = displayAttribute.Name;
-                        }
+        public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            T result = GetByFilter<T>(filter);
+            if (result == null)
+            {
+                string filterStr = filter.ToString();
+                string tableName = typeof(T).Name;
+                string log = $"系统错误:{tableName}中没有找到条件为{filterStr}'的数据！";
+                GlobalConstants.DefaultLogger.Error(log);
+                throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, log);
+            }
+            return result;
+        }
 
-                        _TypePropertyDisplayLabelList[typeKey].Add(propertyName, propertyDisplayName);
-                    }
-                    else
-                    {
-                        propertyDisplayName = _TypePropertyDisplayLabelList[typeKey][propertyName];
-                    }
-
-                    string log = $"系统错误:{tableDisplayName}中没有找到条件为{propertyDisplayName}='{propertyValue}'的数据！";
-                    GlobalConstants.DefaultLogger.Error(log);
-                    throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, log);
-                }
+        public static T AssureNotExistsByFilter<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            T result = GetByFilter<T>(filter);
+            if (result != null)
+            {
+                string filterStr = filter.ToString();
+                string tableName = typeof(T).Name;
+                string log = $"系统错误:{tableName}中已存在条件为{filterStr}'的数据！";
+                GlobalConstants.DefaultLogger.Error(log);
+                throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_ALREADY_EXISTS, log);
             }
             return result;
         }
@@ -86,7 +89,7 @@ namespace Imms.Data
             {
                 if (item.RecordId != null)
                 {
-                    T oldItem = dbContext.Set<T>().Where("RecordId=@0", item.RecordId).FirstOrDefault();
+                    T oldItem = dbContext.Set<T>().Where(x => x.RecordId == item.RecordId).FirstOrDefault();
                     if (oldItem != null)
                     {
                         BusinessException businessException
@@ -103,7 +106,13 @@ namespace Imms.Data
             {
                 if (item.RecordId != null)
                 {
-                    T oldItem = dbContext.Set<T>().Where("RecordId=@0", item.RecordId).FirstOrDefault();
+                    Func<T, bool> filter = (x) =>
+                    {
+                        return x.RecordId == item.RecordId;
+                    };
+                    //Expression<Func<T>() filter = 
+
+                    T oldItem = dbContext.Set<T>().Where(x => x.RecordId == item.RecordId).FirstOrDefault();
                     if (oldItem == null)
                     {
                         BusinessException businessException
