@@ -15,13 +15,12 @@ namespace Imms.Test
             Imms.GlobalConstants.DbContextFactory = new ImmsDbContextFactory();
 
             // program.doInsert(0);
-            // program.doQuery();
+           //  program.doQuery();
             // program.testGetPlantByCode();
             program.testGetPlantByProperty();
 
             Console.Read();
         }
-
        
         private void testGetPlantByProperty()
         {
@@ -38,20 +37,19 @@ namespace Imms.Test
 
         private void doQuery()
         {
-
-            using (ImmsDbContext dbContext = new ImmsDbContext())
+            using (ImmsMesDbContext dbContext = new ImmsMesDbContext())
             {
-                foreach (SystemUser user in dbContext.SystemUser)
+                foreach (SystemUser user in dbContext.SystemUsers)
                 {
                     Console.WriteLine($"userId:{user.RecordId}, userCode:{user.UserCode},userName:{user.UserName}");
                 }
 
-                foreach (SystemRole role in dbContext.SystemRole)
+                foreach (SystemRole role in dbContext.SystemRoles)
                 {
                     Console.WriteLine($"roleId:{role.RecordId}, roleCode:{role.RoleCode},roleName:{role.RoleName}");
                 }
 
-                foreach (SystemProgram program in dbContext.SystemProgram)
+                foreach (SystemProgram program in dbContext.SystemPrograms)
                 {
                     Console.WriteLine($"programId:{program.RecordId}, programCode:{program.ProgramCode},programName:{program.ProgramName}");
                 }
@@ -66,7 +64,7 @@ namespace Imms.Test
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
                 System.Console.WriteLine("Start Insert");
-                using (ImmsDbContext dbContext = new ImmsDbContext())
+                using (ImmsMesDbContext dbContext = new ImmsMesDbContext())
                 {
                     for (; i < end; i++)
                     {
@@ -78,7 +76,7 @@ namespace Imms.Test
                         user.Email = "aaa";
                         user.IsOnline = 0;
 
-                        dbContext.SystemUser.Add(user);
+                        dbContext.SystemUsers.Add(user);
                     }
                     dbContext.SaveChanges();
                 }

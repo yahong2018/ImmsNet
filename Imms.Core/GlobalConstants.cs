@@ -4,6 +4,7 @@ namespace Imms
     {
         public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES = "PRODUCITON_ORDER_APS_2_MES";
         public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES = "PRODUCITON_ORDER_CAD_2_MES";
+        public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__GST_2_MES = "PRODUCITON_ORDER_GST_2_MES";
 
         public const string ORG_TYPE_PLANT = "PLANT";
         public const string ORG_TYPE_WORK_CENTER = "WORK_CENTER";
@@ -12,10 +13,12 @@ namespace Imms
 
         public const string CODE_TABLE_TYPE_MATERIAL_UNIT = "MATERIAL_UNIT";
         public const string CODE_TABLE_TYPE_SIZE = "SIZE";
+        public const string CODE_TABLE_TYPE_MACHINE_TYPE = "MACHINE_TYPE";
 
         public const int EXCEPTION_CODE_NO_ERROR = 0;
         public const int EXCEPTION_CODE_DATA_ALREADY_EXISTS = 1;
-        public const int EXCEPTION_CODE_DATA_NOT_FOUND = 1;
+        public const int EXCEPTION_CODE_DATA_NOT_FOUND = 2;
+        public const int EXCEPTION_CODE_NOT_EXCEPTED_DATA = 3;
 
         public const int BOM_ORDER_TYPE_PART = 1;
         public const int BOM_ORDER_TYPE_STANDARD = 2;
@@ -23,6 +26,10 @@ namespace Imms
         public const int BOM_ORDER_TYPE_DESIGN = 4;
         public const int BOM_ORDER_TYPE_PRODUCTION_ORDER = 5;
         public const int BOM_ORDER_TYPE_WORK_ORDER = 6;
+
+        public const int OPERATION_ORDER_TYPE_MATERIAL = 10;
+        public const int OPERATION_ORDER_TYPE_PRODUCTION = 11;
+        public const int OPERATION_ORDER_TYPE_WORKORDER = 12;
 
         public const int BOM_ORDER_STATUS_NORMAL = 0;
         public const int BOM_ORDER_STATUS_DEPRECATED = 1;
@@ -32,7 +39,7 @@ namespace Imms
         public const int SYSTEM_ID_MCS = 3;
         public const int SYSTEM_ID_KANBAN = 4;
 
-        public static Imms.Data.IDbContextFactory DbContextFactory=null;
+        public static Imms.Data.IDbContextFactory DbContextFactory = null;
         public static Logger DefaultLogger = new Logger();
     }
 }

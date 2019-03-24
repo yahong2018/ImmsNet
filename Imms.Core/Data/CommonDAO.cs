@@ -26,7 +26,7 @@ namespace Imms.Data
             }
         }
 
-        public static T CheckExistsByProperty<T>(string propertyName, object propertyValue) where T : class
+        public static T AssureExistsByProperty<T>(string propertyName, object propertyValue) where T : class
         {
             T result = GetByProperty<T>(propertyName, propertyValue);
             if (result == null)
@@ -163,7 +163,7 @@ namespace Imms.Data
             }
         }
 
-        public static int Update<T>(T item, DMLGenericHandler<T> handlerBeforeUpdate = null, DMLGenericHandler<T> handlerAfterUpdate = null, bool notifyChangeEvent = false) where T : class, IEntity
+        public static int Update<T>(T item, DMLGenericHandler<T> handlerBeforeUpdate = null, DMLGenericHandler<T> handlerAfterUpdate = null, bool notifyDataChanged = false) where T : class, IEntity
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
@@ -179,7 +179,7 @@ namespace Imms.Data
                 }
                 finally
                 {
-                    if (notifyChangeEvent)
+                    if (notifyDataChanged)
                     {
                         DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
                         {
