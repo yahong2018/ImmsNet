@@ -30,12 +30,51 @@ namespace Imms.Mes.Exchange
         {
             ProductionOrderTailerDTO dto = (ProductionOrderTailerDTO)objDTO;
             ProductionOrder productionOrder = CommonDAO.AssureExistsByFilter<ProductionOrder>(x => x.OrderNo == dto.ProductionOrderNo);
-            Material[] materials = new Material[dto.MaterialMarkers.Length];
+            //Material[] materials = new Material[dto.MaterialMarkers.Length];
             if (dto.MaterialMarkers != null)
             {
-                this.ValidateMaterialMarkers(dto.MaterialMarkers, materials);
+                this.ValidateMaterialMarkers(dto.MaterialMarkers);
             }
             Bom[] boms = this.GetUpdatedBom(dto, productionOrder);
+
+        }
+
+        private void CreateCuttingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder,
+              List<CuttingOrder> cuttingOrders,List<Media> medias,
+              List<CuttingMarker> cuttingMarkers,List<CuttingOrderSize> cuttingOrderSizes,
+              List<CuttingOrderSpreadPly> cuttingOrderSpreadPlies)
+        {
+            var cuttingTables = dto.MaterialMarkers.SelectMany(x => x.CuttingTables, (x, y) => new { x.MaterialNo, x.MaterialType, CuttingTable = y });
+            foreach (var item in cuttingTables)
+            {
+                CuttingOrder cuttingOrder = new CuttingOrder();
+                cuttingOrders.Add(cuttingOrder);
+
+                cuttingOrder.ProductionOrderId = productionOrder.RecordId;
+                cuttingOrder.CuttingTableNo = item.CuttingTable.Index;
+                cuttingOrder.Plies = item.CuttingTable.Plies;
+                cuttingOrder.Length = item.CuttingTable.Length;
+                cuttingOrder.Width = item.CuttingTable.Width;
+                if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD)
+                {
+                    cuttingOrder.PlannedQty = item.CuttingTable.TotalSizes.Sum(x => x.Qty);
+                }
+                else
+                {
+                    cuttingOrder.PlannedQty = item.CuttingTable.Packages;
+                }
+
+                cuttingOrder.FgMaterialId = productionOrder.FgMaterialId;
+                cuttingOrder.FabricMaterialType = item.MaterialType;
+
+                Material material = CommonDAO.AssureExistsByFilter<Material>(x => x.MaterialNo == item.MaterialNo);
+                cuttingOrder.FabricMaterialId = material.RecordId;
+
+                cuttingOrder.CuttingEfficiency = 0.99;
+            }
+        }
+
+        private CuttingOrder ConvertCuttingOrder(){
 
         }
 
@@ -131,7 +170,7 @@ namespace Imms.Mes.Exchange
             }
         }
 
-        private void ValidateMaterialMarkers(MaterialMarkerDTO[] materialMarkers, Material[] materials)
+        private void ValidateMaterialMarkers(MaterialMarkerDTO[] materialMarkers)
         {
             var groups = materialMarkers.GroupBy(x => x.MaterialNo).Where(x => x.Count() > 1).ToArray();
             if (groups.Length > 0)
@@ -144,12 +183,6 @@ namespace Imms.Mes.Exchange
                 log.Remove(log.Length - 1, 1);
 
                 throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_REPEATED, log.ToString());
-            }
-
-            for (int i = 0; i < materialMarkers.Length; i++)
-            {
-                Material material = CommonDAO.AssureExistsByFilter<Material>(x => x.MaterialNo == materialMarkers[i].MaterialNo);
-                materials[i] = material;
             }
 
             this.ValidateCuttingTable(materialMarkers);
@@ -211,8 +244,9 @@ namespace Imms.Mes.Exchange
 
     public class CuttingTableDTO
     {
-        public int Index { get; set; }
+        public string Index { get; set; }
         public int Plies { get; set; }
+        public double Length { get; set; }
         public double Width { get; set; }
         public int Packages { get; set; }
         public int CutPartsCount { get; set; }

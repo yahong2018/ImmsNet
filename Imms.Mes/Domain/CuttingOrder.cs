@@ -12,8 +12,11 @@ namespace Imms.Mes.Domain
         public string CuttingTableNo { get; set; }
         public string ContainerNo { get; set; }
         public int PlannedQty { get; set; }
-        public string FgMaterialId { get; set; }
+        //成品料号
+        public long FgMaterialId { get; set; } 
+        //面料类型
         public string FabricMaterialType { get; set; }
+        //面料物料主键
         public long FabricMaterialId { get; set; }
         public int Plies { get; set; }
         public double Width { get; set; }
