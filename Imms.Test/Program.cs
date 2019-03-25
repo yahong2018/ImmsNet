@@ -24,7 +24,7 @@ namespace Imms.Test
        
         private void testGetPlantByProperty()
         {
-            Plant plant = CommonDAO.GetByFilter<Plant>(x=>x.OrganizationCode == "A");
+            Plant plant = CommonDAO.GetOneByFilter<Plant>(x=>x.OrganizationCode == "A");
 
            // Plant plant = CommonDAO.GetByWhere<Plant>("OrganizationCode == @0","A");
             if (plant != null)

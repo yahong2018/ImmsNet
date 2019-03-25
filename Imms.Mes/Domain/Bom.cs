@@ -13,11 +13,11 @@ namespace Imms.Mes.Domain
         public long BomOrderId { get; set; }
         public long ComponentMaterialId { get; set; }
         public long? ComponentAbstractMaterialId { get; set; }
-        public float ComponentQty { get; set; }
+        public double ComponentQty { get; set; }
         public long ComponentUnitId { get; set; }
         public string ComponentMaterialNoPath { get; set; }
         public string ComponentMaterialNamePath { get; set; }
-        public short IsFabric { get; set; }
+        public bool IsMainFabric { get; set; }
         public long ParentBomId { get; set; }
     }
 
@@ -54,7 +54,7 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.ComponentMaterialNoPath).IsRequired().HasColumnName("component_material_no_path").HasMaxLength(130);
             builder.Property(e => e.ComponentQty).HasColumnName("component_qty");
             builder.Property(e => e.ComponentUnitId).HasColumnName("component_unit_id");
-            builder.Property(e => e.IsFabric).HasColumnName("is_fabric");
+            builder.Property(e => e.IsMainFabric).HasColumnName("is_fabric");
             builder.Property(e => e.ParentBomId).HasColumnName("parent_bom_id");
         }
     }

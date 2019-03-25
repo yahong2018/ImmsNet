@@ -20,7 +20,15 @@ namespace Imms.Data
         private static readonly SortedDictionary<Guid, string> _TableDisplayLabelList = new SortedDictionary<Guid, string>();
         private static readonly SortedList<Guid, SortedDictionary<string, string>> _TypePropertyDisplayLabelList = new SortedList<Guid, SortedDictionary<string, string>>();
 
-        public static T GetByFilter<T>(Expression<Func<T, bool>> filter) where T : class
+        public static T[] GetAllByFilter<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                return dbContext.Set<T>().Where(filter).ToArray();
+            }
+        }
+
+        public static T GetOneByFilter<T>(Expression<Func<T, bool>> filter) where T : class
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
@@ -28,7 +36,7 @@ namespace Imms.Data
             }
         }
 
-        public static T GetByWhere<T>(string where, params object[] parameters) where T : class
+        public static T GetOneByWhere<T>(string where, params object[] parameters) where T : class
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
@@ -38,7 +46,7 @@ namespace Imms.Data
 
         public static T AssureExistsByFilter<T>(string where, params object[] parameters) where T : class
         {
-            T result = GetByWhere<T>(where, parameters);
+            T result = GetOneByWhere<T>(where, parameters);
             if (result == null)
             {
                 string tableName = typeof(T).Name;
@@ -57,7 +65,7 @@ namespace Imms.Data
 
         public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter) where T : class
         {
-            T result = GetByFilter<T>(filter);
+            T result = GetOneByFilter<T>(filter);
             if (result == null)
             {
                 string filterStr = filter.ToString();
@@ -71,7 +79,7 @@ namespace Imms.Data
 
         public static T AssureNotExistsByFilter<T>(Expression<Func<T, bool>> filter) where T : class
         {
-            T result = GetByFilter<T>(filter);
+            T result = GetOneByFilter<T>(filter);
             if (result != null)
             {
                 string filterStr = filter.ToString();

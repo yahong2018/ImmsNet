@@ -22,11 +22,11 @@ namespace Imms.Mes
         {
         }
 
-        public virtual DbSet<Bom> Bom { get; set; }
-        public virtual DbSet<BomOrder> BomOrder { get; set; }
+        public virtual DbSet<Bom> Boms { get; set; }
+        public virtual DbSet<BomOrder> BomOrders { get; set; }
 
-        public virtual DbSet<CuttingMarker> CuttingMarker { get; set; }
-        public virtual DbSet<CuttingOrder> CuttingOrder { get; set; }
+        public virtual DbSet<CuttingMarker> CuttingMarkers { get; set; }
+        public virtual DbSet<CuttingOrder> CuttingOrders { get; set; }
         public virtual DbSet<CuttingOrderSize> CuttingOrderSize { get; set; }
         public virtual DbSet<Material> Material { get; set; }
         public virtual DbSet<MaterialPickingOrder> MaterialPickingOrder { get; set; }

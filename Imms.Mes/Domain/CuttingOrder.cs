@@ -28,6 +28,93 @@ namespace Imms.Mes.Domain
         public long? OperatorId { get; set; }
     }
 
+    public partial class CuttingOrderSize : TrackableEntity<long>
+    {
+        public long CuttingOrderId { get; set; }
+        public string Size { get; set; }
+        public int? LayerQty { get; set; }
+        public int? PlannedQty { get; set; }
+        public int? ActualQty { get; set; }
+        public int? CreatedWorkOrderQty { get; set; }
+    }
+
+    public partial class CuttingMarker : TrackableEntity<long>
+    {
+        public long CuttingOrderId { get; set; }
+        public long? MediaId { get; set; }
+        public string Remark { get; set; }
+        public long? MarkerFileId { get; set; }
+    }
+
+    public partial class CuttingOrderSpreadPly:TrackableEntity<long>
+    {
+        public long CuttingOrderId { get; set; }
+        public double Length{get;set;}
+        public int Plies{get;set;}
+    }
+
+    public class CuttingOrderSpreadPlyConfigure : TrackableEntityConfigure<CuttingOrderSpreadPly>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<CuttingOrderSpreadPly> builder)
+        {
+            base.InternalConfigure(builder);
+
+            builder.ToTable("cutting_marker");
+            builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id");
+            builder.Property(e => e.Length).HasColumnName("length");
+            builder.Property(e => e.Plies).HasColumnName("plies");            
+        }
+    }
+
+
+    public class CuttingMarkerConfigure : TrackableEntityConfigure<CuttingMarker>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<CuttingMarker> builder)
+        {
+            base.InternalConfigure(builder);
+
+            builder.ToTable("cutting_marker");
+            builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id");
+            builder.Property(e => e.MarkerFileId).HasColumnName("marker_file_id");
+            builder.Property(e => e.MediaId).HasColumnName("media_id");
+            builder.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+        }
+    }
+
+    public class CuttingOrderSizeConfigure : TrackableEntityConfigure<CuttingOrderSize>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<CuttingOrderSize> builder)
+        {
+            base.InternalConfigure(builder);
+            builder.ToTable("cutting_order_size");
+
+            builder.Property(e => e.ActualQty)
+                    .HasColumnName("actual_qty")
+                    .HasColumnType("int(11)");
+
+            builder.Property(e => e.CreatedWorkOrderQty)
+                    .HasColumnName("created_work_order_qty")
+                    .HasColumnType("int(11)");
+
+            builder.Property(e => e.CuttingOrderId)
+                .HasColumnName("cutting_order_id")
+                .HasColumnType("bigint(20)");
+
+            builder.Property(e => e.LayerQty)
+                .HasColumnName("layer_qty")
+                .HasColumnType("int(11)");
+
+            builder.Property(e => e.PlannedQty)
+                    .HasColumnName("planned_qty")
+                    .HasColumnType("int(11)");
+
+            builder.Property(e => e.Size)
+                .HasColumnName("size")
+                .HasMaxLength(10)
+                .IsUnicode(false);
+        }
+    }
+
     public class CuttingOrderConfigure : OrderEntityConfigure<CuttingOrder>
     {
         protected override void InternalConfigure(EntityTypeBuilder<CuttingOrder> builder)

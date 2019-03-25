@@ -5,6 +5,7 @@ using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Domain;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Mes.Exchange
 {
@@ -29,14 +30,101 @@ namespace Imms.Mes.Exchange
         {
             ProductionOrderTailerDTO dto = (ProductionOrderTailerDTO)objDTO;
             ProductionOrder productionOrder = CommonDAO.AssureExistsByFilter<ProductionOrder>(x => x.OrderNo == dto.ProductionOrderNo);
+            Material[] materials = new Material[dto.MaterialMarkers.Length];
             if (dto.MaterialMarkers != null)
             {
-                this.ValidateMaterialMarkers(dto.MaterialMarkers);
-                this.ValidateCuttingTable(dto.MaterialMarkers);
+                this.ValidateMaterialMarkers(dto.MaterialMarkers, materials);
+            }
+            Bom[] boms = this.GetUpdatedBom(dto, materials, productionOrder);
+
+        }
+
+        private Bom[] GetUpdatedBom(ProductionOrderTailerDTO dto, Material[] materials, ProductionOrder productionOrder)
+        {
+            //
+            //1.更新主料
+            //2.更新辅料
+            //
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                var boms = (from b in dbContext.Set<Bom>()
+                            join m in dbContext.Set<Material>() on b.ComponentMaterialId equals m.RecordId
+                            where b.BomOrderId == productionOrder.BomOrderId
+                            select new
+                            {
+                                InnerBom = b,
+                                m.MaterialNo
+                            }
+                    );
+                //
+                //主料：返回的物料编码如果在生产BOM里面有的话就直接更新，如果没有的话就根据返回的物料找它的子件，用量更新在子件上（抽象BOM）。
+                //
+                foreach (ComponentUsageDTO usage in dto.ComponentUsages)
+                {
+                    var theBom = boms.Where(x => x.MaterialNo == usage.ComponentNo).FirstOrDefault();
+                    if (theBom != null)
+                    {
+                        theBom.InnerBom.ComponentQty = usage.Qty;
+                    }
+                    else
+                    {
+                        var boms_1 = (
+                            from bm in dbContext.Set<Bom>()
+                            join bo in dbContext.Set<BomOrder>() on bm.BomOrderId equals bo.RecordId
+                            join mp in dbContext.Set<Material>() on bo.MaterialId equals mp.RecordId
+                            where mp.MaterialNo == usage.ComponentNo
+                            select new
+                            {
+                                InnerBom = bm,
+                                mp.MaterialNo
+                            }
+                        ).ToArray();
+
+                        var boms_2 = (from a in boms join b in boms_1 on a.MaterialNo equals b.MaterialNo select a);
+                        foreach (var bom in boms_2)
+                        {
+                            bom.InnerBom.ComponentQty = usage.Qty;
+                        }
+                    }
+                }
+                //
+                //主料：更新工艺变量
+                //
+                var details = dto.Hems.SelectMany(x => x.Details);
+                foreach (var detail in details)
+                {
+                    var bom_1 = (from b in boms where b.MaterialNo == detail.ComponentNo select b);
+                    foreach (var b in bom_1)
+                    {
+                        b.InnerBom.ComponentQty = detail.Value;
+                    }
+                }
+
+                //
+                //更新辅料：根据主料每个尺码的总计划裁剪数量
+                //
+                int cuttingQty = 0;
+                string mainFabricCode = materials.Where(m => m.RecordId == (boms.Where(b => b.InnerBom.IsMainFabric).Select(b => b.InnerBom.ComponentMaterialId).First())).Select(m => m.MaterialNo).First();
+                if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD && mainFabricCode != GlobalConstants.MATERIAL_TYPE_KT)
+                {
+                    cuttingQty = dto.MaterialMarkers.Where(x => x.MaterialNo == mainFabricCode)
+                         .Select(x => x.CuttingTables)
+                         .First()
+                         .Sum(x => x.TotalSizes.Sum(y => y.Qty));
+                }
+
+                var accessories = (from b in boms where !(dto.ComponentUsages.Select(c => c.ComponentNo).Contains(b.MaterialNo)) select b);
+                //var accessories = boms.Where(x =>   dto.ComponentUsages.Select(c=>c.ComponentNo));
+                //(from m in dto.ComponentUsages where m.ComponentNo == x.MaterialNo select m).Count() == 0
+                foreach (var b in accessories)
+                {
+                    b.InnerBom.ComponentQty *= ((cuttingQty == 0) ? productionOrder.PlannedQty : cuttingQty);
+                }
+                return boms.Select(x => x.InnerBom).ToArray();
             }
         }
 
-        private void ValidateMaterialMarkers(MaterialMarkerDTO[] materialMarkers)
+        private void ValidateMaterialMarkers(MaterialMarkerDTO[] materialMarkers, Material[] materials)
         {
             var groups = materialMarkers.GroupBy(x => x.MaterialNo).Where(x => x.Count() > 1).ToArray();
             if (groups.Length > 0)
@@ -49,7 +137,15 @@ namespace Imms.Mes.Exchange
                 log.Remove(log.Length - 1, 1);
 
                 throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_REPEATED, log.ToString());
-            }            
+            }
+
+            for (int i = 0; i < materialMarkers.Length; i++)
+            {
+                Material material = CommonDAO.AssureExistsByFilter<Material>(x => x.MaterialNo == materialMarkers[i].MaterialNo);
+                materials[i] = material;
+            }
+
+            this.ValidateCuttingTable(materialMarkers);
         }
 
 
@@ -82,6 +178,9 @@ namespace Imms.Mes.Exchange
     {
         public string ProductionOrderNo { get; set; }
         public string MaterialNo { get; set; }
+        //
+        //注意：CAD返回的只是面料的用量，辅料的用量需要根据层数、件数来计算
+        //
         public ComponentUsageDTO[] ComponentUsages { get; set; }
         public MaterialMarkerDTO[] MaterialMarkers { get; set; }
         public ProductionOrderSizeDTO[] Sizes { get; set; }

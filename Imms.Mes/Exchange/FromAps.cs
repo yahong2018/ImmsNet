@@ -118,7 +118,7 @@ namespace Imms.Mes.Exchange
 
         private ProductionOrderSize ConvertSize(OrderSizeDTO dto)
         {
-            Size size = CommonDAO.AssureExistsByFilter<Size>("CodeNo == @0",dto.Size);
+            Size size = CommonDAO.AssureExistsByFilter<Size>("CodeNo == @0", dto.Size);
             ProductionOrderSize orderSize = new ProductionOrderSize
             {
                 SizeId = size.RecordId,
@@ -129,15 +129,16 @@ namespace Imms.Mes.Exchange
 
         private ProductionOrder ConvertProductionOrder(ScheduleOrderDTO scheduleOrder)
         {
-            Material fgMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",scheduleOrder.MaterialCode);
-            Plant plant = CommonDAO.AssureExistsByFilter<Plant>("OrganizationCode == @0",scheduleOrder.Plant);
-            WorkCenter workCenter = CommonDAO.AssureExistsByFilter<WorkCenter>("OrganizationCode == @0",scheduleOrder.WorkCenter);
-            BomOrder bomOrder = CommonDAO.AssureExistsByFilter<BomOrder>("OrderNo == @0",scheduleOrder.BomOrderNo);
+            Material fgMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0", scheduleOrder.MaterialCode);
+            Plant plant = CommonDAO.AssureExistsByFilter<Plant>("OrganizationCode == @0", scheduleOrder.Plant);
+            WorkCenter workCenter = CommonDAO.AssureExistsByFilter<WorkCenter>("OrganizationCode == @0", scheduleOrder.WorkCenter);
+            BomOrder bomOrder = CommonDAO.AssureExistsByFilter<BomOrder>("OrderNo == @0", scheduleOrder.BomOrderNo);
 
             ProductionOrder productionOrder = new ProductionOrder
             {
                 RequirementOrderNo = scheduleOrder.RequirementOrderNo,
                 ScheduleOrderNo = scheduleOrder.ScheduleOrderNo,
+                OrderType = scheduleOrder.OrderType,
                 FgMaterialId = fgMaterial.RecordId,
                 WorkCenterId = workCenter.RecordId,
                 BomOrderId = bomOrder.RecordId,
@@ -167,16 +168,16 @@ namespace Imms.Mes.Exchange
 
         private Bom ConvertBom(BomDTO dto)
         {
-            Material abstractMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",dto.ComponentAbstractMaterial);
-            Material componentMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",dto.MaterialCode);
-            MaterialUnit unit = CommonDAO.AssureExistsByFilter<MaterialUnit>("CodeNo == @0",dto.ComponentMaterialUnit);
+            Material abstractMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0", dto.ComponentAbstractMaterial);
+            Material componentMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0", dto.MaterialCode);
+            MaterialUnit unit = CommonDAO.AssureExistsByFilter<MaterialUnit>("CodeNo == @0", dto.ComponentMaterialUnit);
 
             Bom bom = new Bom()
             {
                 ComponentAbstractMaterialId = abstractMaterial.RecordId,
                 ComponentMaterialId = componentMaterial.RecordId,
                 ComponentQty = dto.Qty,
-                IsFabric = (short)(dto.IsMainFabric ? 1 : 0),
+                IsMainFabric = dto.IsMainFabric,
                 ComponentUnitId = unit.RecordId
             };
 
@@ -252,6 +253,7 @@ namespace Imms.Mes.Exchange
     {
         public string ScheduleOrderNo { get; set; }
         public string RequirementOrderNo { get; set; }
+        public int OrderType { get; set; }
         public string BomOrderNo { get; set; }
         public string MaterialCode { get; set; }
         public int PlannedQty { get; set; }

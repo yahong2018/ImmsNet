@@ -622,12 +622,32 @@ create table cutting_marker  (
   create_date                          datetime                     not null,
   update_by                            bigint                       null,
   update_date                          datetime                     null,
-  opt_flag                              int                          not null default 0,
+  opt_flag                             int                          not null default 0,
 
   primary key (record_id),
   index idx_cutting_marker_01(cutting_order_id),
   index idx_cutting_marker_02(media_id)
 ) ;
+
+--
+-- 裁剪拉布层数
+--
+create table cutting_order_spread_ply
+(
+  record_id                 bigint                not null auto_increment,
+  cutting_order_id          bigint                not null,
+  length                    double(8,2)           not null, -- 拉布长度
+  plies                     int                   not null, -- 层数
+
+  create_by                            bigint                       not null,
+  create_date                          datetime                     not null,
+  update_by                            bigint                       null,
+  update_date                          datetime                     null,
+  opt_flag                              int                         not null default 0,
+
+  primary key(record_id),
+  index idx_cutting_order_spread_ply_01(cutting_order_id)
+);
 
 --
 -- 生产作业单

@@ -32,6 +32,11 @@ namespace Imms
         public const int OPERATION_ORDER_TYPE_PRODUCTION = 11;
         public const int OPERATION_ORDER_TYPE_WORKORDER = 12;
 
+        public const int PRODUCTION_ORDER_TYPE_STANDARD = 0;
+        public const int PRODUCTION_ORDER_TYPE_CUSTOM = 1;
+
+        public const string MATERIAL_TYPE_KT = "KT";
+
         public const int BOM_ORDER_STATUS_NORMAL = 0;
         public const int BOM_ORDER_STATUS_DEPRECATED = 1;
 

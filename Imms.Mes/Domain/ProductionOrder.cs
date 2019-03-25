@@ -10,12 +10,13 @@ namespace Imms.Mes.Domain
     {
         public string RequirementOrderNo { get; set; }
         public string ScheduleOrderNo { get; set; }
+        public int OrderType { get; set; }
         public long FgMaterialId { get; set; }
         public byte Priority { get; set; }
         public long? WorkCenterId { get; set; }
-        public int? PlannedQty { get; set; }
+        public int PlannedQty { get; set; }
         public long? RoutingOrderId { get; set; }
-        public long? BomOrderId { get; set; }
+        public long BomOrderId { get; set; }
         public int? FinishedQty { get; set; }
         public int? SecondQualityQty { get; set; }
         public int? DefectQty { get; set; }
@@ -33,12 +34,9 @@ namespace Imms.Mes.Domain
             base.InternalConfigure(builder);
             builder.ToTable("production_order");
 
+            builder.Property(e => e.OrderType).HasColumnName("order_type").HasColumnType("int(11)");
             builder.Property(e => e.ActualEndDate).HasColumnName("actual_end_date");
-
-            builder.Property(e => e.ActualQty)
-                .HasColumnName("actual_qty")
-                .HasColumnType("int(11)");
-
+            builder.Property(e => e.ActualQty).HasColumnName("actual_qty").HasColumnType("int(11)");
             builder.Property(e => e.ActualStartDate).HasColumnName("actual_start_date");
 
             builder.Property(e => e.BomOrderId)
