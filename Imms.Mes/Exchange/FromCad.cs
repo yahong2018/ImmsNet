@@ -35,11 +35,11 @@ namespace Imms.Mes.Exchange
             {
                 this.ValidateMaterialMarkers(dto.MaterialMarkers, materials);
             }
-            Bom[] boms = this.GetUpdatedBom(dto, materials, productionOrder);
+            Bom[] boms = this.GetUpdatedBom(dto, productionOrder);
 
         }
 
-        private Bom[] GetUpdatedBom(ProductionOrderTailerDTO dto, Material[] materials, ProductionOrder productionOrder)
+        private Bom[] GetUpdatedBom(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
         {
             //
             //1.更新主料
@@ -104,7 +104,14 @@ namespace Imms.Mes.Exchange
                 //更新辅料：根据主料每个尺码的总计划裁剪数量
                 //
                 int cuttingQty = 0;
-                string mainFabricCode = materials.Where(m => m.RecordId == (boms.Where(b => b.InnerBom.IsMainFabric).Select(b => b.InnerBom.ComponentMaterialId).First())).Select(m => m.MaterialNo).First();
+                string mainFabricCode = dbContext.Set<Material>()
+                              .Where(m => m.RecordId == (
+                                   boms.Where(b => b.InnerBom.IsMainFabric)
+                                   .Select(b => b.InnerBom.ComponentMaterialId)
+                                   .First()
+                               ))
+                               .Select(m => m.MaterialNo)
+                               .First();
                 if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD && mainFabricCode != GlobalConstants.MATERIAL_TYPE_KT)
                 {
                     cuttingQty = dto.MaterialMarkers.Where(x => x.MaterialNo == mainFabricCode)
