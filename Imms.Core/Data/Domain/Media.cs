@@ -7,7 +7,7 @@ namespace Imms.Data.Domain
 {
     public partial class Media : TrackableEntity<long>
     {
-        public int MediaFormat { get; set; }
+        public string MediaFormat { get; set; }
         public string MediaUrl { get; set; }
         public string MediaName { get; set; }
         public int MediaSize { get; set; }
@@ -62,8 +62,7 @@ namespace Imms.Data.Domain
                 .HasColumnType("int(11)");
 
             builder.Property(e => e.MediaFormat)
-                .HasColumnName("media_format")
-                .HasColumnType("int(11)");
+                .HasColumnName("media_format");
 
             builder.Property(e => e.MediaUrl)
                 .IsRequired()

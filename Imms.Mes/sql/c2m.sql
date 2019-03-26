@@ -649,6 +649,56 @@ create table cutting_order_spread_ply
   index idx_cutting_order_spread_ply_01(cutting_order_id)
 );
 
+create table quality_check
+(
+    record_id              bigint                 not null auto_increment,
+	production_order_id    bigint                 not null,
+	size_no                varchar(50)            not null,
+	size_name              varchar(50)            not null,
+
+    create_by              bigint                       not null,
+    create_date            datetime                     not null,
+    update_by              bigint                       null,
+    update_date            datetime                     null,
+    opt_flag               int                         not null default 0,
+
+    primary key(record_id),
+    index idx_quality_check_01(production_order_id)	
+);
+
+create table quality_check_detail
+(
+    record_id              bigint                 not null auto_increment,
+	quality_check_id       bigint                 not null,
+	component_no           varchar(50)            not null,
+	component_name         varchar(50)            not null,
+	standard_value         varchar(50)            not null,
+
+    create_by              bigint                       not null,
+    create_date            datetime                     not null,
+    update_by              bigint                       null,
+    update_date            datetime                     null,
+    opt_flag               int                          not null default 0,
+
+    primary key(record_id),
+    index idx_quality_check_detail_01(quality_check_id)	
+);
+
+create table production_order_pattern_relation(
+    record_id              bigint                 not null auto_increment,
+	production_order_id    bigint                 not null,
+	material_id            bigint                 not null,
+	
+    create_by              bigint                       not null,
+    create_date            datetime                     not null,
+    update_by              bigint                       null,
+    update_date            datetime                     null,
+    opt_flag               int                          not null default 0,
+
+    primary key(record_id),
+    index idx_production_order_pattern_relation_01(production_order_id)	
+);
+
 --
 -- 生产作业单
 --

@@ -1,11 +1,12 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Domain;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Transactions;
 
 namespace Imms.Mes.Exchange
 {
@@ -30,55 +31,208 @@ namespace Imms.Mes.Exchange
         {
             ProductionOrderTailerDTO dto = (ProductionOrderTailerDTO)objDTO;
             ProductionOrder productionOrder = CommonDAO.AssureExistsByFilter<ProductionOrder>(x => x.OrderNo == dto.ProductionOrderNo);
-            //Material[] materials = new Material[dto.MaterialMarkers.Length];
             if (dto.MaterialMarkers != null)
             {
                 this.ValidateMaterialMarkers(dto.MaterialMarkers);
             }
-            Bom[] boms = this.GetUpdatedBom(dto, productionOrder);
-
-        }
-
-        private void CreateCuttingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder,
-              List<CuttingOrder> cuttingOrders,List<Media> medias,
-              List<CuttingMarker> cuttingMarkers,List<CuttingOrderSize> cuttingOrderSizes,
-              List<CuttingOrderSpreadPly> cuttingOrderSpreadPlies)
-        {
-            var cuttingTables = dto.MaterialMarkers.SelectMany(x => x.CuttingTables, (x, y) => new { x.MaterialNo, x.MaterialType, CuttingTable = y });
-            foreach (var item in cuttingTables)
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
-                CuttingOrder cuttingOrder = new CuttingOrder();
-                cuttingOrders.Add(cuttingOrder);
+                this.ImportUpdatedBom(dto, productionOrder);
+                this.ImportCuttingOrder(dto, productionOrder);
+                this.ImportQualityCheck(dto, productionOrder);
+                this.ImportPartterImage(dto, productionOrder);
 
-                cuttingOrder.ProductionOrderId = productionOrder.RecordId;
-                cuttingOrder.CuttingTableNo = item.CuttingTable.Index;
-                cuttingOrder.Plies = item.CuttingTable.Plies;
-                cuttingOrder.Length = item.CuttingTable.Length;
-                cuttingOrder.Width = item.CuttingTable.Width;
-                if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD)
-                {
-                    cuttingOrder.PlannedQty = item.CuttingTable.TotalSizes.Sum(x => x.Qty);
-                }
-                else
-                {
-                    cuttingOrder.PlannedQty = item.CuttingTable.Packages;
-                }
-
-                cuttingOrder.FgMaterialId = productionOrder.FgMaterialId;
-                cuttingOrder.FabricMaterialType = item.MaterialType;
-
-                Material material = CommonDAO.AssureExistsByFilter<Material>(x => x.MaterialNo == item.MaterialNo);
-                cuttingOrder.FabricMaterialId = material.RecordId;
-
-                cuttingOrder.CuttingEfficiency = 0.99;
+                scope.Complete();
             }
         }
 
-        private CuttingOrder ConvertCuttingOrder(){
+        private void ImportPartterImage(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        {
+            foreach (PatternImageDTO partternImage in dto.PatternImages)
+            {
+                Media media = new Media();
+                media.MediaUrl = partternImage.PartternImageUrl;
+                string[] segs = partternImage.PartternImageUrl.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+                media.MediaName = segs[segs.Length - 1];
+                media.MediaFormat = GlobalConstants.MIME_MEDIA_FORMAT_JPEG;
+                media.Description = "物料纸样多媒体";
+                CommonDAO.Insert<Media>(media);
 
+                ProductionOrderPatternRelation patternRelation = new ProductionOrderPatternRelation();
+                patternRelation.ProductionOrderId = productionOrder.RecordId;
+                Material material = CommonDAO.AssureExistsByFilter<Material>(x => x.MaterialNo == partternImage.MaterialNo);
+                patternRelation.MaterialId = material.RecordId;
+                CommonDAO.Insert<ProductionOrderPatternRelation>(patternRelation);
+
+                MediaBelong belong = new MediaBelong();
+                belong.MediaId = media.RecordId;
+                belong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_PRODUCTION_PATTERNIMAGES;
+                belong.BelongToId = patternRelation.RecordId;
+                CommonDAO.Insert<MediaBelong>(belong);
+            }
         }
 
-        private Bom[] GetUpdatedBom(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private void ImportQualityCheck(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        {
+            foreach (ProductionOrderSizeDTO orderSize in dto.Sizes)
+            {
+                QualityCheck qualityCheck = new QualityCheck();
+                qualityCheck.ProductionOrderId = productionOrder.RecordId;
+                qualityCheck.SizeNo = orderSize.SizeNo;
+                qualityCheck.SizeName = orderSize.SizeName;
+
+                CommonDAO.Insert<QualityCheck>(qualityCheck);
+
+                foreach (ProductionOrderSizeDetailDTO detail in orderSize.Details)
+                {
+                    QualityCheckDetail checkDetail = new QualityCheckDetail();
+                    checkDetail.QualityCheckId = qualityCheck.RecordId;
+                    checkDetail.ComponentNo = detail.ComponentNo;
+                    checkDetail.ComponentName = detail.ComponentName;
+                    checkDetail.StandardValue = detail.Value;
+
+                    CommonDAO.Insert<QualityCheckDetail>(checkDetail);
+                }
+            }
+        }
+
+        private void ImportCuttingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        {
+            foreach (MaterialMarkerDTO materialMarker in dto.MaterialMarkers)
+            {
+                foreach (CuttingTableDTO cuttingTable in materialMarker.CuttingTables)
+                {
+                    CuttingOrder cuttingOrder = ConvertCuttingOrder(productionOrder, materialMarker, cuttingTable);
+                    CommonDAO.Insert<CuttingOrder>(cuttingOrder);
+
+                    Media mediaImage = ConvertImageMedia(cuttingTable);
+                    Media mediaCutFile = ConvertCutMedia(cuttingTable);
+
+                    CuttingMarker cuttingMarker = ConvertCuttingTable(cuttingTable, cuttingOrder);
+                    BuildMediaBelongs(mediaImage, mediaCutFile, cuttingMarker);
+
+                    ConvertCuttingOrderSizes(productionOrder, cuttingTable, cuttingOrder);
+                    ConvertCuttingOrderSpreadSplies(cuttingTable, cuttingOrder);
+                }
+            }
+        }
+
+        private static void ConvertCuttingOrderSpreadSplies(CuttingTableDTO cuttingTable, CuttingOrder cuttingOrder)
+        {
+            if (cuttingTable.SpreadPlies != null)
+            {
+                foreach (CuttingOrderSpreadPliesDTO plies in cuttingTable.SpreadPlies)
+                {
+                    CuttingOrderSpreadPly spreadPly = new CuttingOrderSpreadPly();
+                    spreadPly.CuttingOrderId = cuttingOrder.RecordId;
+                    spreadPly.Length = plies.Length;
+                    spreadPly.Plies = plies.Plies;
+
+                    CommonDAO.Insert<CuttingOrderSpreadPly>(spreadPly);
+                }
+            }
+        }
+
+        private static void ConvertCuttingOrderSizes(ProductionOrder productionOrder, CuttingTableDTO cuttingTable, CuttingOrder cuttingOrder)
+        {
+            CuttingOrderSizeDTO[] cuttingOrderSizes = cuttingTable.Sizes;
+            if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD)
+            {
+                cuttingOrderSizes = cuttingTable.TotalSizes;
+            }
+            if (cuttingOrderSizes != null)
+            {
+                foreach (CuttingOrderSizeDTO size in cuttingOrderSizes)
+                {
+                    CuttingOrderSize cuttingOrderSize = new CuttingOrderSize();
+                    cuttingOrderSize.CuttingOrderId = cuttingOrder.RecordId;
+                    cuttingOrderSize.PlannedQty = size.Qty;
+                    cuttingOrderSize.Size = size.Size;
+                    cuttingOrderSize.LayerQty = 1;
+                    cuttingOrderSize.ActualQty = 0;
+
+                    CommonDAO.Insert<CuttingOrderSize>(cuttingOrderSize);
+                }
+            }
+        }
+
+        private static void BuildMediaBelongs(Media mediaImage, Media mediaCutFile, CuttingMarker cuttingMarker)
+        {
+            MediaBelong imageBelong = new MediaBelong();
+            imageBelong.MediaId = mediaImage.RecordId;
+            imageBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER_IMAGE;
+            imageBelong.BelongToId = cuttingMarker.RecordId;
+            CommonDAO.Insert<MediaBelong>(imageBelong);
+
+            MediaBelong cutBelong = new MediaBelong();
+            cutBelong.MediaId = mediaCutFile.RecordId;
+            cutBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER_CUT_FILE;
+            cutBelong.BelongToId = cuttingMarker.RecordId;
+            CommonDAO.Insert<MediaBelong>(cutBelong);
+        }
+
+        private static CuttingMarker ConvertCuttingTable(CuttingTableDTO cuttingTable, CuttingOrder cuttingOrder)
+        {
+            CuttingMarker cuttingMarker = new CuttingMarker();
+            cuttingMarker.CuttingOrderId = cuttingOrder.RecordId;
+            cuttingMarker.Remark = cuttingTable.CutFileName;
+            //cuttingMarker.MediaId = media.RecordId;
+            //cuttingMarker.MarkerFileId = cut.RecordId;
+            CommonDAO.Insert<CuttingMarker>(cuttingMarker);
+            return cuttingMarker;
+        }
+
+        private static Media ConvertCutMedia(CuttingTableDTO cuttingTable)
+        {
+            Media cut = new Media();
+            cut.MediaName = cuttingTable.CutFileName;
+            cut.MediaUrl = cuttingTable.CutFileUrl;
+            cut.MediaFormat = GlobalConstants.MIME_MEDIA_FORMAT_JPEG;
+            cut.Description = "裁剪技术文件";
+            CommonDAO.Insert<Media>(cut);
+
+            return cut;
+        }
+
+        private static Media ConvertImageMedia(CuttingTableDTO cuttingTable)
+        {
+            Media media = new Media();
+            media.MediaName = cuttingTable.CutFileName;
+            media.MediaUrl = cuttingTable.CutImageUrl;
+            media.MediaFormat = GlobalConstants.MIME_MEDIA_FORMAT_JPEG;
+            media.Description = "裁剪技术文件多媒体";
+            CommonDAO.Insert<Media>(media);
+            return media;
+        }
+
+        private static CuttingOrder ConvertCuttingOrder(ProductionOrder productionOrder, MaterialMarkerDTO materialMarker, CuttingTableDTO cuttingTable)
+        {
+            CuttingOrder cuttingOrder = new CuttingOrder
+            {
+                ProductionOrderId = productionOrder.RecordId,
+                CuttingTableNo = cuttingTable.Index,
+                Plies = cuttingTable.Plies,
+                Length = cuttingTable.Length,
+                Width = cuttingTable.Width,
+                FgMaterialId = productionOrder.FgMaterialId,
+                FabricMaterialType = materialMarker.MaterialType
+            };
+            if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD)
+            {
+                cuttingOrder.PlannedQty = cuttingTable.TotalSizes.Sum(x => x.Qty);
+            }
+            else
+            {
+                cuttingOrder.PlannedQty = cuttingTable.Packages;
+            }
+            Material material = CommonDAO.AssureExistsByFilter<Material>(x => x.MaterialNo == materialMarker.MaterialNo);
+            cuttingOrder.FabricMaterialId = material.RecordId;
+            cuttingOrder.CuttingEfficiency = 0.99;
+
+            return cuttingOrder;
+        }
+
+        private void ImportUpdatedBom(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
         {
             //
             //1.更新主料
@@ -166,7 +320,10 @@ namespace Imms.Mes.Exchange
                 {
                     b.InnerBom.ComponentQty *= ((cuttingQty == 0) ? productionOrder.PlannedQty : cuttingQty);
                 }
-                return boms.Select(x => x.InnerBom).ToArray();
+                foreach (var bom in boms)
+                {
+                    CommonDAO.Update<Bom>(bom.InnerBom);
+                }
             }
         }
 

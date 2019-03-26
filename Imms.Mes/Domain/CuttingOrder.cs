@@ -35,18 +35,18 @@ namespace Imms.Mes.Domain
     {
         public long CuttingOrderId { get; set; }
         public string Size { get; set; }
-        public int? LayerQty { get; set; }
-        public int? PlannedQty { get; set; }
-        public int? ActualQty { get; set; }
+        public int LayerQty { get; set; }
+        public int PlannedQty { get; set; }
+        public int ActualQty { get; set; }
         public int? CreatedWorkOrderQty { get; set; }
     }
 
     public partial class CuttingMarker : TrackableEntity<long>
     {
         public long CuttingOrderId { get; set; }
-        public long? MediaId { get; set; }
+        public long MediaId { get; set; }
         public string Remark { get; set; }
-        public long? MarkerFileId { get; set; }
+        public long MarkerFileId { get; set; }
     }
 
     public partial class CuttingOrderSpreadPly:TrackableEntity<long>

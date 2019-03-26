@@ -27,6 +27,23 @@ namespace Imms.Mes.Domain
         public DateTime? ActualEndDate { get; set; }
     }
 
+    public class ProductionOrderPatternRelation:TrackableEntity<long>
+    {
+        public long ProductionOrderId { get; set; }
+        public long MaterialId { get; set; }
+    }
+
+    public class ProductionOrderPatternRelationConfigure : TrackableEntityConfigure<ProductionOrderPatternRelation>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<ProductionOrderPatternRelation> builder)
+        {
+            base.InternalConfigure(builder);
+
+            builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id");
+            builder.Property(e => e.MaterialId).HasColumnName("material_id");
+        }
+    }
+
     public class ProductionOrderConfigure : OrderEntityConfigure<ProductionOrder>
     {
         protected override void InternalConfigure(EntityTypeBuilder<ProductionOrder> builder)

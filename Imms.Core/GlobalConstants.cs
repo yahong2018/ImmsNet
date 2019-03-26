@@ -45,6 +45,12 @@ namespace Imms
         public const int SYSTEM_ID_MCS = 3;
         public const int SYSTEM_ID_KANBAN = 4;
 
+        public const string MIME_MEDIA_FORMAT_JPEG = "image/jpeg";
+
+        public const int BELONG_TO_RECORD_TYPE_CUTTING_MARKER_IMAGE = 0;
+        public const int BELONG_TO_RECORD_TYPE_CUTTING_MARKER_CUT_FILE = 1;
+        public const int BELONG_TO_RECORD_TYPE_PRODUCTION_PATTERNIMAGES = 2;
+
         public static Imms.Data.IDbContextFactory DbContextFactory = null;
         public static Logger DefaultLogger = new Logger();
     }
