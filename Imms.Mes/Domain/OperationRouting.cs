@@ -20,7 +20,7 @@ namespace Imms.Mes.Domain
         public bool IsOutsource { get; set; }
         public string QaProcedure { get; set; }
         public string Requirement { get; set; }
-        public byte? RequiredLevel { get; set; }
+        public byte RequiredLevel { get; set; }
     }
 
     public partial class Operation : BaseOperation
@@ -35,12 +35,16 @@ namespace Imms.Mes.Domain
         public long? NextRoutingId { get; set; }
         public long? PreRoutingId { get; set; }
         public string PrevOperationNo{get;set;}
+
+        public virtual OperationRoutingOrder RoutingOrder { get; set; }
     }
 
     public partial class OperationRoutingOrder : OrderEntity<long>
     {
         public int OrderType { get; set; }
         public long MaterialId { get; set; }
+
+        public virtual ICollection<OperationRouting> Routings { get; set; }
     }
 
     public class BaseOperationConfigure<E> : TrackableEntityConfigure<E> where E : BaseOperation
@@ -145,6 +149,8 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.NextRoutingId)
                 .HasColumnName("next_routing_id")
                 .HasColumnType("int(11)");
+
+            builder.HasOne(e => e.RoutingOrder).WithMany(e => e.Routings).HasForeignKey(e => e.OperationRoutingOrderId);
         }
     }
 
@@ -162,6 +168,8 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.OrderType)
                     .HasColumnName("order_type")
                     .HasColumnType("int(11)");
+
+            builder.HasMany(e => e.Routings).WithOne(e => e.RoutingOrder).HasForeignKey(e => e.OperationRoutingOrderId);
         }
     }
 }

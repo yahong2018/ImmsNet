@@ -30,7 +30,7 @@ namespace Imms.Data.Domain
             builder.ToTable("plan_code");
 
             builder.HasDiscriminator("code_type", typeof(string))
-                .HasValue<MaterialUnit>(GlobalConstants.CODE_TABLE_TYPE_MATERIAL_UNIT)
+                .HasValue<MaterialUnit>(GlobalConstants.TYPE_CODE_TABLE_MATERIAL_UNIT)
                 ;
 
             builder.Property(e => e.CodeName)

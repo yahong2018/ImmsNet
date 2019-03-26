@@ -41,9 +41,16 @@ namespace Imms.Mes.Exchange
                 this.ImportCuttingOrder(dto, productionOrder);
                 this.ImportQualityCheck(dto, productionOrder);
                 this.ImportPartterImage(dto, productionOrder);
+                this.UpdateProductionOrderStatus(productionOrder);
 
                 scope.Complete();
             }
+        }
+
+        private void UpdateProductionOrderStatus(ProductionOrder productionOrder)
+        {
+            productionOrder.OrderStatus |= GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY;
+            CommonDAO.Update<ProductionOrder>(productionOrder);
         }
 
         private void ImportPartterImage(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
@@ -136,7 +143,7 @@ namespace Imms.Mes.Exchange
         private static void ConvertCuttingOrderSizes(ProductionOrder productionOrder, CuttingTableDTO cuttingTable, CuttingOrder cuttingOrder)
         {
             CuttingOrderSizeDTO[] cuttingOrderSizes = cuttingTable.Sizes;
-            if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD)
+            if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD)
             {
                 cuttingOrderSizes = cuttingTable.TotalSizes;
             }
@@ -160,13 +167,15 @@ namespace Imms.Mes.Exchange
         {
             MediaBelong imageBelong = new MediaBelong();
             imageBelong.MediaId = mediaImage.RecordId;
-            imageBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER_IMAGE;
+            imageBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER;
+            imageBelong.MediaType = GlobalConstants.MEDIA_TYPE_CUTTING_MARKER_CUT_MEDIA;
             imageBelong.BelongToId = cuttingMarker.RecordId;
             CommonDAO.Insert<MediaBelong>(imageBelong);
 
             MediaBelong cutBelong = new MediaBelong();
             cutBelong.MediaId = mediaCutFile.RecordId;
-            cutBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER_CUT_FILE;
+            cutBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER;
+            cutBelong.MediaType = GlobalConstants.MEDIA_TYPE_CUTTING_MARKER_CUT_FILE;
             cutBelong.BelongToId = cuttingMarker.RecordId;
             CommonDAO.Insert<MediaBelong>(cutBelong);
         }
@@ -217,7 +226,7 @@ namespace Imms.Mes.Exchange
                 FgMaterialId = productionOrder.FgMaterialId,
                 FabricMaterialType = materialMarker.MaterialType
             };
-            if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD)
+            if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD)
             {
                 cuttingOrder.PlannedQty = cuttingTable.TotalSizes.Sum(x => x.Qty);
             }
@@ -305,7 +314,7 @@ namespace Imms.Mes.Exchange
                                ))
                                .Select(m => m.MaterialNo)
                                .First();
-                if (productionOrder.OrderType == GlobalConstants.PRODUCTION_ORDER_TYPE_STANDARD && mainFabricCode != GlobalConstants.MATERIAL_TYPE_KT)
+                if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD && mainFabricCode != GlobalConstants.TYPE_MATERIAL_KT)
                 {
                     cuttingQty = dto.MaterialMarkers.Where(x => x.MaterialNo == mainFabricCode)
                          .Select(x => x.CuttingTables)

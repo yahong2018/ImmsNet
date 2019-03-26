@@ -29,6 +29,10 @@ namespace Imms.Mes.Domain
         public DateTime? ActualEndDate { get; set; }
         public int FinishedQty { get; set; }
         public long? OperatorId { get; set; }
+
+        public virtual ICollection<CuttingOrderSize> Sizes { get; set; }
+        public virtual ICollection<CuttingMarker> Markers { get; set; }
+        public virtual ICollection<CuttingOrderSpreadPly> SpreadPlies { get; set; }
     }
 
     public partial class CuttingOrderSize : TrackableEntity<long>
@@ -39,6 +43,8 @@ namespace Imms.Mes.Domain
         public int PlannedQty { get; set; }
         public int ActualQty { get; set; }
         public int? CreatedWorkOrderQty { get; set; }
+
+        public virtual CuttingOrder CuttingOrder { get; set; }
     }
 
     public partial class CuttingMarker : TrackableEntity<long>
@@ -47,6 +53,8 @@ namespace Imms.Mes.Domain
         public long MediaId { get; set; }
         public string Remark { get; set; }
         public long MarkerFileId { get; set; }
+
+        public virtual CuttingOrder CuttingOrder { get; set; }
     }
 
     public partial class CuttingOrderSpreadPly:TrackableEntity<long>
@@ -54,6 +62,8 @@ namespace Imms.Mes.Domain
         public long CuttingOrderId { get; set; }
         public double Length{get;set;}
         public int Plies{get;set;}
+
+        public virtual CuttingOrder CuttingOrder { get; set; }
     }
 
     public class CuttingOrderSpreadPlyConfigure : TrackableEntityConfigure<CuttingOrderSpreadPly>
@@ -65,7 +75,9 @@ namespace Imms.Mes.Domain
             builder.ToTable("cutting_marker");
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id");
             builder.Property(e => e.Length).HasColumnName("length");
-            builder.Property(e => e.Plies).HasColumnName("plies");            
+            builder.Property(e => e.Plies).HasColumnName("plies");
+
+            builder.HasOne(e => e.CuttingOrder).WithMany(e => e.SpreadPlies).HasForeignKey(e => e.CuttingOrderId);
         }
     }
 
@@ -81,6 +93,8 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.MarkerFileId).HasColumnName("marker_file_id");
             builder.Property(e => e.MediaId).HasColumnName("media_id");
             builder.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+
+            builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Markers).HasForeignKey(e => e.CuttingOrderId);
         }
     }
 
@@ -115,6 +129,8 @@ namespace Imms.Mes.Domain
                 .HasColumnName("size")
                 .HasMaxLength(10)
                 .IsUnicode(false);
+
+            builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Sizes).HasForeignKey(e => e.CuttingOrderId);
         }
     }
 
@@ -196,6 +212,9 @@ namespace Imms.Mes.Domain
                 .HasColumnName("work_station_id")
                 .HasColumnType("bigint(20)");
 
+            builder.HasMany(e => e.Sizes).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
+            builder.HasMany(e => e.Markers).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
+            builder.HasMany(e => e.SpreadPlies).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
         }
     }
 }

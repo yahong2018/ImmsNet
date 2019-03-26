@@ -27,8 +27,8 @@ namespace Imms.Mes.Domain
         protected override void InternalConfigure(EntityTypeBuilder<TreeCode> builder)
         {
             builder.HasDiscriminator("code_type", typeof(string))
-                .HasValue<Size>(GlobalConstants.CODE_TABLE_TYPE_SIZE)
-                .HasValue<MachineType>(GlobalConstants.CODE_TABLE_TYPE_MACHINE_TYPE)
+                .HasValue<Size>(GlobalConstants.TYPE_CODE_TABLE_SIZE)
+                .HasValue<MachineType>(GlobalConstants.TYPE_CODE_TABLE_MACHINE_TYPE)
                 ;
         }
     }

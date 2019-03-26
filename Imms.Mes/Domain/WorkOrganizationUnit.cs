@@ -28,8 +28,8 @@ namespace Imms.Mes.Domain
         public void Configure(EntityTypeBuilder<WorkOrganizationUnit> builder)
         {
             builder.HasDiscriminator("organization_type",typeof(string))
-            .HasValue<Plant>(GlobalConstants.ORG_TYPE_PLANT)
-            .HasValue<WorkCenter>(GlobalConstants.ORG_TYPE_WORK_CENTER);            
+            .HasValue<Plant>(GlobalConstants.TYPE_ORG_PLANT)
+            .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER);            
         }
     }
 }

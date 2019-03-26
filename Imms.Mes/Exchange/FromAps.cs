@@ -39,8 +39,8 @@ namespace Imms.Mes.Exchange
             Bom[] boms = ConvertBoms(scheduleOrder.Boms);
             BomOrder bomOrder = new BomOrder
             {
-                BomOrderType = GlobalConstants.BOM_ORDER_TYPE_PRODUCTION_ORDER,
-                OrderStatus = GlobalConstants.BOM_ORDER_STATUS_NORMAL
+                BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER,
+                OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL
             };
             ProductionOrderSize[] sizes = ConvertSizes(scheduleOrder.OrderSizes);
             ProductionOrderMeasure[] measures = ConvertMeasures(scheduleOrder.BodyDatas);
@@ -48,7 +48,6 @@ namespace Imms.Mes.Exchange
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
                 CommonDAO.Insert<BomOrder>(bomOrder);
-
                 foreach (Bom bom in boms)
                 {
                     bom.BomOrderId = bomOrder.RecordId;
@@ -56,11 +55,12 @@ namespace Imms.Mes.Exchange
                 CommonDAO.Insert<Bom>(boms);
 
                 productionOrder.BomOrderId = bomOrder.RecordId;
+                productionOrder.OrderStatus = productionOrder.OrderStatus | GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY;
                 CommonDAO.Insert<ProductionOrder>(productionOrder, notifyChangeEvent: true);
 
                 foreach (ProductionOrderSize size in sizes)
                 {
-                    size.ProducitonOrderId = productionOrder.RecordId;
+                    size.ProductionOrderId = productionOrder.RecordId;
                 }
                 CommonDAO.Insert<ProductionOrderSize>(sizes);
 
@@ -144,7 +144,8 @@ namespace Imms.Mes.Exchange
                 BomOrderId = bomOrder.RecordId,
                 PlannedStartDate = scheduleOrder.PlannedStartDate,
                 PlannedEndDate = scheduleOrder.PlannedEndDate,
-                PlannedQty = scheduleOrder.PlannedQty
+                PlannedQty = scheduleOrder.PlannedQty,
+                OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PLANNED //已计划
             };
 
             return productionOrder;

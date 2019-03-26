@@ -25,12 +25,91 @@ namespace Imms.Mes.Domain
         public DateTime PlannedEndDate { get; set; }
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
+
+        public virtual ICollection<ProductionOrderSize> Sizes { get; set; }
+        public virtual ICollection<ProductionOrderMeasure> Measures { get; set; }
+        public virtual ICollection<ProductionOrderPatternRelation> PatternImages { get; set; }
     }
 
-    public class ProductionOrderPatternRelation:TrackableEntity<long>
+    public partial class ProductionOrderSize : TrackableEntity<long>
+    {
+        public long ProductionOrderId { get; set; }
+        public long SizeId { get; set; }
+        //  public string SizeCode { get; set; }
+        public int? QytPlanned { get; set; }
+
+        public virtual ProductionOrder ProductionOrder { get; set; }
+    }
+
+    public partial class ProductionOrderMeasure : TrackableEntity<long>
+    {
+        public long ProductionOrderId { get; set; }
+        public string BodyNo { get; set; }
+        public string MeasureData { get; set; }
+        public string GarmentSize { get; set; }
+
+        public virtual ProductionOrder ProductionOrder { get; set; }
+    }
+
+    public class ProductionOrderPatternRelation : TrackableEntity<long>
     {
         public long ProductionOrderId { get; set; }
         public long MaterialId { get; set; }
+
+        public virtual ProductionOrder ProductionOrder { get; set; }
+    }
+
+
+    public class ProductionOrderSizeConfigure : TrackableEntityConfigure<ProductionOrderSize>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<ProductionOrderSize> builder)
+        {
+            base.InternalConfigure(builder);
+            builder.ToTable("production_order_size");
+
+            builder.Property(e => e.ProductionOrderId)
+                   .HasColumnName("production_order_id")
+                   .HasColumnType("bigint(20)");
+
+            builder.Property(e => e.QytPlanned)
+                .HasColumnName("qyt_planned")
+                .HasColumnType("int(11)");
+
+            builder.Property(e => e.SizeId)
+                .HasColumnName("size_id")
+                .HasColumnType("bigint(20)");
+
+            builder.HasOne(s => s.ProductionOrder).WithMany(p=>p.Sizes).HasForeignKey(s=>s.ProductionOrderId);
+        }
+    }
+
+    public class ProductionOrderMeasureConfigure : TrackableEntityConfigure<ProductionOrderMeasure>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<ProductionOrderMeasure> builder)
+        {
+            base.InternalConfigure(builder);
+            builder.ToTable("production_order_measure");
+
+            builder.Property(e => e.ProductionOrderId)
+                .HasColumnName("order_id")
+                .HasColumnType("bigint(20)");
+
+            builder.Property(e => e.BodyNo)
+                   .IsRequired()
+                   .HasColumnName("body_no")
+                   .HasMaxLength(20)
+                   .IsUnicode(false);
+
+            builder.Property(e => e.MeasureData)
+                    .HasColumnName("measure_data")
+                    .HasColumnType("varchar(10)");
+
+            builder.Property(e => e.GarmentSize)
+                    .HasColumnName("garment_size")
+                    .HasColumnType("varchar(10)");
+
+            builder.HasOne(m => m.ProductionOrder).WithMany(p => p.Measures).HasForeignKey(m => m.ProductionOrderId);
+        }
     }
 
     public class ProductionOrderPatternRelationConfigure : TrackableEntityConfigure<ProductionOrderPatternRelation>
@@ -41,6 +120,8 @@ namespace Imms.Mes.Domain
 
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id");
             builder.Property(e => e.MaterialId).HasColumnName("material_id");
+
+            builder.HasOne(i => i.ProductionOrder).WithMany(p => p.PatternImages).HasForeignKey(i => i.ProductionOrderId);
         }
     }
 
@@ -103,6 +184,10 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.WorkCenterId)
                     .HasColumnName("work_center_id")
                     .HasColumnType("bigint(20)");
+
+            builder.HasMany(p => p.Sizes).WithOne(s => s.ProductionOrder).HasForeignKey(s=>s.ProductionOrderId);
+            builder.HasMany(p => p.Measures).WithOne(m => m.ProductionOrder).HasForeignKey(m => m.ProductionOrderId);
+            builder.HasMany(p => p.PatternImages).WithOne(i => i.ProductionOrder).HasForeignKey(i => i.ProductionOrderId);
         }
     }
 }

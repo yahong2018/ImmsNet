@@ -5,21 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
-using Imms.Mes.Logic;
 
 namespace Imms.Mes.Exchange
 {
     public class FromGst : IThirdPartDataPullLogic
     {
-        public ProductionOrderLogic productionOrderLogic{get;set;}
-
         public string[] ExchangeRules { get { return new string[] { GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__GST_2_MES }; } set => throw new System.NotImplementedException(); }
 
         public SortedDictionary<string, Type> DTOTypes =>
             new SortedDictionary<string, Type>(){
                     {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__GST_2_MES,typeof(ProductionOrderRoutingDTO)}
             };
-
 
         public SortedDictionary<string, ThirdPartDataPullProcessHandler> Handlers =>
             new SortedDictionary<string, ThirdPartDataPullProcessHandler>()
@@ -39,7 +35,65 @@ namespace Imms.Mes.Exchange
             OperationRoutingOrder routingOrder = CreateProductionRoutingOrder(material);
             OperationRouting[] operationRoutings = ConvertRoutings(dto.OperationRoutings);
 
-            productionOrderLogic.SetProductionOrderRouting(productionOrder,routingOrder,operationRoutings);            
+            this.SetProductionOrderRouting(productionOrder,routingOrder,operationRoutings);            
+        }
+
+        private void SetProductionOrderRouting(ProductionOrder productionOrder, OperationRoutingOrder routingOrder, OperationRouting[] operationRoutings)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
+            {
+                CommonDAO.Insert<OperationRoutingOrder>(routingOrder);
+
+                productionOrder.RoutingOrderId = routingOrder.RecordId;
+                CommonDAO.Update<ProductionOrder>(productionOrder, notifyDataChanged: true);
+
+                foreach (OperationRouting routing in operationRoutings)
+                {
+                    routing.OperationRoutingOrderId = routingOrder.RecordId;
+                    CommonDAO.Insert<OperationRouting>(routing);
+                }
+                this.SetNextAndPrevRoutingId(routingOrder.RecordId);
+
+                this.UpdateProductionOrderStatus(productionOrder);
+
+                scope.Complete();
+            }
+        }
+
+        private void UpdateProductionOrderStatus(ProductionOrder productionOrder)
+        {
+            productionOrder.OrderStatus |= GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY;
+            CommonDAO.Update<ProductionOrder>(productionOrder);
+        }
+
+        // private Media GetOperationMedia(Operation operation,int mediaType){
+        //     /*
+        //     select *
+        //       from media
+        //     where record_id in(
+        //         select media_id
+        //         from media_belong 
+        //         where belong_to_id = opertation.record_id  -- 外键
+        //           and belong_to_record_type = 25 -- operation_roder
+        //           and media_type = mediaType   -- sop文件
+        //       )
+        //      */
+        // }
+
+        private void SetNextAndPrevRoutingId(long routingOrderId)
+        {
+            string sql = @"update operation_routing
+                   set o.next_operation_routing_id = n.record_id,
+                       o.prev_operation_routing_id = p.record_id
+                from operation_routing o 
+                           left join operation_routing n on o.next_operation_no = n.operation_no
+                           left join operation_routing p on o.prev_opreation_no = p.operation_no
+                where o.operation_routing_order_id = @0";
+
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                dbContext.Database.ExecuteSqlCommand(sql,routingOrderId);
+            }
         }
 
         private OperationRoutingOrder CreateProductionRoutingOrder(Material material)
@@ -47,7 +101,7 @@ namespace Imms.Mes.Exchange
             return new OperationRoutingOrder()
             {
                 MaterialId = material.RecordId,
-                OrderType = GlobalConstants.OPERATION_ORDER_TYPE_PRODUCTION
+                OrderType = GlobalConstants.TYPE_OPERATION_ORDER_PRODUCTION
             };
         }
 
@@ -116,7 +170,7 @@ namespace Imms.Mes.Exchange
         public double StandardTime { get; set; }
         public double StandardPrice { get; set; }
         public string SectionType { get; set; }
-        public byte? RequiredLevel { get; set; }
+        public byte RequiredLevel { get; set; }
         public string[] PreOperations { get; set; }
     }
 }

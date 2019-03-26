@@ -1,15 +1,20 @@
-﻿using System;
+﻿using Imms.Data;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection;
-using Imms.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Imms.Mes.Domain
 {
+    public partial class BomOrder : OrderEntity<long>
+    {
+        public int BomOrderType { get; set; }
+        public long MaterialId { get; set; }
+
+        public virtual ICollection<Bom> Boms { get; set; }
+    }
+
     public partial class Bom : TrackableEntity<long>
-    {           
+    {
         public long BomOrderId { get; set; }
         public long ComponentMaterialId { get; set; }
         public long? ComponentAbstractMaterialId { get; set; }
@@ -19,12 +24,8 @@ namespace Imms.Mes.Domain
         public string ComponentMaterialNamePath { get; set; }
         public bool IsMainFabric { get; set; }
         public long ParentBomId { get; set; }
-    }
 
-     public partial class BomOrder : OrderEntity<long>
-    {
-        public int BomOrderType { get; set; }
-        public long MaterialId { get; set; }
+        public virtual BomOrder BomOrder { get; set; }
     }
 
     public class BomOrderConfigure : OrderEntityConfigure<BomOrder>
@@ -36,6 +37,8 @@ namespace Imms.Mes.Domain
             builder.ToTable("bom_order");
             builder.Property(e => e.BomOrderType).HasColumnName("bom_order_type");
             builder.Property(e => e.MaterialId).HasColumnName("material_id");
+
+            builder.HasMany(e => e.Boms).WithOne(e => e.BomOrder).HasForeignKey(e => e.BomOrderId);
         }
     }
 
@@ -56,6 +59,8 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.ComponentUnitId).HasColumnName("component_unit_id");
             builder.Property(e => e.IsMainFabric).HasColumnName("is_fabric");
             builder.Property(e => e.ParentBomId).HasColumnName("parent_bom_id");
+
+            builder.HasOne(e => e.BomOrder).WithMany(e => e.Boms).HasForeignKey(e => e.BomOrderId);
         }
     }
 
