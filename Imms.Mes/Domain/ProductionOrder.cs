@@ -26,6 +26,7 @@ namespace Imms.Mes.Domain
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
 
+        public virtual BomOrder BomOrder { get; set; }
         public virtual ICollection<ProductionOrderSize> Sizes { get; set; }
         public virtual ICollection<ProductionOrderMeasure> Measures { get; set; }
         public virtual ICollection<ProductionOrderPatternRelation> PatternImages { get; set; }
@@ -185,6 +186,7 @@ namespace Imms.Mes.Domain
                     .HasColumnName("work_center_id")
                     .HasColumnType("bigint(20)");
 
+            builder.HasOne(e => e.BomOrder).WithMany().HasForeignKey(e => e.BomOrderId);
             builder.HasMany(p => p.Sizes).WithOne(s => s.ProductionOrder).HasForeignKey(s=>s.ProductionOrderId);
             builder.HasMany(p => p.Measures).WithOne(m => m.ProductionOrder).HasForeignKey(m => m.ProductionOrderId);
             builder.HasMany(p => p.PatternImages).WithOne(i => i.ProductionOrder).HasForeignKey(i => i.ProductionOrderId);

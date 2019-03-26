@@ -6,6 +6,7 @@ using Imms.Data;
 using Imms.Data.Domain;
 using Newtonsoft.Json;
 using Imms.Mes.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Mes.Exchange
 {
@@ -47,28 +48,19 @@ namespace Imms.Mes.Exchange
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
-                CommonDAO.Insert<BomOrder>(bomOrder);
-                foreach (Bom bom in boms)
-                {
-                    bom.BomOrderId = bomOrder.RecordId;
-                }
-                CommonDAO.Insert<Bom>(boms);
-
-                productionOrder.BomOrderId = bomOrder.RecordId;
+                bomOrder.Boms = boms;
+                productionOrder.BomOrder = bomOrder;
                 productionOrder.OrderStatus = productionOrder.OrderStatus | GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY;
-                CommonDAO.Insert<ProductionOrder>(productionOrder, notifyChangeEvent: true);
-
-                foreach (ProductionOrderSize size in sizes)
+                productionOrder.Sizes = sizes;
+                productionOrder.Measures = measures;
+                
+                using(DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
                 {
-                    size.ProductionOrderId = productionOrder.RecordId;
-                }
-                CommonDAO.Insert<ProductionOrderSize>(sizes);
+                    dbContext.Set<ProductionOrder>().Add(productionOrder);
 
-                foreach (ProductionOrderMeasure measure in measures)
-                {
-                    measure.ProductionOrderId = productionOrder.RecordId;
+
+                    dbContext.SaveChanges();
                 }
-                CommonDAO.Insert<ProductionOrderMeasure>(measures);
 
                 scope.Complete();
             }

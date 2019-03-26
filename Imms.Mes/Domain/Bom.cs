@@ -10,6 +10,7 @@ namespace Imms.Mes.Domain
         public int BomOrderType { get; set; }
         public long MaterialId { get; set; }
 
+        public virtual Material Material { get; set; }
         public virtual ICollection<Bom> Boms { get; set; }
     }
 
@@ -38,6 +39,7 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.BomOrderType).HasColumnName("bom_order_type");
             builder.Property(e => e.MaterialId).HasColumnName("material_id");
 
+            builder.HasOne(e => e.Material).WithMany().HasForeignKey(e => e.MaterialId);
             builder.HasMany(e => e.Boms).WithOne(e => e.BomOrder).HasForeignKey(e => e.BomOrderId);
         }
     }
