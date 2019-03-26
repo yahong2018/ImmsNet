@@ -4,6 +4,7 @@ using Imms.Mes;
 using Imms.Mes.Domain;
 using Imms.Mes.Domain.Test;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Linq;
 using System.Transactions;
@@ -23,10 +24,45 @@ namespace Imms.Test
             //program.testGetPlantByProperty();
 
             program.One2OneQuery();
-            program.One2OneInsert();
+            //  program.One2OneInsert();
+            program.TestUpdate();
             program.One2OneQuery();
 
             Console.Read();
+        }
+
+        private void TestUpdate()
+        {
+            Console.WriteLine("开始更新-----------------");
+            Body body = CommonDAO.GetOneByFilter<Body>(x => x.BodyName == "身C1");
+            Foot foot10 = CommonDAO.GetOneByFilter<Foot>(x=>x.FootName=="脚10");
+            foot10.FootName="aaaa";
+           // body.Feet.Add(new Foot() { FootName = "脚15" });
+           // body.Feet.Add(new Foot() { FootName = "脚16" });
+            body.Feet.Add(foot10);
+            //body.BodyName = "身C1";
+
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                //Body dbItem = dbContext.Set<Body>().Where(x => x.Id == body.Id).First();
+                EntityEntry<Body> entry = dbContext.Attach<Body>(body);
+                entry.State=EntityState.Modified;
+
+                EntityEntry<Foot> footEntry = dbContext.Attach<Foot>(foot10);
+                footEntry.State=EntityState.Modified;                
+
+               // entry.CurrentValues.SetValues(body);
+
+                // foreach (Foot foot in body.Feet)
+                // {
+                //     foot.Body = body;
+                //     dbContext.Set<Foot>().Add(foot);
+                // }
+
+                dbContext.SaveChanges();
+            }
+
+            Console.WriteLine("更新结束-----------------");
         }
 
         private void One2OneInsert()
@@ -68,6 +104,8 @@ namespace Imms.Test
                     {
                         Console.WriteLine($"foot_id:{foot.Id},foot_name:{foot.FootName},body_name:{foot.Body.BodyName}");
                     }
+
+                    Console.WriteLine("******************************");
                 }
             }
             Console.WriteLine("查询结束--------");

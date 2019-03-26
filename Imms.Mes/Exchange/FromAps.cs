@@ -41,28 +41,24 @@ namespace Imms.Mes.Exchange
             BomOrder bomOrder = new BomOrder
             {
                 BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER,
-                OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL
+                OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL,
+                Material = productionOrder.FgMaterial
             };
             ProductionOrderSize[] sizes = ConvertSizes(scheduleOrder.OrderSizes);
             ProductionOrderMeasure[] measures = ConvertMeasures(scheduleOrder.BodyDatas);
 
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
+            bomOrder.Boms.AddRange(boms);
+            productionOrder.BomOrder = bomOrder;
+            productionOrder.OrderStatus = productionOrder.OrderStatus | GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY;
+            productionOrder.Sizes.AddRange(sizes);
+            productionOrder.Measures.AddRange(measures);
+
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
-                bomOrder.Boms = boms;
-                productionOrder.BomOrder = bomOrder;
-                productionOrder.OrderStatus = productionOrder.OrderStatus | GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY;
-                productionOrder.Sizes = sizes;
-                productionOrder.Measures = measures;
-                
-                using(DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
-                {
-                    dbContext.Set<ProductionOrder>().Add(productionOrder);
+                dbContext.Set<BomOrder>().Add(bomOrder);
+                dbContext.Set<ProductionOrder>().Add(productionOrder);
 
-
-                    dbContext.SaveChanges();
-                }
-
-                scope.Complete();
+                dbContext.SaveChanges();
             }
         }
 
@@ -124,16 +120,14 @@ namespace Imms.Mes.Exchange
             Material fgMaterial = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0", scheduleOrder.MaterialCode);
             Plant plant = CommonDAO.AssureExistsByFilter<Plant>("OrganizationCode == @0", scheduleOrder.Plant);
             WorkCenter workCenter = CommonDAO.AssureExistsByFilter<WorkCenter>("OrganizationCode == @0", scheduleOrder.WorkCenter);
-            BomOrder bomOrder = CommonDAO.AssureExistsByFilter<BomOrder>("OrderNo == @0", scheduleOrder.BomOrderNo);
 
             ProductionOrder productionOrder = new ProductionOrder
             {
                 RequirementOrderNo = scheduleOrder.RequirementOrderNo,
                 ScheduleOrderNo = scheduleOrder.ScheduleOrderNo,
                 OrderType = scheduleOrder.OrderType,
-                FgMaterialId = fgMaterial.RecordId,
+                FgMaterial = fgMaterial,
                 WorkCenterId = workCenter.RecordId,
-                BomOrderId = bomOrder.RecordId,
                 PlannedStartDate = scheduleOrder.PlannedStartDate,
                 PlannedEndDate = scheduleOrder.PlannedEndDate,
                 PlannedQty = scheduleOrder.PlannedQty,

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Imms.Mes.Exchange
 {
@@ -27,7 +28,7 @@ namespace Imms.Mes.Exchange
         {
             ProductionOrderRoutingDTO dto = (ProductionOrderRoutingDTO)dtoObj;
             ProductionOrder productionOrder = CommonDAO.AssureExistsByFilter<ProductionOrder>("OrderNo == @0", dto.ProductionOrderNo);
-            Material material = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0",dto.MaterialNo);
+            Material material = CommonDAO.AssureExistsByFilter<Material>("MaterialNo == @0", dto.MaterialNo);
             if (material.RecordId != productionOrder.FgMaterialId)
             {
                 throw new BusinessException(GlobalConstants.EXCEPTION_CODE_NOT_EXCEPTED_DATA, $"Gst返回工艺的物料Id{material.RecordId}与Id为{productionOrder.RecordId}的生产订单的物料编号{productionOrder.FgMaterialId}不一致!");
@@ -35,36 +36,46 @@ namespace Imms.Mes.Exchange
             OperationRoutingOrder routingOrder = CreateProductionRoutingOrder(material);
             OperationRouting[] operationRoutings = ConvertRoutings(dto.OperationRoutings);
 
-            this.SetProductionOrderRouting(productionOrder,routingOrder,operationRoutings);            
+            this.SetProductionOrderRouting(productionOrder, routingOrder, operationRoutings);
         }
 
         private void SetProductionOrderRouting(ProductionOrder productionOrder, OperationRoutingOrder routingOrder, OperationRouting[] operationRoutings)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
-                CommonDAO.Insert<OperationRoutingOrder>(routingOrder);
-
-                productionOrder.RoutingOrderId = routingOrder.RecordId;
-                CommonDAO.Update<ProductionOrder>(productionOrder, notifyDataChanged: true);
-
-                foreach (OperationRouting routing in operationRoutings)
+                using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
                 {
-                    routing.OperationRoutingOrderId = routingOrder.RecordId;
-                    CommonDAO.Insert<OperationRouting>(routing);
-                }
-                this.SetNextAndPrevRoutingId(routingOrder.RecordId);
+                    routingOrder.Routings.AddRange(operationRoutings);
+                    dbContext.Set<OperationRoutingOrder>().Add(routingOrder);
 
-                this.UpdateProductionOrderStatus(productionOrder);
+                    productionOrder.OrderStatus |= GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY;
+                    productionOrder.RoutingOrder = routingOrder;
+                    EntityEntry<ProductionOrder> entry = dbContext.Attach<ProductionOrder>(productionOrder);
+                    entry.State=EntityState.Modified;
+
+                    dbContext.SaveChanges();
+
+                    this.SetNextAndPrevRoutingId(routingOrder.RecordId,dbContext);
+                }
 
                 scope.Complete();
             }
         }
 
-        private void UpdateProductionOrderStatus(ProductionOrder productionOrder)
+        private void SetNextAndPrevRoutingId(long routingOrderId, DbContext dbContext)
         {
-            productionOrder.OrderStatus |= GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY;
-            CommonDAO.Update<ProductionOrder>(productionOrder);
+            string sql = @"update operation_routing
+                   set o.next_operation_routing_id = n.record_id,
+                       o.prev_operation_routing_id = p.record_id
+                from operation_routing o 
+                           left join operation_routing n on o.next_operation_no = n.operation_no
+                           left join operation_routing p on o.prev_opreation_no = p.operation_no
+                where o.operation_routing_order_id = @0";
+
+            dbContext.Database.ExecuteSqlCommand(sql, routingOrderId);
         }
+
+
 
         // private Media GetOperationMedia(Operation operation,int mediaType){
         //     /*
@@ -79,22 +90,6 @@ namespace Imms.Mes.Exchange
         //       )
         //      */
         // }
-
-        private void SetNextAndPrevRoutingId(long routingOrderId)
-        {
-            string sql = @"update operation_routing
-                   set o.next_operation_routing_id = n.record_id,
-                       o.prev_operation_routing_id = p.record_id
-                from operation_routing o 
-                           left join operation_routing n on o.next_operation_no = n.operation_no
-                           left join operation_routing p on o.prev_opreation_no = p.operation_no
-                where o.operation_routing_order_id = @0";
-
-            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
-            {
-                dbContext.Database.ExecuteSqlCommand(sql,routingOrderId);
-            }
-        }
 
         private OperationRoutingOrder CreateProductionRoutingOrder(Material material)
         {
@@ -124,12 +119,12 @@ namespace Imms.Mes.Exchange
         private OperationRouting ConvertOperationRouting(OperationRoutingDTO dto)
         {
             OperationRouting routing = new OperationRouting();
-            Operation operation = CommonDAO.AssureExistsByFilter<Operation>("OperationNo == @0",dto.OperationNo);
-            MachineType machineType = CommonDAO.AssureExistsByFilter<MachineType>("CodeNo == @0",dto.MachineType);
+            Operation operation = CommonDAO.AssureExistsByFilter<Operation>("OperationNo == @0", dto.OperationNo);
+            MachineType machineType = CommonDAO.AssureExistsByFilter<MachineType>("CodeNo == @0", dto.MachineType);
 
             routing.OperationId = operation.RecordId;
             routing.OperationNo = operation.OperationNo;
-            routing.OperationName = operation.OperationName;            
+            routing.OperationName = operation.OperationName;
             routing.IsOutsource = dto.IsOutsource;
             routing.MachineTypeId = machineType.RecordId;
             routing.NextOpertionNo = dto.NextOperationNo;

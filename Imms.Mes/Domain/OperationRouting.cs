@@ -44,7 +44,7 @@ namespace Imms.Mes.Domain
         public int OrderType { get; set; }
         public long MaterialId { get; set; }
 
-        public virtual ICollection<OperationRouting> Routings { get; set; }
+        public virtual List<OperationRouting> Routings { get; set; }=new List<OperationRouting>();
     }
 
     public class BaseOperationConfigure<E> : TrackableEntityConfigure<E> where E : BaseOperation

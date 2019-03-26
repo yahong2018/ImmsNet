@@ -11,7 +11,7 @@ namespace Imms.Mes.Domain
         public long MaterialId { get; set; }
 
         public virtual Material Material { get; set; }
-        public virtual ICollection<Bom> Boms { get; set; }
+        public virtual List<Bom> Boms { get; set; } = new List<Bom>();
     }
 
     public partial class Bom : TrackableEntity<long>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
+using Imms.Data.Domain;
 
 namespace Imms.Mes.Domain
 {
@@ -26,10 +27,13 @@ namespace Imms.Mes.Domain
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
 
+        public virtual OperationRoutingOrder RoutingOrder{get;set;}
+        public virtual Material FgMaterial{get;set;}
         public virtual BomOrder BomOrder { get; set; }
-        public virtual ICollection<ProductionOrderSize> Sizes { get; set; }
-        public virtual ICollection<ProductionOrderMeasure> Measures { get; set; }
-        public virtual ICollection<ProductionOrderPatternRelation> PatternImages { get; set; }
+        public virtual List<ProductionOrderSize> Sizes { get; set; }=new List<ProductionOrderSize>();
+        public virtual List<ProductionOrderMeasure> Measures { get; set; } = new List<ProductionOrderMeasure>();
+        public virtual List<ProductionOrderPatternRelation> PatternImages { get; set; } = new List<ProductionOrderPatternRelation>();
+        public virtual List<QualityCheck> QualityChecks {get;set;}=new List<QualityCheck>();
     }
 
     public partial class ProductionOrderSize : TrackableEntity<long>
@@ -56,7 +60,9 @@ namespace Imms.Mes.Domain
     {
         public long ProductionOrderId { get; set; }
         public long MaterialId { get; set; }
-
+        public long MediaId{get;set;}
+        
+        public virtual Media Media{get;set;}
         public virtual ProductionOrder ProductionOrder { get; set; }
     }
 
@@ -121,7 +127,9 @@ namespace Imms.Mes.Domain
 
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id");
             builder.Property(e => e.MaterialId).HasColumnName("material_id");
+            builder.Property(e => e.MediaId).HasColumnName("media_id");
 
+            builder.HasOne(e=>e.Media).WithMany().HasForeignKey(e=>e.MediaId);
             builder.HasOne(i => i.ProductionOrder).WithMany(p => p.PatternImages).HasForeignKey(i => i.ProductionOrderId);
         }
     }
@@ -186,6 +194,8 @@ namespace Imms.Mes.Domain
                     .HasColumnName("work_center_id")
                     .HasColumnType("bigint(20)");
 
+            builder.HasOne(e=>e.RoutingOrder).WithMany().HasForeignKey(e=>e.RoutingOrderId);
+            builder.HasOne(e=>e.FgMaterial).WithMany().HasForeignKey(e=>e.FgMaterialId);
             builder.HasOne(e => e.BomOrder).WithMany().HasForeignKey(e => e.BomOrderId);
             builder.HasMany(p => p.Sizes).WithOne(s => s.ProductionOrder).HasForeignKey(s=>s.ProductionOrderId);
             builder.HasMany(p => p.Measures).WithOne(m => m.ProductionOrder).HasForeignKey(m => m.ProductionOrderId);

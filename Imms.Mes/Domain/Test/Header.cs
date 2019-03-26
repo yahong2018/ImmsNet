@@ -17,9 +17,9 @@ namespace Imms.Mes.Domain.Test
         public int Id { get; set; }
         public string BodyName { get; set; }
 
-        public int HeaderId { get; set; }
+        public int? HeaderId { get; set; }
         public Header Header { get; set; }
-        public ICollection<Foot> Feet { get; set; } = new List<Foot>();
+        public List<Foot> Feet { get; set; }=new List<Foot>();
     }
 
     public class Foot
@@ -52,7 +52,7 @@ namespace Imms.Mes.Domain.Test
             builder.Property(e => e.BodyName).HasColumnName("body_name");
             builder.Property(e => e.HeaderId).HasColumnName("header_id");
 
-            builder.HasOne(e => e.Header).WithMany().HasForeignKey(e => e.HeaderId).HasPrincipalKey(e=>e.Id).IsRequired();
+            builder.HasOne(e => e.Header).WithMany().HasForeignKey(e => e.HeaderId);
          //   builder.HasMany(e => e.Feet).WithOne(e => e.Body).HasForeignKey(e => e.BodyId);
         }
     }
@@ -67,7 +67,8 @@ namespace Imms.Mes.Domain.Test
             builder.Property(e => e.FootName).HasColumnName("foot_name");
             builder.Property(e => e.BodyId).HasColumnName("body_id");
 
-            builder.HasOne(e => e.Body).WithMany(e => e.Feet).HasForeignKey(e => e.BodyId).HasPrincipalKey(e=>e.Id).IsRequired();
+            //builder.HasOne(e => e.Body).WithMany(e => e.Feet).HasForeignKey(e => e.BodyId).HasPrincipalKey(e=>e.Id).IsRequired();
+            builder.HasOne(e => e.Body).WithMany(e => e.Feet).HasForeignKey(e => e.BodyId);
         }
     }
 

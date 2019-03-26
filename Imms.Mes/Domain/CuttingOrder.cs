@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
+using Imms.Data.Domain;
 
 namespace Imms.Mes.Domain
 {
@@ -13,7 +14,7 @@ namespace Imms.Mes.Domain
         public string ContainerNo { get; set; }
         public int PlannedQty { get; set; }
         //成品料号
-        public long FgMaterialId { get; set; } 
+        public long FgMaterialId { get; set; }
         //面料类型
         public string FabricMaterialType { get; set; }
         //面料物料主键
@@ -30,6 +31,7 @@ namespace Imms.Mes.Domain
         public int FinishedQty { get; set; }
         public long? OperatorId { get; set; }
 
+        public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual ICollection<CuttingOrderSize> Sizes { get; set; }
         public virtual ICollection<CuttingMarker> Markers { get; set; }
         public virtual ICollection<CuttingOrderSpreadPly> SpreadPlies { get; set; }
@@ -55,13 +57,15 @@ namespace Imms.Mes.Domain
         public long MarkerFileId { get; set; }
 
         public virtual CuttingOrder CuttingOrder { get; set; }
+        public virtual Media Media { get; set; }
+        public virtual Media MarkFile { get; set; }
     }
 
-    public partial class CuttingOrderSpreadPly:TrackableEntity<long>
+    public partial class CuttingOrderSpreadPly : TrackableEntity<long>
     {
         public long CuttingOrderId { get; set; }
-        public double Length{get;set;}
-        public int Plies{get;set;}
+        public double Length { get; set; }
+        public int Plies { get; set; }
 
         public virtual CuttingOrder CuttingOrder { get; set; }
     }
@@ -95,6 +99,8 @@ namespace Imms.Mes.Domain
             builder.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
 
             builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Markers).HasForeignKey(e => e.CuttingOrderId);
+            builder.HasOne(e => e.Media).WithMany().HasForeignKey(e => e.MediaId);
+            builder.HasOne(e => e.MarkFile).WithMany().HasForeignKey(e => e.MarkerFileId);
         }
     }
 
@@ -212,6 +218,7 @@ namespace Imms.Mes.Domain
                 .HasColumnName("work_station_id")
                 .HasColumnType("bigint(20)");
 
+            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
             builder.HasMany(e => e.Sizes).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
             builder.HasMany(e => e.Markers).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
             builder.HasMany(e => e.SpreadPlies).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
