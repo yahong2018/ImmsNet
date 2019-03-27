@@ -48,13 +48,7 @@ namespace Imms.Mes.Exchange
                 this.UpdateProducitonData(productionOrder, dbContext);
 
                 dbContext.SaveChanges();
-            }, (DbContext) =>
-            {
-                ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
-                {
-                    Entity = productionOrder,
-                    DMLType = GlobalConstants.DML_OPERATION_UPDATE
-                });
+                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
             });
         }
 

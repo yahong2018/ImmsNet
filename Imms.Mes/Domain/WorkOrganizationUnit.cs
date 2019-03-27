@@ -23,6 +23,15 @@ namespace Imms.Mes.Domain
         public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
     }
 
+    public class WorkStation:WorkOrganizationUnit{
+        [NotMapped]
+        public string WorkStationCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
+        [NotMapped]
+        public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
+
+
+    }    
+
     public class WorkOrganizationUnitConfigure : IEntityTypeConfiguration<WorkOrganizationUnit>
     {
         public void Configure(EntityTypeBuilder<WorkOrganizationUnit> builder)

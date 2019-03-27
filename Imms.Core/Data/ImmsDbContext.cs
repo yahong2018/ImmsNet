@@ -1,5 +1,7 @@
+using System;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 
 namespace Imms.Data
@@ -8,11 +10,30 @@ namespace Imms.Data
     {
         public ImmsDbContext()
         {
+            this.ChangeTracker.StateChanged += StateChanged;
         }
 
         public ImmsDbContext(DbContextOptions options)
             : base(options)
         {
+        }
+
+        private void StateChanged(object sender, EntityStateChangedEventArgs e)
+        {
+            if (e.Entry.Entity is ITrackableEntity)
+            {
+                ITrackableEntity trackableEntity = e.Entry.Entity as ITrackableEntity;
+                if (e.NewState == EntityState.Added)
+                {
+                    trackableEntity.CreateBy = GlobalConstants.GetCurrentUser().RecordId;
+                    trackableEntity.CreateDate = DateTime.Now;
+                }
+                else if (e.NewState == EntityState.Modified)
+                {
+                    trackableEntity.UpdateBy = GlobalConstants.GetCurrentUser().RecordId;
+                    trackableEntity.UpdateDate = DateTime.Now;
+                }
+            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,12 +53,12 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new SystemUserConfigure());
             modelBuilder.ApplyConfiguration(new SysetmAppConfigure());
             modelBuilder.ApplyConfiguration(new ThirdPartDataExchangeRuleConfigure());
-            modelBuilder.ApplyConfiguration(new ThridPartDataExcahngeConfigure());      
+            modelBuilder.ApplyConfiguration(new ThridPartDataExcahngeConfigure());
             modelBuilder.ApplyConfiguration(new MediaConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Data.Domain.TreeCodeConfigure());            
+            modelBuilder.ApplyConfiguration(new Imms.Data.Domain.TreeCodeConfigure());
             modelBuilder.ApplyConfiguration(new PlanCodeConfigure());
             modelBuilder.ApplyConfiguration(new CodeSeedConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Data.Domain.WorkOrganizationUnitConfigure()); 
+            modelBuilder.ApplyConfiguration(new Imms.Data.Domain.WorkOrganizationUnitConfigure());
             modelBuilder.ApplyConfiguration(new MediaBelongConfigure());
 
             base.OnModelCreating(modelBuilder);

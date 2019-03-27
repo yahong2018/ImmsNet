@@ -7,12 +7,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Data
 {
+    public class DataChangedNotifier
+    {
+        public static void Notify(DataChangedNotifyEvent e)
+        {
+            ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, e);
+        }
+
+        public static void Notify(IEntity item, int dmlType)
+        {
+            DataChangedNotifyEvent e = new DataChangedNotifyEvent()
+            {
+                Entity = item,
+                DMLType = dmlType
+            };
+
+            ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, e);
+        }
+    }
+
     public class DataChangeNotifyEventDispatcher
     {
-        public void OnDateChanged(object objE)
+        protected virtual internal void OnDateChanged(object objE)
         {
             DataChangedNotifyEvent e = (DataChangedNotifyEvent)objE;
-            
+
             if (e.Entity != null || e.Entity.RecordId == null)
             {
                 return;
@@ -64,7 +83,7 @@ namespace Imms.Data
                 }
 
                 foreach (DataChangedNotifyEvent e in changedEvents)
-                {                     
+                {
                     foreach (IDataChangeNotifyEventListener listener in this.listeners)
                     {
                         if (listener.ListenTypes.Contains(e.Entity.GetType()))

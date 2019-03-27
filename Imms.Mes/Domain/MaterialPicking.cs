@@ -20,7 +20,7 @@ namespace Imms.Mes.Domain
         public long MaterialPickingOrderId { get; set; }
         public long ComponentMaterialId { get; set; }
         public long ComponentUnitId { get; set; }
-        public double Qty { get; set; }        
+        public double PlanQty { get; set; }        
         public double PickedQty { get; set; }
 
         public virtual MaterialPickingSchedule Schedule { get; set; }
@@ -115,7 +115,7 @@ namespace Imms.Mes.Domain
                     .HasColumnName("picked_qty")
                     .HasColumnType("double(8,2)");
 
-            builder.Property(e => e.Qty)
+            builder.Property(e => e.PlanQty)
                 .HasColumnName("qty")
                 .HasColumnType("double(8,2)");
 

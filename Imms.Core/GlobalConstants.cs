@@ -6,7 +6,7 @@ namespace Imms
         public const int DML_OPERATION_INSERT = 0;
         public const int DML_OPERATION_UPDATE = 10;
         public const int DML_OPERATION_DELETE = 100;
-        
+
         //系统异常代码
         public const int EXCEPTION_CODE_NO_ERROR = 0; //无异常
         public const int EXCEPTION_CODE_DATA_ALREADY_EXISTS = 1;//数据已经存在
@@ -50,6 +50,15 @@ namespace Imms
         public const int TYPE_BOM_ORDER_WORK_ORDER = 6;
         //物料类型
         public const string TYPE_MATERIAL_KT = "KT";
+        //工位类型        
+        public const string TYPE_WORK_STATION_CUTTING = "CUTTING"; //裁剪
+        public const string TYPE_WORK_STATION_HANGING = "HANGING"; //上吊挂
+        public const string TYPE_WORK_STATION_STITCHING = "STITCHING"; //缝制
+        public const string TYPE_WORK_STATION_QUALITY = "QUALITY"; //质检
+        public const string TYPE_WORK_STATION_PACK = "PACK";//包装
+        public const string TYPE_WORK_STATION_PRINTING = "PRINTING"; // 印染
+        public const string TYPE_WORK_STATION_CUTTINGPRINTER = "CUTTINGPRINTER"; // 实样切割打印机     
+        public const string TYPE_WORK_STATION_PICKING = "PICKING";// 领料工位
 
         //BOM状态
         public const int STATUS_BOM_ORDER_NORMAL = 0;
@@ -84,5 +93,14 @@ namespace Imms
         //其他
         public static Imms.Data.IDbContextFactory DbContextFactory = null;
         public static Logger DefaultLogger = new Logger();
+
+        //系统当前用户
+        public static CurrentUserGetHandler CurrentUserGetFunction = null;
+        public static Imms.Data.Domain.SystemUser GetCurrentUser()
+        {
+            return CurrentUserGetFunction();
+        }
     }
+
+    public delegate Imms.Data.Domain.SystemUser CurrentUserGetHandler();
 }

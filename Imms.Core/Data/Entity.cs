@@ -41,7 +41,16 @@ namespace Imms.Data
         }
     }
 
-    public class TrackableEntity<T> : Entity<T> where T : IComparable
+    public interface ITrackableEntity
+    {
+        long CreateBy { get; set; }
+        DateTime CreateDate { get; set; }
+        long? UpdateBy { get; set; }
+        DateTime? UpdateDate { get; set; }
+        int OptFlag { get; set; }
+    }
+
+    public class TrackableEntity<T> : Entity<T>, ITrackableEntity where T : IComparable
     {
         public long CreateBy { get; set; }
         public DateTime CreateDate { get; set; }

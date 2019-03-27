@@ -6,16 +6,26 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 namespace Imms.Data.Domain
-{    
+{
     public partial class WorkOrganizationUnit : TrackableEntity<long>
     {
         // public string OrganizationType { get; set; }        
         public string OrganizationCode { get; set; }
         public string OrganizationName { get; set; }
         public string Description { get; set; }
-        public string Parameters { get; set; }
         public long ParentOrganizationId { get; set; }
-    }   
+
+        public virtual List<WorkOrganizationUnitParameter> Parameters { get; set; } = new List<WorkOrganizationUnitParameter>();
+    }
+
+    public class WorkOrganizationUnitParameter : TrackableEntity<long>
+    {
+        public long OrganizationUnitId { get; set; }
+        public string ParameterCode { get; set; }
+        public string ParameterValue { get; set; }
+
+        public virtual WorkOrganizationUnit Organization { get; set; }
+    }
 
     public class WorkOrganizationUnitConfigure : TrackableEntityConfigure<WorkOrganizationUnit>
     {
@@ -23,7 +33,7 @@ namespace Imms.Data.Domain
         {
             base.InternalConfigure(builder);
 
-            builder.ToTable("work_organization_unit");            
+            builder.ToTable("work_organization_unit");
 
             builder.Property(e => e.Description)
                     .HasColumnName("description")

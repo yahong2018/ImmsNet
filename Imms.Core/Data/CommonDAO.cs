@@ -51,10 +51,11 @@ namespace Imms.Data
             {
                 string tableName = typeof(T).Name;
                 StringBuilder stringBuilder = new StringBuilder();
-                foreach(object obj in parameters){
+                foreach (object obj in parameters)
+                {
                     stringBuilder.Append(obj.ToString());
                     stringBuilder.Append(",");
-                }               
+                }
 
                 string log = $"系统错误:{tableName}中没有找到条件为{where},值为{stringBuilder.ToString()}'的数据！";
                 GlobalConstants.DefaultLogger.Error(log);
@@ -63,7 +64,7 @@ namespace Imms.Data
             return result;
         }
 
-        public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter,bool throwException=true) where T : class
+        public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter, bool throwException = true) where T : class
         {
             T result = GetOneByFilter<T>(filter);
             if (result == null && throwException)
@@ -133,10 +134,26 @@ namespace Imms.Data
             return null;
         }
 
-        public static void UseDbContext(params DBContextHandler[] handlers){
-            using(DbContext dbContext = GlobalConstants.DbContextFactory.GetContext()){
-                foreach(DBContextHandler handler in handlers){
+        public static void UseDbContext(params DBContextHandler[] handlers)
+        {
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                foreach (DBContextHandler handler in handlers)
+                {
                     handler(dbContext);
+                }
+            }
+        }
+
+
+        public void Validate<T>(int dmlType, params T[] items)
+        {
+            DMLCommonHandler verifyHandler = GetCustomDataVerifyHandler(typeof(T), dmlType);
+            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            {
+                foreach (T item in items)
+                {
+                    verifyHandler(item, dmlType, dbContext);
                 }
             }
         }
@@ -164,8 +181,8 @@ namespace Imms.Data
         private static int DoSingleInsert<T>(DbContext dbContext, T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null) where T : class, IEntity
         {
             AssureNotExists<T>(item);
-            GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_INSERT)?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT,dbContext);
-            handlerBeforeInsert?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT,dbContext);
+            GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_INSERT)?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT, dbContext);
+            handlerBeforeInsert?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT, dbContext);
             try
             {
                 dbContext.Set<T>().Add(item);
@@ -173,7 +190,7 @@ namespace Imms.Data
             }
             finally
             {
-                handlerAfterInsert?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT,dbContext);
+                handlerAfterInsert?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT, dbContext);
             }
         }
 
@@ -182,8 +199,8 @@ namespace Imms.Data
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
                 T dbItem = AssureExists<T>(item);
-                GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_UPDATE)?.Invoke(dbItem, GlobalConstants.DML_OPERATION_UPDATE,dbContext);
-                handlerBeforeUpdate?.Invoke(item, GlobalConstants.DML_OPERATION_UPDATE,dbContext);
+                GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_UPDATE)?.Invoke(dbItem, GlobalConstants.DML_OPERATION_UPDATE, dbContext);
+                handlerBeforeUpdate?.Invoke(item, GlobalConstants.DML_OPERATION_UPDATE, dbContext);
                 try
                 {
                     EntityEntry<T> entry = dbContext.Entry<T>(dbItem);
@@ -192,20 +209,20 @@ namespace Imms.Data
                     return dbContext.SaveChanges();
                 }
                 finally
-                {                   
-                    handlerAfterUpdate?.Invoke(item, GlobalConstants.DML_OPERATION_UPDATE,dbContext);
+                {
+                    handlerAfterUpdate?.Invoke(item, GlobalConstants.DML_OPERATION_UPDATE, dbContext);
                 }
             }
         }
-        
+
 
         public static int Delete<T>(T item, DMLGenericHandler<T> handlerBeforeDelete = null, DMLGenericHandler<T> handlerAfterDelete = null) where T : class, IEntity
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
                 T dbItem = AssureExists<T>(item);
-                GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_DELETE)?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE,dbContext);
-                handlerBeforeDelete?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE,dbContext);
+                GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_DELETE)?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE, dbContext);
+                handlerBeforeDelete?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE, dbContext);
                 try
                 {
                     dbContext.Remove<T>(dbItem);
@@ -214,7 +231,7 @@ namespace Imms.Data
                 }
                 finally
                 {
-                    handlerAfterDelete?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE,dbContext);
+                    handlerAfterDelete?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE, dbContext);
                 }
             }
         }
@@ -258,6 +275,6 @@ namespace Imms.Data
     }
 
     public delegate void DBContextHandler(DbContext dbContext);
-    public delegate void DMLCommonHandler(object item, int dmlType,DbContext dbContext);
-    public delegate void DMLGenericHandler<T>(T item, int dmlType,DbContext dbContext);
+    public delegate void DMLCommonHandler(object item, int dmlType, DbContext dbContext);
+    public delegate void DMLGenericHandler<T>(T item, int dmlType, DbContext dbContext);
 }
