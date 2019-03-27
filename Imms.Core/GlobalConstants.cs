@@ -2,72 +2,86 @@ namespace Imms
 {
     public static class GlobalConstants
     {
-        //ÏµÍ³Òì³£´úÂë
-        public const int EXCEPTION_CODE_NO_ERROR = 0;
-        public const int EXCEPTION_CODE_DATA_ALREADY_EXISTS = 1;
-        public const int EXCEPTION_CODE_DATA_NOT_FOUND = 2;
-        public const int EXCEPTION_CODE_NOT_EXCEPTED_DATA = 3;
-        public const int EXCEPTION_CODE_DATA_REPEATED = 4;
+        //æ•°æ®æ“ä½œ
+        public const int DML_OPERATION_INSERT = 0;
+        public const int DML_OPERATION_UPDATE = 10;
+        public const int DML_OPERATION_DELETE = 100;
+        
+        //ç³»ç»Ÿå¼‚å¸¸ä»£ç 
+        public const int EXCEPTION_CODE_NO_ERROR = 0; //æ— å¼‚å¸¸
+        public const int EXCEPTION_CODE_DATA_ALREADY_EXISTS = 1;//æ•°æ®å·²ç»å­˜åœ¨
+        public const int EXCEPTION_CODE_DATA_NOT_FOUND = 2;//æ•°æ®æ²¡æœ‰æ‰¾åˆ°
+        public const int EXCEPTION_CODE_NOT_EXCEPTED_DATA = 3;//éé¢„æœŸæ•°æ®
+        public const int EXCEPTION_CODE_DATA_REPEATED = 4;  //æ•°æ®é‡å¤
+        public const int EXCEPTION_CODE_CUSTOM = int.MaxValue; //ä¸šåŠ¡é€»è¾‘è‡ªå®šä¹‰çš„å¼‚å¸¸
 
-        //Êı¾İ½»»»:¹æÔò
+        //æ•°æ®äº¤æ¢:è§„åˆ™
         public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__APS_2_MES = "PRODUCITON_ORDER_APS_2_MES";
         public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES = "PRODUCITON_ORDER_CAD_2_MES";
         public const string DATA_EXCHANGE_RULE__PRODUCITON_ORDER__GST_2_MES = "PRODUCITON_ORDER_GST_2_MES";
-        //Êı¾İ½»»»£ºÏµÍ³ID
+        //æ•°æ®äº¤æ¢ï¼šç³»ç»ŸID
         public const int SYSTEM_ID_MES = 1;
         public const int SYSTEM_ID_APS = 2;
         public const int SYSTEM_ID_MCS = 3;
         public const int SYSTEM_ID_KANBAN = 4;
 
-        //×éÖ¯»ú¹¹ÀàĞÍ
+        //ç»„ç»‡æœºæ„ç±»å‹
         public const string TYPE_ORG_PLANT = "PLANT";
         public const string TYPE_ORG_WORK_CENTER = "WORK_CENTER";
         public const string TYPE_ORG_WORK_LINE = "WORK_LINE";
         public const string TYPE_ORG_WORK_STATETION = "WORK_STATION";
-        //±àÂëÀàĞÍ
+        //ç¼–ç ç±»å‹
         public const string TYPE_CODE_TABLE_MATERIAL_UNIT = "MATERIAL_UNIT";
         public const string TYPE_CODE_TABLE_SIZE = "SIZE";
-        public const string TYPE_CODE_TABLE_MACHINE_TYPE = "MACHINE_TYPE";               
-        //Éú²ú¶©µ¥ÀàĞÍ
+        public const string TYPE_CODE_TABLE_MACHINE_TYPE = "MACHINE_TYPE";
+        //ç”Ÿäº§è®¢å•ç±»å‹
         public const int TYPE_PRODUCTION_ORDER_STANDARD = 0;
         public const int TYPE_PRODUCTION_ORDER_CUSTOM = 1;
-        //¹¤ÒÕµ¥ÀàĞÍ
+        //å·¥è‰ºå•ç±»å‹
         public const int TYPE_OPERATION_ORDER_MATERIAL = 10;
         public const int TYPE_OPERATION_ORDER_PRODUCTION = 11;
         public const int TYPE_OPERATION_ORDER_WORKORDER = 12;
-        //BOMµ¥ÀàĞÍ
+        //BOMå•ç±»å‹
         public const int TYPE_BOM_ORDER_PART = 1;
         public const int TYPE_BOM_ORDER_STANDARD = 2;
         public const int TYPE_BOM_ORDER_ORDER = 3;
         public const int TYPE_BOM_ORDER_DESIGN = 4;
         public const int TYPE_BOM_ORDER_PRODUCTION_ORDER = 5;
         public const int TYPE_BOM_ORDER_WORK_ORDER = 6;
-        //ÎïÁÏÀàĞÍ
+        //ç‰©æ–™ç±»å‹
         public const string TYPE_MATERIAL_KT = "KT";
-        
-        //BOM×´Ì¬
+
+        //BOMçŠ¶æ€
         public const int STATUS_BOM_ORDER_NORMAL = 0;
         public const int STATUS_BOM_ORDER_DEPRECATED = 1;
 
-        //Éú²ú¶©µ¥µÄ×´Ì¬
-        public const int STATUS_PRODUCTION_ORDER_PLANNED = 0;
-        public const int STATUS_PRODUCTION_ORDER_BOM_READY = 1;   //BOMÒÑ×¼±¸
-        public const int STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY = 2; //²Ã¼ô¼¼ÊõÎÄ¼şÒÑ×¼±¸
-        public const int STATUS_PRODUCTION_ORDER_ROUTING_READY = 4; //Éú²ú¹¤ÒÕÒÑ×¼±¸
-        public const int STATUS_PRODUCTION_ORDER_TECH_ALL_READY   //Éú²ú¼¼ÊõÒÑ×¼±¸
+        //è®¢å•é€šç”¨çŠ¶æ€
+        public const int STATUS_ORDER_INITIATE = 0;   //åˆå§‹çŠ¶æ€
+        public const int STATUS_ORDER_PLANNED = 1;    //å·²è®¡åˆ’
+        public const int STATUS_ORDER_FINISHED = int.MaxValue; //å·²å®Œæˆ
+
+        //ç”Ÿäº§è®¢å•çŠ¶æ€
+        public const int STATUS_PRODUCTION_ORDER_BOM_READY = 2;   //BOMå·²å‡†å¤‡
+        public const int STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY = 4; //è£å‰ªæŠ€æœ¯æ–‡ä»¶å·²å‡†å¤‡
+        public const int STATUS_PRODUCTION_ORDER_ROUTING_READY = 8; //ç”Ÿäº§å·¥è‰ºå·²å‡†å¤‡
+        public const int STATUS_PRODUCTION_ORDER_TECH_ALL_READY   //ç”Ÿäº§æŠ€æœ¯å·²å…¨éƒ¨å‡†å¤‡   äºŒè¿›åˆ¶çš„1111ï¼Œåè¿›åˆ¶15
             = STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;
-                
-        //¶àÃ½Ìå
+        public const int STATUS_PRODUCTION_ORDER_PICKING = 16;    //å·²å¼€å§‹ï¼ˆå®Œæˆï¼‰é¢†æ–™
+        public const int STATUS_PRODUCTION_ORDER_CUTTING = 32;    //å·²å¼€å§‹ï¼ˆå®Œæˆï¼‰è£å‰ª
+        public const int STATUS_PRODUCTION_ORDER_HANGING = 64;    //å·²å¼€å§‹ï¼ˆå®Œæˆï¼‰ä¸Šè£ç‰‡
+        public const int STATUS_PRODUCTION_ORDER_SEWING = 128;    //å·²å¼€å§‹ï¼ˆå®Œæˆï¼‰ç¼åˆ¶
+
+        //å¤šåª’ä½“
         public const string MIME_MEDIA_FORMAT_JPEG = "image/jpeg";
-        //Ã½ÌåÀàĞÍ
+        //åª’ä½“ç±»å‹
         public const int MEDIA_TYPE_CUTTING_MARKER_CUT_MEDIA = 10;
         public const int MEDIA_TYPE_CUTTING_MARKER_CUT_FILE = 11;
-        
-        //¸½¼ş¼ÇÂ¼ÀàĞÍ
-        public const int BELONG_TO_RECORD_TYPE_CUTTING_MARKER = 10;        
+
+        //é™„ä»¶è®°å½•ç±»å‹
+        public const int BELONG_TO_RECORD_TYPE_CUTTING_MARKER = 10;
         public const int BELONG_TO_RECORD_TYPE_PRODUCTION_PATTERNIMAGES = 20;
-              
-        //ÆäËû
+
+        //å…¶ä»–
         public static Imms.Data.IDbContextFactory DbContextFactory = null;
         public static Logger DefaultLogger = new Logger();
     }

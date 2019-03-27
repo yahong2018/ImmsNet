@@ -63,10 +63,10 @@ namespace Imms.Data
             return result;
         }
 
-        public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter) where T : class
+        public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter,bool throwException=true) where T : class
         {
             T result = GetOneByFilter<T>(filter);
-            if (result == null)
+            if (result == null && throwException)
             {
                 string filterStr = filter.ToString();
                 string tableName = typeof(T).Name;
@@ -133,31 +133,41 @@ namespace Imms.Data
             return null;
         }
 
-        public static int Insert<T>(T[] items, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null, bool notifyChangeEvent = false) where T : class, IEntity
+        public static void UseDbContext(params DBContextHandler[] handlers){
+            using(DbContext dbContext = GlobalConstants.DbContextFactory.GetContext()){
+                foreach(DBContextHandler handler in handlers){
+                    handler(dbContext);
+                }
+
+                dbContext.SaveChanges();
+            }
+        }
+
+        public static int Insert<T>(T[] items, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null) where T : class, IEntity
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
                 foreach (T item in items)
                 {
-                    DoSingleInsert(dbContext, item, handlerBeforeInsert, handlerAfterInsert, notifyChangeEvent);
+                    DoSingleInsert(dbContext, item, handlerBeforeInsert, handlerAfterInsert);
                 }
             }
             return items.Length;
         }
 
-        public static int Insert<T>(T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null, bool notifyChangeEvent = false) where T : class, IEntity
+        public static int Insert<T>(T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null) where T : class, IEntity
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
-                return DoSingleInsert(dbContext, item, handlerBeforeInsert, handlerAfterInsert, notifyChangeEvent);
+                return DoSingleInsert(dbContext, item, handlerBeforeInsert, handlerAfterInsert);
             }
         }
 
-        private static int DoSingleInsert<T>(DbContext dbContext, T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null, bool notifyChangeEvent = false) where T : class, IEntity
+        private static int DoSingleInsert<T>(DbContext dbContext, T item, DMLGenericHandler<T> handlerBeforeInsert = null, DMLGenericHandler<T> handlerAfterInsert = null) where T : class, IEntity
         {
             AssureNotExists<T>(item);
-            GetCustomDataVerifyHandler(typeof(T), DMLType.Insert)?.Invoke(item, DMLType.Insert);
-            handlerBeforeInsert?.Invoke(item, DMLType.Insert);
+            GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_INSERT)?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT,dbContext);
+            handlerBeforeInsert?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT,dbContext);
             try
             {
                 dbContext.Set<T>().Add(item);
@@ -165,28 +175,17 @@ namespace Imms.Data
             }
             finally
             {
-                if (notifyChangeEvent)
-                {
-                    DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
-                    {
-                        Entity = item,
-                        DMLType = DMLType.Insert
-                    };
-
-                    ThreadPool.QueueUserWorkItem<DataChangedNotifyEvent>(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, changedEvent, false);
-                }
-
-                handlerAfterInsert?.Invoke(item, DMLType.Insert);
+                handlerAfterInsert?.Invoke(item, GlobalConstants.DML_OPERATION_INSERT,dbContext);
             }
         }
 
-        public static int Update<T>(T item, DMLGenericHandler<T> handlerBeforeUpdate = null, DMLGenericHandler<T> handlerAfterUpdate = null, bool notifyDataChanged = false) where T : class, IEntity
+        public static int Update<T>(T item, DMLGenericHandler<T> handlerBeforeUpdate = null, DMLGenericHandler<T> handlerAfterUpdate = null) where T : class, IEntity
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
                 T dbItem = AssureExists<T>(item);
-                GetCustomDataVerifyHandler(typeof(T), DMLType.Update)?.Invoke(dbItem, DMLType.Update);
-                handlerBeforeUpdate?.Invoke(item, DMLType.Update);
+                GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_UPDATE)?.Invoke(dbItem, GlobalConstants.DML_OPERATION_UPDATE,dbContext);
+                handlerBeforeUpdate?.Invoke(item, GlobalConstants.DML_OPERATION_UPDATE,dbContext);
                 try
                 {
                     EntityEntry<T> entry = dbContext.Entry<T>(dbItem);
@@ -195,31 +194,20 @@ namespace Imms.Data
                     return dbContext.SaveChanges();
                 }
                 finally
-                {
-                    if (notifyDataChanged)
-                    {
-                        DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
-                        {
-                            Entity = item,
-                            DMLType = DMLType.Update
-                        };
-
-                        ThreadPool.QueueUserWorkItem<DataChangedNotifyEvent>(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, changedEvent, false);
-                    }
-
-                    handlerAfterUpdate?.Invoke(item, DMLType.Update);
+                {                   
+                    handlerAfterUpdate?.Invoke(item, GlobalConstants.DML_OPERATION_UPDATE,dbContext);
                 }
             }
         }
+        
 
-
-        public static int Delete<T>(T item, DMLGenericHandler<T> handlerBeforeDelete = null, DMLGenericHandler<T> handlerAfterDelete = null, bool notifyChangeEvent = false) where T : class, IEntity
+        public static int Delete<T>(T item, DMLGenericHandler<T> handlerBeforeDelete = null, DMLGenericHandler<T> handlerAfterDelete = null) where T : class, IEntity
         {
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
                 T dbItem = AssureExists<T>(item);
-                GetCustomDataVerifyHandler(typeof(T), DMLType.Delete)?.Invoke(dbItem, DMLType.Delete);
-                handlerBeforeDelete?.Invoke(dbItem, DMLType.Delete);
+                GetCustomDataVerifyHandler(typeof(T), GlobalConstants.DML_OPERATION_DELETE)?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE,dbContext);
+                handlerBeforeDelete?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE,dbContext);
                 try
                 {
                     dbContext.Remove<T>(dbItem);
@@ -228,31 +216,20 @@ namespace Imms.Data
                 }
                 finally
                 {
-                    if (notifyChangeEvent)
-                    {
-                        DataChangedNotifyEvent changedEvent = new DataChangedNotifyEvent
-                        {
-                            Entity = dbItem,
-                            DMLType = DMLType.Delete
-                        };
-
-                        ThreadPool.QueueUserWorkItem<DataChangedNotifyEvent>(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, changedEvent, false);
-                    }
-
-                    handlerAfterDelete?.Invoke(dbItem, DMLType.Delete);
+                    handlerAfterDelete?.Invoke(dbItem, GlobalConstants.DML_OPERATION_DELETE,dbContext);
                 }
             }
         }
 
 
-        public static void RegisterDMLCommonHandler(Type itemType, DMLType dmlType, DMLCommonHandler handler)
+        public static void RegisterDMLCommonHandler(Type itemType, int dmlType, DMLCommonHandler handler)
         {
             Guid key = itemType.GUID;
             lock (_CustomDataVerifyHandlers)
             {
                 if (!_CustomDataVerifyHandlers.ContainsKey(key))
                 {
-                    _CustomDataVerifyHandlers.Add(key, new SortedDictionary<DMLType, DMLCommonHandler>());
+                    _CustomDataVerifyHandlers.Add(key, new SortedDictionary<int, DMLCommonHandler>());
                 }
                 else if (!_CustomDataVerifyHandlers[key].ContainsKey(dmlType))
                 {
@@ -266,7 +243,7 @@ namespace Imms.Data
         }
 
 
-        private static DMLCommonHandler GetCustomDataVerifyHandler(Type itemType, DMLType dmlType)
+        private static DMLCommonHandler GetCustomDataVerifyHandler(Type itemType, int dmlType)
         {
             Guid key = itemType.GUID;
 
@@ -279,16 +256,10 @@ namespace Imms.Data
             }
             return null;
         }
-        private static readonly SortedList<Guid, SortedDictionary<DMLType, DMLCommonHandler>> _CustomDataVerifyHandlers = new SortedList<Guid, SortedDictionary<DMLType, DMLCommonHandler>>();
+        private static readonly SortedList<Guid, SortedDictionary<int, DMLCommonHandler>> _CustomDataVerifyHandlers = new SortedList<Guid, SortedDictionary<int, DMLCommonHandler>>();
     }
 
-    public enum DMLType
-    {
-        Insert,
-        Update,
-        Delete
-    }
-
-    public delegate void DMLCommonHandler(object item, DMLType dmlType);
-    public delegate void DMLGenericHandler<T>(T item, DMLType dmlType);
+    public delegate void DBContextHandler(DbContext dbContext);
+    public delegate void DMLCommonHandler(object item, int dmlType,DbContext dbContext);
+    public delegate void DMLGenericHandler<T>(T item, int dmlType,DbContext dbContext);
 }

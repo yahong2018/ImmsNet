@@ -7,6 +7,7 @@ using Imms.Data.Domain;
 using Newtonsoft.Json;
 using Imms.Mes.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace Imms.Mes.Exchange
 {
@@ -53,13 +54,17 @@ namespace Imms.Mes.Exchange
             productionOrder.Sizes.AddRange(sizes);
             productionOrder.Measures.AddRange(measures);
 
-            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
-            {
-                dbContext.Set<BomOrder>().Add(bomOrder);
-                dbContext.Set<ProductionOrder>().Add(productionOrder);
-
-                dbContext.SaveChanges();
-            }
+            CommonDAO.Insert<ProductionOrder>(productionOrder, handlerBeforeInsert: (order, dmlType, dbContext) =>
+              {
+                  dbContext.Set<BomOrder>().Add(bomOrder);  //要同时新增BomOrder
+              }, handlerAfterInsert: (order, dmlType, dbContext) =>
+              {
+                  ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
+                  {
+                      Entity = order,
+                      DMLType = GlobalConstants.DML_OPERATION_DELETE
+                  });
+              });
         }
 
         private ProductionOrderMeasure[] ConvertMeasures(BodyMeasureDTO[] dtos)
@@ -131,7 +136,7 @@ namespace Imms.Mes.Exchange
                 PlannedStartDate = scheduleOrder.PlannedStartDate,
                 PlannedEndDate = scheduleOrder.PlannedEndDate,
                 PlannedQty = scheduleOrder.PlannedQty,
-                OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PLANNED //已计划
+                OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED //已计划
             };
 
             return productionOrder;

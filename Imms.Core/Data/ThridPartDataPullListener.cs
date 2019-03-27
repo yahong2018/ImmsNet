@@ -17,7 +17,7 @@ namespace Imms.Data
 
         public void ProcessEvent(DataChangedNotifyEvent e)
         {
-            if (e.DMLType != DMLType.Insert)
+            if (e.DMLType != GlobalConstants.DML_OPERATION_INSERT)
             {
                 return;
             }

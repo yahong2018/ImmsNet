@@ -9,8 +9,10 @@ namespace Imms.Data
 {
     public class DataChangeNotifyEventDispatcher
     {
-        protected internal void OnDateChanged(DataChangedNotifyEvent e)
+        public void OnDateChanged(object objE)
         {
+            DataChangedNotifyEvent e = (DataChangedNotifyEvent)objE;
+            
             if (e.Entity != null || e.Entity.RecordId == null)
             {
                 return;
@@ -103,7 +105,7 @@ namespace Imms.Data
     public class DataChangedNotifyEvent : IComparable
     {
         public IEntity Entity { get; set; }
-        public DMLType DMLType { get; set; }
+        public int DMLType { get; set; }
 
         public int CompareTo(object obj)
         {

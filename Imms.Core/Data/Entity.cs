@@ -5,50 +5,85 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Imms.Data
 {
-    public interface IEntity:IComparable{
-        IComparable RecordId{get;set;}
+    public interface IEntity : IComparable
+    {
+        IComparable RecordId { get; set; }
     }
 
-    public class Entity<T>:IEntity where T: IComparable
+    public class Entity<T> : IEntity where T : IComparable
     {
         public T RecordId { get; set; }
-        IComparable IEntity.RecordId { get => this.RecordId; set => this.RecordId = (T) value; }
+        IComparable IEntity.RecordId { get => this.RecordId; set => this.RecordId = (T)value; }
 
         int IComparable.CompareTo(object obj)
         {
-            if(obj==null){
+            if (obj == null)
+            {
                 return 1;
             }
 
-            if(((IEntity)this).RecordId==null){
+            if (((IEntity)this).RecordId == null)
+            {
                 return -1;
             }
 
-            if(!(obj is IEntity)){
+            if (!(obj is IEntity))
+            {
                 return -1;
             }
 
-            if(((IEntity)obj).RecordId==null){
+            if (((IEntity)obj).RecordId == null)
+            {
                 return -1;
             }
 
-            return ((IComparable) this.RecordId).CompareTo(((IEntity)obj).RecordId);
+            return ((IComparable)this.RecordId).CompareTo(((IEntity)obj).RecordId);
         }
     }
 
-    public class TrackableEntity<T> : Entity<T> where T:IComparable
+    public class TrackableEntity<T> : Entity<T> where T : IComparable
     {
         public long CreateBy { get; set; }
-        public DateTime CreateDate { get; set; }        
+        public DateTime CreateDate { get; set; }
         public long? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int OptFlag { get; set; }
     }
 
-    public class OrderEntity<T>:TrackableEntity<T> where T:IComparable
+    public class OrderEntity<T> : TrackableEntity<T> where T : IComparable
     {
         public string OrderNo { get; set; }
-        public int OrderStatus{get;set;}
+
+        private int _OrderStatus;
+        public int OrderStatus
+        {
+            get { return _OrderStatus; }
+            set
+            {
+                if (value == GlobalConstants.STATUS_ORDER_FINISHED || value == GlobalConstants.STATUS_ORDER_PLANNED)
+                {
+                    this.DirectAssign(value);
+                }
+                else
+                {
+                    this.AssignStatus(value);
+                }
+            }
+        }
+
+        public void DirectAssign(int status)
+        {
+            this.OrderStatus = status;
+        }
+
+        public void AssignStatus(int status)
+        {
+            this.OrderStatus |= status;
+        }
+        public bool ReachStatus(int status)
+        {
+            return (this.OrderStatus & status) == status;
+        }
     }
 
     public abstract class EntityConfigure<E> : IEntityTypeConfiguration<E> where E : class
@@ -73,21 +108,22 @@ namespace Imms.Data
         {
             base.InternalConfigure(builder);
 
-            builder.Property(typeof(long),"CreateBy").HasColumnName("create_by");
-            builder.Property(typeof(DateTime),"CreateDate").HasColumnName("create_date");
-            builder.Property(typeof(long?),"UpdateBy").HasColumnName("update_by");
-            builder.Property(typeof(DateTime?),"UpdateDate").HasColumnName("update_date");
-            builder.Property(typeof(int),"OptFlag").HasColumnName("opt_flag");
+            builder.Property(typeof(long), "CreateBy").HasColumnName("create_by");
+            builder.Property(typeof(DateTime), "CreateDate").HasColumnName("create_date");
+            builder.Property(typeof(long?), "UpdateBy").HasColumnName("update_by");
+            builder.Property(typeof(DateTime?), "UpdateDate").HasColumnName("update_date");
+            builder.Property(typeof(int), "OptFlag").HasColumnName("opt_flag");
         }
     }
 
-    public abstract class OrderEntityConfigure<E>:TrackableEntityConfigure<E> where E:class{
+    public abstract class OrderEntityConfigure<E> : TrackableEntityConfigure<E> where E : class
+    {
         protected override void InternalConfigure(EntityTypeBuilder<E> builder)
         {
             base.InternalConfigure(builder);
 
-            builder.Property(typeof(int),"OrderStatus").HasColumnName("order_status");
-            builder.Property(typeof(string),"OrderNo").HasColumnName("order_no").HasMaxLength(12);
+            builder.Property(typeof(int), "OrderStatus").HasColumnName("order_status");
+            builder.Property(typeof(string), "OrderNo").HasColumnName("order_no").HasMaxLength(12);
         }
     }
 }

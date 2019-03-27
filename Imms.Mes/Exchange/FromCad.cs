@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Transactions;
 
 namespace Imms.Mes.Exchange
@@ -38,22 +39,27 @@ namespace Imms.Mes.Exchange
                 this.ValidateMaterialMarkers(dto.MaterialMarkers);
             }
 
-            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            CommonDAO.UseDbContext((dbContext) =>
             {
                 this.UpdateBom(dto, productionOrder, dbContext);
                 this.AddCuttingOrders(dto, productionOrder, dbContext);
                 this.AddQualityChecks(dto, productionOrder);
                 this.AddPatternRelations(dto, productionOrder);
                 this.UpdateProducitonData(productionOrder, dbContext);
-
-                dbContext.SaveChanges();
-            }
+            }, (DbContext) =>
+            {
+                ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
+                {
+                    Entity = productionOrder,
+                    DMLType = GlobalConstants.DML_OPERATION_UPDATE
+                });
+            });
         }
 
         private void UpdateProducitonData(ProductionOrder productionOrder, DbContext dbContext)
         {
             EntityEntry<ProductionOrder> entry = dbContext.Attach<ProductionOrder>(productionOrder);
-            productionOrder.OrderStatus |= GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY;
+            productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_TECH_ALL_READY;
             entry.State = EntityState.Modified;
         }
 
@@ -199,23 +205,6 @@ namespace Imms.Mes.Exchange
             }
         }
 
-        // private static void BuildMediaBelongs(Media mediaImage, Media mediaCutFile, CuttingMarker cuttingMarker)
-        // {
-        //     MediaBelong imageBelong = new MediaBelong();
-        //     imageBelong.MediaId = mediaImage.RecordId;
-        //     imageBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER;
-        //     imageBelong.MediaType = GlobalConstants.MEDIA_TYPE_CUTTING_MARKER_CUT_MEDIA;
-        //     imageBelong.BelongToId = cuttingMarker.RecordId;
-        //     CommonDAO.Insert<MediaBelong>(imageBelong);
-
-        //     MediaBelong cutBelong = new MediaBelong();
-        //     cutBelong.MediaId = mediaCutFile.RecordId;
-        //     cutBelong.BelongToRecordType = GlobalConstants.BELONG_TO_RECORD_TYPE_CUTTING_MARKER;
-        //     cutBelong.MediaType = GlobalConstants.MEDIA_TYPE_CUTTING_MARKER_CUT_FILE;
-        //     cutBelong.BelongToId = cuttingMarker.RecordId;
-        //     CommonDAO.Insert<MediaBelong>(cutBelong);
-        // }
-
         private static CuttingMarker ConvertCuttingTable(CuttingTableDTO cuttingTable, CuttingOrder cuttingOrder)
         {
             Media mediaImage = ConvertImageMedia(cuttingTable);
@@ -262,7 +251,8 @@ namespace Imms.Mes.Exchange
                 Length = cuttingTable.Length,
                 Width = cuttingTable.Width,
                 FgMaterialId = productionOrder.FgMaterialId,
-                FabricMaterialType = materialMarker.MaterialType
+                FabricMaterialType = materialMarker.MaterialType,
+                OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE, //初始状态，还没有计划
             };
             if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD)
             {

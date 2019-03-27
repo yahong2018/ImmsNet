@@ -10,22 +10,24 @@ namespace Imms.Mes.Domain
     public partial class CuttingOrder : OrderEntity<long>
     {
         public long ProductionOrderId { get; set; }
-        public string CuttingTableNo { get; set; }
-        public string ContainerNo { get; set; }
-        public int PlannedQty { get; set; }
-        //成品料号
-        public long FgMaterialId { get; set; }
-        //面料类型
-        public string FabricMaterialType { get; set; }
-        //面料物料主键
-        public long FabricMaterialId { get; set; }
+        
+        public string CuttingTableNo { get; set; }        
+        public long FgMaterialId { get; set; }//成品料号
+        public string FabricMaterialType { get; set; }  //面料类型
+        public long FabricMaterialId { get; set; }//面料物料主键
+
         public int Plies { get; set; }
         public double Width { get; set; }
         public double Length { get; set; }
         public double CuttingEfficiency { get; set; }
-        public long? WorkStationId { get; set; }
+
+        public long PickingOrderId { get; set; } //领料单主键
+        public long WorkStationId { get; set; }
         public DateTime PlannedCuttingDate { get; set; }
         public DateTime PlannedEndDate { get; set; }
+
+        public string ContainerNo { get; set; }
+        public int PlannedQty { get; set; }
         public DateTime? ActualCuttingDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
         public int FinishedQty { get; set; }
