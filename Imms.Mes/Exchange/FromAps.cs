@@ -54,14 +54,17 @@ namespace Imms.Mes.Exchange
             productionOrder.Sizes.AddRange(sizes);
             productionOrder.Measures.AddRange(measures);
 
-            CommonDAO.Insert<ProductionOrder>(productionOrder, handlerBeforeInsert: (order, dmlType, dbContext) =>
+            CommonDAO.UseDbContext((dbContext) =>
               {
-                  dbContext.Set<BomOrder>().Add(bomOrder);  //要同时新增BomOrder
-              }, handlerAfterInsert: (order, dmlType, dbContext) =>
+                  dbContext.Set<BomOrder>().Add(bomOrder);
+                  dbContext.Set<ProductionOrder>().Add(productionOrder);
+
+                  dbContext.SaveChanges();
+              }, (dbContext) =>
               {
                   ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
                   {
-                      Entity = order,
+                      Entity = productionOrder,
                       DMLType = GlobalConstants.DML_OPERATION_DELETE
                   });
               });

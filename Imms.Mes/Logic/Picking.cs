@@ -7,6 +7,7 @@ using Imms.Mes.Domain;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Threading;
 
 namespace Imms.Mes.Logic
 {
@@ -39,11 +40,18 @@ namespace Imms.Mes.Logic
                 pickingSchedule.PickingBoms.Add(pickingBom);
             }
 
-            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+            CommonDAO.UseDbContext((dbContext) =>
             {
                 dbContext.Set<MaterialPickingSchedule>().Add(pickingSchedule);
                 dbContext.SaveChanges();
-            }
+            }, (dbContext) =>
+            {
+                ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
+                {
+                    Entity = pickingSchedule,
+                    DMLType = GlobalConstants.DML_OPERATION_INSERT
+                });
+            });
 
             return pickingSchedule;
         }
@@ -53,7 +61,8 @@ namespace Imms.Mes.Logic
         //
         public void ExecuteMaterialPicking(MaterialPickingOrder pickingOrder)
         {
-            CommonDAO.Insert<MaterialPickingOrder>(pickingOrder, handlerBeforeInsert: (x, dmlType, dbContext) =>
+            ProductionOrder productionOrder = null;            
+            CommonDAO.UseDbContext((dbContext) =>
             {
                 //更新领料计划
                 MaterialPickingSchedule schedule = pickingOrder.Schedule;
@@ -65,27 +74,40 @@ namespace Imms.Mes.Logic
                 if (schedule.PickingBoms.Where(e => (e.Qty - e.PickedQty) > 0).Count() == 0) //物料已全部领完
                 {
                     schedule.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
-                }               
+                }
 
                 //更新生产订单
-                ProductionOrder productionOrder = (
+                productionOrder = (
                     from ps in dbContext.Set<MaterialPickingSchedule>()
                     join po in dbContext.Set<ProductionOrder>() on ps.ProductionOrderId equals po.RecordId
-                    where ps.RecordId == x.PickingScheduleId
+                    where ps.RecordId == pickingOrder.PickingScheduleId
                     select po
                 ).First();
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING;
                 productionOrder.ActualStartDate = DateTime.Now;  //已开始生产
 
                 EntityEntry<MaterialPickingSchedule> scheduleEntry = dbContext.Entry<MaterialPickingSchedule>(schedule);
-                schedule.ProductionOrder = productionOrder;               
+                schedule.ProductionOrder = productionOrder;
                 scheduleEntry.State = EntityState.Modified;
 
                 EntityEntry<ProductionOrder> productionOrderEntry = dbContext.Entry<ProductionOrder>(productionOrder);
                 productionOrderEntry.State = EntityState.Modified;
 
-            },handlerAfterInsert:(x, dmlType, dbContext)=>{
+                dbContext.SaveChanges();
 
+            }, (dbContext) =>
+            {
+                ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
+                {
+                    Entity = productionOrder,
+                    DMLType = GlobalConstants.DML_OPERATION_UPDATE
+                });
+
+                ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent
+                {
+                    Entity = pickingOrder.Schedule,
+                    DMLType = GlobalConstants.DML_OPERATION_UPDATE
+                });
             });
         }
     }

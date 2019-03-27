@@ -46,6 +46,8 @@ namespace Imms.Mes.Exchange
                 this.AddQualityChecks(dto, productionOrder);
                 this.AddPatternRelations(dto, productionOrder);
                 this.UpdateProducitonData(productionOrder, dbContext);
+
+                dbContext.SaveChanges();
             }, (DbContext) =>
             {
                 ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, new DataChangedNotifyEvent

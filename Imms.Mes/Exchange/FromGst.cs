@@ -43,7 +43,7 @@ namespace Imms.Mes.Exchange
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
             {
-                using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+                CommonDAO.UseDbContext((dbContext) =>
                 {
                     routingOrder.Routings.AddRange(operationRoutings);
                     dbContext.Set<OperationRoutingOrder>().Add(routingOrder);
@@ -51,12 +51,12 @@ namespace Imms.Mes.Exchange
                     productionOrder.OrderStatus |= GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY;
                     productionOrder.RoutingOrder = routingOrder;
                     EntityEntry<ProductionOrder> entry = dbContext.Attach<ProductionOrder>(productionOrder);
-                    entry.State=EntityState.Modified;
+                    entry.State = EntityState.Modified;
 
                     dbContext.SaveChanges();
 
-                    this.SetNextAndPrevRoutingId(routingOrder.RecordId,dbContext);
-                }
+                    this.SetNextAndPrevRoutingId(routingOrder.RecordId, dbContext);
+                });
 
                 scope.Complete();
             }

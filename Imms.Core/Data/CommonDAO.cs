@@ -138,8 +138,6 @@ namespace Imms.Data
                 foreach(DBContextHandler handler in handlers){
                     handler(dbContext);
                 }
-
-                dbContext.SaveChanges();
             }
         }
 
