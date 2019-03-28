@@ -1,7 +1,7 @@
 using System;
 using Imms.Data;
-using Imms.Mes.Domain;
 using Imms.Data.Domain;
+using Imms.Mes.Production;
 
 namespace Imms.Mes.Exchange{
     public class ToGst : IDataChangeNotifyEventListener

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
 
-namespace Imms.Mes.Domain
+namespace Imms.Mes.Routing
 {
     public partial class BaseOperation : TrackableEntity<long>
     {

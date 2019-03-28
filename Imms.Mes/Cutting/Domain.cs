@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
 using Imms.Data.Domain;
+using Imms.Mes.Production;
 
-namespace Imms.Mes.Domain
+namespace Imms.Mes.Cutting
 {
     public partial class CuttingOrder : OrderEntity<long>
     {
-        public long ProductionOrderId { get; set; }
-        
-        public string CuttingTableNo { get; set; }        
+        public long ProductionOrderId { get; set; }        
+        public string CuttingTableNo { get; set; }
         public long FgMaterialId { get; set; }//成品料号
         public string FabricMaterialType { get; set; }  //面料类型
         public long FabricMaterialId { get; set; }//面料物料主键
@@ -21,17 +21,16 @@ namespace Imms.Mes.Domain
         public double Length { get; set; }
         public double CuttingEfficiency { get; set; }
 
-        public long PickingOrderId { get; set; } //领料单主键
+        public int QtyPlanned { get; set; }
         public long WorkStationId { get; set; }
-        public DateTime PlannedCuttingDate { get; set; }
-        public DateTime PlannedEndDate { get; set; }
+        public DateTime? DateStartPlanned { get; set; }
+        public DateTime? DateEndPlanned { get; set; }
 
         public string ContainerNo { get; set; }
-        public int PlannedQty { get; set; }
-        public DateTime? ActualCuttingDate { get; set; }
-        public DateTime? ActualEndDate { get; set; }
-        public int FinishedQty { get; set; }
-        public long? OperatorId { get; set; }
+        public DateTime? DateStartActual { get; set; }
+        public DateTime? DateEndActual { get; set; }
+        public int QtyFinished { get; set; }
+        public long OperatorId { get; set; }
 
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual ICollection<CuttingOrderSize> Sizes { get; set; }
@@ -43,10 +42,10 @@ namespace Imms.Mes.Domain
     {
         public long CuttingOrderId { get; set; }
         public string Size { get; set; }
-        public int LayerQty { get; set; }
-        public int PlannedQty { get; set; }
-        public int ActualQty { get; set; }
-        public int? CreatedWorkOrderQty { get; set; }
+        public int QtyLayer { get; set; }
+        public int QtyPlanned { get; set; }
+        public int QtyActual { get; set; }
+        public int? QtyCreatedWorkOrder { get; set; }
 
         public virtual CuttingOrder CuttingOrder { get; set; }
     }
@@ -113,11 +112,11 @@ namespace Imms.Mes.Domain
             base.InternalConfigure(builder);
             builder.ToTable("cutting_order_size");
 
-            builder.Property(e => e.ActualQty)
+            builder.Property(e => e.QtyActual)
                     .HasColumnName("actual_qty")
                     .HasColumnType("int(11)");
 
-            builder.Property(e => e.CreatedWorkOrderQty)
+            builder.Property(e => e.QtyCreatedWorkOrder)
                     .HasColumnName("created_work_order_qty")
                     .HasColumnType("int(11)");
 
@@ -125,11 +124,11 @@ namespace Imms.Mes.Domain
                 .HasColumnName("cutting_order_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.LayerQty)
+            builder.Property(e => e.QtyLayer)
                 .HasColumnName("layer_qty")
                 .HasColumnType("int(11)");
 
-            builder.Property(e => e.PlannedQty)
+            builder.Property(e => e.QtyPlanned)
                     .HasColumnName("planned_qty")
                     .HasColumnType("int(11)");
 
@@ -150,8 +149,8 @@ namespace Imms.Mes.Domain
 
             builder.ToTable("cutting_order");
 
-            builder.Property(e => e.ActualCuttingDate).HasColumnName("actual_cutting_date");
-            builder.Property(e => e.ActualEndDate).HasColumnName("actual_end_date");
+            builder.Property(e => e.DateStartActual).HasColumnName("date_start_actual");
+            builder.Property(e => e.DateEndActual).HasColumnName("date_end_actual");
             builder.Property(e => e.ContainerNo)
                 .HasColumnName("container_no")
                 .HasMaxLength(64)
@@ -182,7 +181,7 @@ namespace Imms.Mes.Domain
                 .HasMaxLength(64)
                 .IsUnicode(false);
 
-            builder.Property(e => e.FinishedQty)
+            builder.Property(e => e.QtyFinished)
                 .HasColumnName("finished_qty")
                 .HasColumnType("int(11)")
                 .HasDefaultValueSql("0");
@@ -195,11 +194,11 @@ namespace Imms.Mes.Domain
                 .HasColumnName("operator_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.PlannedCuttingDate).HasColumnName("planned_cutting_date");
+            builder.Property(e => e.DateStartPlanned).HasColumnName("date_start_planned");
 
-            builder.Property(e => e.PlannedEndDate).HasColumnName("planned_end_date");
+            builder.Property(e => e.DateEndPlanned).HasColumnName("date_end_planned");
 
-            builder.Property(e => e.PlannedQty)
+            builder.Property(e => e.QtyPlanned)
                 .HasColumnName("planned_qty")
                 .HasColumnType("int(11)")
                 .HasDefaultValueSql("0");

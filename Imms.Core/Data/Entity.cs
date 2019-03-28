@@ -69,26 +69,29 @@ namespace Imms.Data
             get { return _OrderStatus; }
             set
             {
-                if (value == GlobalConstants.STATUS_ORDER_FINISHED || value == GlobalConstants.STATUS_ORDER_PLANNED)
-                {
-                    this.DirectAssign(value);
-                }
-                else
-                {
-                    this.AssignStatus(value);
-                }
+                this.SetOrderStatus(value);
             }
         }
 
-        public void DirectAssign(int status)
+        protected virtual void SetOrderStatus(int status)
         {
-            this.OrderStatus = status;
+            if (status == GlobalConstants.STATUS_ORDER_FINISHED
+              || status == GlobalConstants.STATUS_ORDER_PLANNED
+            )
+            {
+                this.DirectSetStatus(status);
+            }
+            else
+            {
+                this._OrderStatus |= status;
+            }
         }
 
-        public void AssignStatus(int status)
+        protected void DirectSetStatus(int status)
         {
-            this.OrderStatus |= status;
+            this._OrderStatus = status;
         }
+
         public bool ReachStatus(int status)
         {
             return (this.OrderStatus & status) == status;

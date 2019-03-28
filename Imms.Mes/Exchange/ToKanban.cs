@@ -1,7 +1,9 @@
 using System;
 using Imms.Data;
-using Imms.Mes.Domain;
 using Imms.Data.Domain;
+using Imms.Mes.Cutting;
+using Imms.Mes.Picking;
+using Imms.Mes.Production;
 
 namespace Imms.Mes.Exchange
 {
@@ -13,8 +15,7 @@ namespace Imms.Mes.Exchange
             {
                 return new Type[] {
                     typeof(ProductionOrder),
-                    typeof(MaterialPickingSchedule),
-                    typeof(MaterialPickingOrder),
+                    typeof(PickingOrder),                    
                     typeof(CuttingOrder),
                     typeof(ProductionWorkOrder)
                 };

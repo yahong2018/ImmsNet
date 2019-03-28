@@ -118,8 +118,7 @@ namespace Imms.Data
                     Func<T, bool> filter = (x) =>
                     {
                         return x.RecordId == item.RecordId;
-                    };
-                    //Expression<Func<T>() filter = 
+                    };                    
 
                     T oldItem = dbContext.Set<T>().Where(x => x.RecordId == item.RecordId).FirstOrDefault();
                     if (oldItem == null)
@@ -142,6 +141,22 @@ namespace Imms.Data
                 {
                     handler(dbContext);
                 }
+            }
+        }
+
+        public static void UseDbContextWithTransaction(params DBContextHandler[] handlers)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
+            {
+                using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
+                {
+                    foreach (DBContextHandler handler in handlers)
+                    {
+                        handler(dbContext);
+                    }
+                }
+
+                scope.Complete();
             }
         }
 

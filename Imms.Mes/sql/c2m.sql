@@ -454,48 +454,6 @@ create table production_order_measure  (
 );
 
 
---
--- 领料计划
--- 
-create table material_picking_schedule  (
-  record_id                            bigint auto_increment        not null,
-  order_no                             varchar(12)                  not null,
-  order_status                         int                          not null,
-
-  production_order_id                  bigint                       not null,  
-    
-  create_by                            bigint                       not null,
-  create_date                          datetime                     not null,
-  update_by                            bigint                       null,
-  update_date                          datetime                     null,
-  opt_flag                             int                          not null default 0,
-
-  primary key (record_id) ,
-  index idx_material_picking_schedule_01(order_no) ,
-  index idx_material_picking_schedule_02(production_order_id)
-) ;
-
---
--- 领料计划物料清单
---
-create table material_picking_schedule_bom  (
-  record_id                            bigint                       not null auto_increment,
-  material_picking_order_id            bigint                       not null,
-  component_material_id                bigint                       not null,
-  qty                                  double(8,2)                  not null,
-  component_material_unit_id           bigint                       null,
-  picked_qty                           double(8,2)                  not null,
-
-  create_by                            bigint                       not null,
-  create_date                          datetime                     not null,
-  update_by                            bigint                       null,
-  update_date                          datetime                     null,
-  opt_flag                             int                          not null default 0,
-
-  primary key (record_id) ,
-  index idx_material_picking_schedule_bom_01(component_material_id) ,
-  index idx_material_picking_schedule_bom_02(material_picking_order_id)
-) ;
 
 --
 -- 领料单
@@ -504,8 +462,9 @@ create table material_picking_order  (
   record_id                            bigint                       not null auto_increment,
   order_no                             varchar(12)                  not null,
   order_status                         int                          not null,
-
-  picking_schedule_id                  bigint                       not null,
+  picking_bom_order_id                 bigint                       not null,
+  time_picking_planned                 datetime                     not null,
+  time_picking_actual                  datetime                     not null,
   
   container_no                         varchar(64)                  not null,
   operator_id                          bigint                       not null,

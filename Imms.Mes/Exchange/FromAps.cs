@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using Imms.Mes.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using Imms.Mes.Production;
+using Imms.Mes.MasterData;
 
 namespace Imms.Mes.Exchange
 {
@@ -130,9 +132,9 @@ namespace Imms.Mes.Exchange
                 OrderType = scheduleOrder.OrderType,
                 FgMaterial = fgMaterial,
                 WorkCenterId = workCenter.RecordId,
-                PlannedStartDate = scheduleOrder.PlannedStartDate,
-                PlannedEndDate = scheduleOrder.PlannedEndDate,
-                PlannedQty = scheduleOrder.PlannedQty,
+                DateStartPlanned = scheduleOrder.PlannedStartDate,
+                DateEndPlanned = scheduleOrder.PlannedEndDate,
+                QtyPlanned = scheduleOrder.PlannedQty,
                 OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED //已计划
             };
 

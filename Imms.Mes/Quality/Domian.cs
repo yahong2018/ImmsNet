@@ -4,8 +4,9 @@ using System.Text;
 using Imms.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Imms.Mes.Production;
 
-namespace Imms.Mes.Domain
+namespace Imms.Mes.Quality
 {
     public class QualityCheck:TrackableEntity<long>
     {

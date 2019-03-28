@@ -4,18 +4,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Imms.Data;
 using Imms.Data.Domain;
-using Imms.Mes.Domain;
 using System.Threading;
+using System;
+using Imms.Mes.Production;
 
-namespace Imms.Mes.Logic
+namespace Imms.Mes.Cutting
 {
-    public class Cutting
+    public class CuttingLogic
     {
-        public void PlanCuttingOrder(CuttingOrder cuttingOrder)
+        public void PlanCuttingOrder(long cuttingOrderId,DateTime dateStartPlanned,DateTime dateEndPlanned,long cutWorkStationId)
         {
             CommonDAO.UseDbContext((dbContext) =>
             {
+                CuttingOrder cuttingOrder = dbContext.Set<CuttingOrder>().Where(x=>x.RecordId==cuttingOrderId).First();
+                cuttingOrder.DateStartPlanned = dateStartPlanned;
+                cuttingOrder.DateEndPlanned = dateEndPlanned;
+                cuttingOrder.WorkStationId = cutWorkStationId;
                 cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
+                
                 EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
                 entry.State = EntityState.Modified;
 

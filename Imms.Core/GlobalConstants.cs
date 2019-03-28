@@ -42,12 +42,14 @@ namespace Imms
         public const int TYPE_OPERATION_ORDER_PRODUCTION = 11;
         public const int TYPE_OPERATION_ORDER_WORKORDER = 12;
         //BOM单类型
-        public const int TYPE_BOM_ORDER_PART = 1;
-        public const int TYPE_BOM_ORDER_STANDARD = 2;
-        public const int TYPE_BOM_ORDER_ORDER = 3;
-        public const int TYPE_BOM_ORDER_DESIGN = 4;
-        public const int TYPE_BOM_ORDER_PRODUCTION_ORDER = 5;
-        public const int TYPE_BOM_ORDER_WORK_ORDER = 6;
+        public const int TYPE_BOM_ORDER_PART = 10;      //部件BOM
+        public const int TYPE_BOM_ORDER_STANDARD = 20;  //标准BOM
+        public const int TYPE_BOM_ORDER_ORDER = 30;     //订单BOM
+        public const int TYPE_BOM_ORDER_DESIGN = 40;    //设计BOM
+        public const int TYPE_BOM_ORDER_PRODUCTION_ORDER = 50; //生产订单BOM
+        public const int TYPE_BOM_ORDER_PICKING_ORDER = 60;   // 领料单BOM
+        public const int TYPE_BOM_ORDER_WORK_ORDER = 70;    // 作业单BOM
+
         //物料类型
         public const string TYPE_MATERIAL_KT = "KT";
         //工位类型        
@@ -65,7 +67,7 @@ namespace Imms
         public const int STATUS_BOM_ORDER_DEPRECATED = 1;
 
         //订单通用状态
-        public const int STATUS_ORDER_INITIATE = 0;   //初始状态
+        public const int STATUS_ORDER_INITIATE = 0;   //初始状态 *
         public const int STATUS_ORDER_PLANNED = 1;    //已计划
         public const int STATUS_ORDER_FINISHED = int.MaxValue; //已完成
 
@@ -73,12 +75,18 @@ namespace Imms
         public const int STATUS_PRODUCTION_ORDER_BOM_READY = 2;   //BOM已准备
         public const int STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY = 4; //裁剪技术文件已准备
         public const int STATUS_PRODUCTION_ORDER_ROUTING_READY = 8; //生产工艺已准备
-        public const int STATUS_PRODUCTION_ORDER_TECH_ALL_READY   //生产技术已全部准备   二进制的1111，十进制15
-            = STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;
-        public const int STATUS_PRODUCTION_ORDER_PICKING = 16;    //已开始（完成）领料
-        public const int STATUS_PRODUCTION_ORDER_CUTTING = 32;    //已开始（完成）裁剪
-        public const int STATUS_PRODUCTION_ORDER_HANGING = 64;    //已开始（完成）上裁片
-        public const int STATUS_PRODUCTION_ORDER_SEWING = 128;    //已开始（完成）缝制
+        public const int STATUS_PRODUCTION_ORDER_TECH_ALL_READY   //生产技术已全部准备   二进制的1111，十进制15   *
+            = STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;  
+
+        public const int STATUS_PRODUCTION_ORDER_PICKING = 16;    //已开始领料 *
+        public const int STATUS_PRODUCTION_ORDER_PICKED = 32;    //已完成领料  *
+
+        public const int STATUS_PRODUCTION_ORDER_CUTTING = 64;    //已开始裁剪  *
+        public const int STATUS_PRODUCTION_ORDER_CUTTED = 128;    //已完成裁剪  *
+        public const int STATUS_PRODUCTION_ORDER_HANGING = 256;   //已开始上裁片  *
+        public const int STATUS_PRODUCTION_ORDER_HANGED = 512;    //已完成上裁片  *
+        public const int STATUS_PRODUCTION_ORDER_SEWING = 1024;    //已开始缝制   *
+        public const int STATUS_PRODUCTION_ORDER_SEWED = 2048;    //已完成缝制    *
 
         //多媒体
         public const string MIME_MEDIA_FORMAT_JPEG = "image/jpeg";
