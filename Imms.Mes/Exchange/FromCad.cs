@@ -264,7 +264,7 @@ namespace Imms.Mes.Exchange
             if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD)
             {
                 cuttingOrder.QtyPlanned = cuttingTable.TotalSizes.Sum(x => x.Qty);
-            }
+            }            
             else
             {
                 cuttingOrder.QtyPlanned = cuttingTable.Packages;

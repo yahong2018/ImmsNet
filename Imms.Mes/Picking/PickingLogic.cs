@@ -33,7 +33,6 @@ namespace Imms.Mes.Picking
                 bom.RecordId = 0;
                 bom.BomOrder = pickingBomOrder;
             }
-            productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING;
 
             return pickingBomOrder;
         }
@@ -52,10 +51,37 @@ namespace Imms.Mes.Picking
             pickingOrder.Priority = productionOrder.Priority;
             pickingOrder.PickingBomOrder = pickingBomOrder;
 
-            pickingOrder.TimePickingPlanned = DateTime.Now;
+            pickingOrder.TimeStartPlanned = DateTime.Now;
+            pickingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认为30分钟内领料完成，以后要根据工序来配置
             pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
-         
+
             return pickingOrder;
+        }
+
+        //
+        //物料已准备，通知领料人去领料
+        //
+        public void PrepareMaterial(PickingOrder pickingOrder)
+        {
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                //状态更改
+                pickingOrder.OrderStatus = GlobalConstants.STATUS_PICKING_ORDER_PREPARED;
+                pickingOrder.TimeStartActual = DateTime.Now;
+                ProductionOrder productionOrder = dbContext.Set<ProductionOrder>().Where(x => x.RecordId == pickingOrder.ProductionOrderId).Single();
+                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING;
+
+                //数据保存
+                EntityEntry<PickingOrder> pickingEntry = dbContext.Attach<PickingOrder>(pickingOrder);
+                pickingEntry.State = EntityState.Modified;
+                EntityEntry<ProductionOrder> productionOrderEntry = dbContext.Attach<ProductionOrder>(productionOrder);
+                productionOrderEntry.State = EntityState.Modified;
+                dbContext.SaveChanges();
+
+                //通知更改
+                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
+                DataChangedNotifier.Notify(pickingOrder, GlobalConstants.DML_OPERATION_UPDATE);
+            });
         }
 
         //
@@ -74,7 +100,8 @@ namespace Imms.Mes.Picking
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;
                 productionOrder.DateStartActual = DateTime.Now;  //已开始生产
 
-                pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;  //领料已完成               
+                pickingOrder.TimeEndActual = DateTime.Now;
+                pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;  //领料已完成
 
                 //数据保存                
                 EntityEntry<PickingOrder> pickingOrderEntry = dbContext.Entry<PickingOrder>(pickingOrder);
@@ -85,7 +112,7 @@ namespace Imms.Mes.Picking
 
                 //通知更改
                 DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
-                DataChangedNotifier.Notify(pickingOrder, GlobalConstants.DML_OPERATION_UPDATE);
+                DataChangedNotifier.Notify(pickingOrder, GlobalConstants.DML_OPERATION_UPDATE);   //可以进行安排裁剪单了
             });
         }
     }

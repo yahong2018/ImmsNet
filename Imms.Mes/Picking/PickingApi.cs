@@ -5,13 +5,35 @@ using System.Linq;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
 using Imms.Mes.MasterData;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Imms.Mes.Picking
 {
-    public class PickingApi
+    [Route("Imms/Mes/Picking")]
+    public class PickingApi : Controller
     {
         public PickingLogic PickingLogic { get; set; }
 
+        [HttpGet("MaterialToPreparePicking")]
+        public PickingOrder[] GetMaterialToPreparePicking()
+        {
+            return CommonDAO.GetAllByFilter<PickingOrder>(x => x.OrderStatus == GlobalConstants.STATUS_ORDER_PLANNED).ToArray();
+        }
+
+        [HttpPost("MaterialPrepared/{pickingOrderNo}")]
+        public void MaterialPrepared(string pickingOrderNo)
+        {
+            PickingOrder pickingOrder = CommonDAO.GetOneByFilter<PickingOrder>(x => x.OrderNo == pickingOrderNo);
+            PickingLogic.PrepareMaterial(pickingOrder);
+        }
+
+        [HttpGet("MaterialToPicking")]
+        public PickingOrder[] GetMaterialToPicking()
+        {
+            return CommonDAO.GetAllByFilter<PickingOrder>(x => x.OrderStatus == GlobalConstants.STATUS_PICKING_ORDER_PREPARED).ToArray();
+        }
+
+        [HttpPost("ReportMaterialPicked")]
         public void ReportMaterialPicked(PickingReportDTO pickingReport)
         {
             PickingOrder pickingOrder = pickingReport.ToPickingOrder();
@@ -28,10 +50,9 @@ namespace Imms.Mes.Picking
     public class PickingReportDTO
     {
         public string PickingOrderNo { get; set; }
-        
+
         public string ContainerNo { get; set; }
-        public string OperatorCode { get; set; }
-        public DateTime OperationTime { get; set; }
+        public string OperatorCode { get; set; }        
         public PickedItemDTO[] PickedDetails { get; set; }
 
         public PickingOrder ToPickingOrder()
@@ -43,8 +64,7 @@ namespace Imms.Mes.Picking
                 result.ContainerNo = this.ContainerNo;
                 SystemUser operatorUser = dbContext.Set<SystemUser>().Where(x => x.UserCode == this.OperatorCode).Single();
                 result.OperatorId = operatorUser.RecordId;
-                result.TimePickingActual = this.OperationTime;
-
+                
                 foreach (PickedItemDTO detail in this.PickedDetails)
                 {
                     PickingOrderItem item = new PickingOrderItem();

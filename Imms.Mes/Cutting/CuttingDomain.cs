@@ -23,12 +23,12 @@ namespace Imms.Mes.Cutting
 
         public int QtyPlanned { get; set; }
         public long WorkStationId { get; set; }
-        public DateTime? DateStartPlanned { get; set; }
-        public DateTime? DateEndPlanned { get; set; }
+        public DateTime? TimetartPlanned { get; set; }
+        public DateTime? TimeEndPlanned { get; set; }
 
         public string ContainerNo { get; set; }
-        public DateTime? DateStartActual { get; set; }
-        public DateTime? DateEndActual { get; set; }
+        public DateTime? TimeStartActual { get; set; }
+        public DateTime? TimeEndActual { get; set; }
         public int QtyFinished { get; set; }
         public long OperatorId { get; set; }
 
@@ -149,8 +149,8 @@ namespace Imms.Mes.Cutting
 
             builder.ToTable("cutting_order");
 
-            builder.Property(e => e.DateStartActual).HasColumnName("date_start_actual");
-            builder.Property(e => e.DateEndActual).HasColumnName("date_end_actual");
+            builder.Property(e => e.TimeStartActual).HasColumnName("date_start_actual");
+            builder.Property(e => e.TimeEndActual).HasColumnName("date_end_actual");
             builder.Property(e => e.ContainerNo)
                 .HasColumnName("container_no")
                 .HasMaxLength(64)
@@ -194,9 +194,9 @@ namespace Imms.Mes.Cutting
                 .HasColumnName("operator_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.DateStartPlanned).HasColumnName("date_start_planned");
+            builder.Property(e => e.TimetartPlanned).HasColumnName("date_start_planned");
 
-            builder.Property(e => e.DateEndPlanned).HasColumnName("date_end_planned");
+            builder.Property(e => e.TimeEndPlanned).HasColumnName("date_end_planned");
 
             builder.Property(e => e.QtyPlanned)
                 .HasColumnName("planned_qty")

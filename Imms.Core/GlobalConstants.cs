@@ -69,24 +69,27 @@ namespace Imms
         //订单通用状态
         public const int STATUS_ORDER_INITIATE = 0;   //初始状态 *
         public const int STATUS_ORDER_PLANNED = 1;    //已计划
-        public const int STATUS_ORDER_FINISHED = int.MaxValue; //已完成
+        public const int STATUS_ORDER_FINISHED = int.MaxValue; //已完成   
 
         //生产订单状态
         public const int STATUS_PRODUCTION_ORDER_BOM_READY = 2;   //BOM已准备
         public const int STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY = 4; //裁剪技术文件已准备
         public const int STATUS_PRODUCTION_ORDER_ROUTING_READY = 8; //生产工艺已准备
         public const int STATUS_PRODUCTION_ORDER_TECH_ALL_READY   //生产技术已全部准备   二进制的1111，十进制15   *
-            = STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;  
-
+            = STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;
         public const int STATUS_PRODUCTION_ORDER_PICKING = 16;    //已开始领料 *
         public const int STATUS_PRODUCTION_ORDER_PICKED = 32;    //已完成领料  *
-
         public const int STATUS_PRODUCTION_ORDER_CUTTING = 64;    //已开始裁剪  *
         public const int STATUS_PRODUCTION_ORDER_CUTTED = 128;    //已完成裁剪  *
         public const int STATUS_PRODUCTION_ORDER_HANGING = 256;   //已开始上裁片  *
         public const int STATUS_PRODUCTION_ORDER_HANGED = 512;    //已完成上裁片  *
         public const int STATUS_PRODUCTION_ORDER_SEWING = 1024;    //已开始缝制   *
         public const int STATUS_PRODUCTION_ORDER_SEWED = 2048;    //已完成缝制    *
+
+        //领料单
+        public const int STATUS_PICKING_ORDER_PREPARED = STATUS_PRODUCTION_ORDER_PICKING; //物料已准备好 | 开始领料        
+        //裁剪单
+        public const int STATUS_CUTTING_ORDER_CUTTING = STATUS_PRODUCTION_ORDER_CUTTING;  //开始裁剪
 
         //多媒体
         public const string MIME_MEDIA_FORMAT_JPEG = "image/jpeg";

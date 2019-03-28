@@ -14,12 +14,16 @@ namespace Imms.Mes.Picking
         public long ProductionOrderId { get; set; }
         public long PickingBomOrderId { get; set; }
         public int Priority { get; set; }
-        
-        public DateTime TimePickingPlanned { get; set; }
+
+        public DateTime TimeStartPlanned { get; set; }
+        public DateTime TimeEndPlanned { get; set; }
+
+        public DateTime? TimeStartActual { get; set; }
+        public DateTime? TimeEndActual { get; set; }
 
         public string ContainerNo { get; set; }
-        public long OperatorId { get; set; }        
-        public DateTime? TimePickingActual { get; set; }
+        public long OperatorId { get; set; }
+
 
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual BomOrder PickingBomOrder { get; set; }
