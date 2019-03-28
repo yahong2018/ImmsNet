@@ -24,7 +24,6 @@ namespace Imms.Mes.Picking
         public string ContainerNo { get; set; }
         public long OperatorId { get; set; }
 
-
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual BomOrder PickingBomOrder { get; set; }
         public virtual List<PickingOrderItem> PickedItems { get; set; } = new List<PickingOrderItem>();

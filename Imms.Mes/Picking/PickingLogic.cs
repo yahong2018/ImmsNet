@@ -77,10 +77,6 @@ namespace Imms.Mes.Picking
                 EntityEntry<ProductionOrder> productionOrderEntry = dbContext.Attach<ProductionOrder>(productionOrder);
                 productionOrderEntry.State = EntityState.Modified;
                 dbContext.SaveChanges();
-
-                //通知更改
-                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
-                DataChangedNotifier.Notify(pickingOrder, GlobalConstants.DML_OPERATION_UPDATE);
             });
         }
 
@@ -97,11 +93,9 @@ namespace Imms.Mes.Picking
                     where po.RecordId == pickingOrder.ProductionOrderId
                     select po
                 ).First();
-                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;
-                productionOrder.DateStartActual = DateTime.Now;  //已开始生产
-
+                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;                
                 pickingOrder.TimeEndActual = DateTime.Now;
-                pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;  //领料已完成
+                pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;  //领料已完成,但这个时候并不等于开始生产
 
                 //数据保存                
                 EntityEntry<PickingOrder> pickingOrderEntry = dbContext.Entry<PickingOrder>(pickingOrder);
@@ -109,10 +103,6 @@ namespace Imms.Mes.Picking
                 EntityEntry<ProductionOrder> productionOrderEntry = dbContext.Entry<ProductionOrder>(productionOrder);
                 productionOrderEntry.State = EntityState.Modified;
                 dbContext.SaveChanges();
-
-                //通知更改
-                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
-                DataChangedNotifier.Notify(pickingOrder, GlobalConstants.DML_OPERATION_UPDATE);   //可以进行安排裁剪单了
             });
         }
     }

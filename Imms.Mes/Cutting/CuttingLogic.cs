@@ -7,26 +7,25 @@ using Imms.Data.Domain;
 using System.Threading;
 using System;
 using Imms.Mes.Production;
+using Imms.Mes.MasterData;
 
 namespace Imms.Mes.Cutting
 {
     public class CuttingLogic
     {
-        public void PlanCuttingOrder(long cuttingOrderId, long cutWorkStationId)
+        public void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation)
         {
             CommonDAO.UseDbContext((dbContext) =>
-            {
-                CuttingOrder cuttingOrder = dbContext.Set<CuttingOrder>().Where(x => x.RecordId == cuttingOrderId).First();
+            {                
                 cuttingOrder.TimetartPlanned = DateTime.Now;
                 cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成
-                cuttingOrder.WorkStationId = cutWorkStationId;
+                cuttingOrder.WorkStationId = cuttingWorkStation.RecordId;
                 cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
 
                 EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
                 entry.State = EntityState.Modified;
 
-                dbContext.SaveChanges();
-                DataChangedNotifier.Notify(cuttingOrder, GlobalConstants.DML_OPERATION_UPDATE);
+                dbContext.SaveChanges();                
             });
         }
 
@@ -39,14 +38,13 @@ namespace Imms.Mes.Cutting
                 EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
                 entry.State = EntityState.Modified;
 
-                ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
+                ProductionOrder productionOrder = cuttingOrder.ProductionOrder;                
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING;
+                productionOrder.DateStartActual = DateTime.Now;   //开始裁剪表示已开始生产，此时，这个单据不可以被删除。
                 EntityEntry<ProductionOrder> entryProductionOrder = dbContext.Attach<ProductionOrder>(productionOrder);
                 entryProductionOrder.State = EntityState.Modified;
 
                 dbContext.SaveChanges();
-                DataChangedNotifier.Notify(cuttingOrder, GlobalConstants.DML_OPERATION_UPDATE);
-                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
             });
         }
 
@@ -60,13 +58,13 @@ namespace Imms.Mes.Cutting
                 entry.State = EntityState.Modified;
 
                 ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
-                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED;
+                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED;                   
+                int qtyActual = cuttingOrder.Sizes.Sum(x=>x.QtyActual);
+                productionOrder.QtyActual = qtyActual;   //实际生产量等于实际的裁剪量
                 EntityEntry<ProductionOrder> entryProductionOrder = dbContext.Attach<ProductionOrder>(productionOrder);
                 entryProductionOrder.State = EntityState.Modified;
 
                 dbContext.SaveChanges();
-                DataChangedNotifier.Notify(cuttingOrder, GlobalConstants.DML_OPERATION_UPDATE);
-                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
             });
         }
     }

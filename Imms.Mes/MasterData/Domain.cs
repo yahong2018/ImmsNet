@@ -59,8 +59,6 @@ namespace Imms.Mes.MasterData
         public string WorkStationCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
         [NotMapped]
         public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
-
-
     }   
 
     public partial class WorkstationCheckIn : Entity<long>

@@ -13,16 +13,16 @@ namespace Imms.Data
 {
     public class ThridPartDataPullListener : IDataChangeNotifyEventListener
     {
-        public Type[] ListenTypes { get { return new Type[] { typeof(ThirdPartDataExchange) }; } set => throw new NotImplementedException(); }
+        Type[] IDataChangeNotifyEventListener.ListenTypes { get { return new Type[] { typeof(ThirdPartDataExchangeTask) }; } set => throw new NotImplementedException(); }
 
-        public void ProcessEvent(DataChangedNotifyEvent e)
+        void IDataChangeNotifyEventListener.ProcessEvent(DataChangedNotifyEvent e)
         {
             if (e.DMLType != GlobalConstants.DML_OPERATION_INSERT)
             {
                 return;
             }
 
-            ThirdPartDataExchange log = (ThirdPartDataExchange)e.Entity;
+            ThirdPartDataExchangeTask log = (ThirdPartDataExchangeTask)e.Entity;
             foreach (IThirdPartDataPullLogic logic in this.logics)
             {
                 bool isMatch = (from r in logic.ExchangeRules where r == log.ExchangeRuleCode select r).Count() > 0;
@@ -32,7 +32,8 @@ namespace Imms.Data
                     {
                         throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, $"指定的ExchangeRule:{log.ExchangeRuleCode}不被支持.");
                     }
-                    if(!logic.Handlers.ContainsKey(log.ExchangeRuleCode)){
+                    if (!logic.Handlers.ContainsKey(log.ExchangeRuleCode))
+                    {
                         throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, $"指定的ExchangeRule:{log.ExchangeRuleCode}无处理程序.");
                     }
 
@@ -54,6 +55,18 @@ namespace Imms.Data
             }
         }
 
+        IEntity[] IDataChangeNotifyEventListener.LoadUnProcessedItemFromDb()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RegisterPullLogic(IThirdPartDataPullLogic logic)
+        {
+            lock (this.logics)
+            {
+                logics.Add(logic);
+            }
+        }
         private List<IThirdPartDataPullLogic> logics = new List<IThirdPartDataPullLogic>();
     }
 

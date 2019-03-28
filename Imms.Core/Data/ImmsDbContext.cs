@@ -34,6 +34,23 @@ namespace Imms.Data
                     trackableEntity.UpdateDate = DateTime.Now;
                 }
             }
+            if (e.NewState == EntityState.Added || e.NewState == EntityState.Deleted || e.NewState == EntityState.Modified)
+            {
+                int dmlType = 0;
+                if (e.NewState == EntityState.Added)
+                {
+                    dmlType = GlobalConstants.DML_OPERATION_INSERT;
+                }
+                else if (e.NewState == EntityState.Deleted)
+                {
+                    dmlType = GlobalConstants.DML_OPERATION_DELETE;
+                }
+                else if (e.NewState == EntityState.Modified)
+                {
+                    dmlType = GlobalConstants.DML_OPERATION_UPDATE;
+                }
+                DataChangedNotifier.Notify((e.Entry.Entity as IEntity), dmlType);
+            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -76,7 +93,7 @@ namespace Imms.Data
         public virtual DbSet<WorkOrganizationUnit> WorkOrganizationUnits { get; set; }
         public virtual DbSet<SystemApp> SystemApps { get; set; }
         public virtual DbSet<ThirdPartDataExcahngeRule> ThirdPartDataExcahngeRules { get; set; }
-        public virtual DbSet<ThirdPartDataExchange> ThirdPartDataExchanges { get; set; }
+        public virtual DbSet<ThirdPartDataExchangeTask> ThirdPartDataExchanges { get; set; }
         public virtual DbSet<Media> Medias { get; set; }
         public virtual DbSet<MediaBelong> MediaBelongs { get; set; }
     }

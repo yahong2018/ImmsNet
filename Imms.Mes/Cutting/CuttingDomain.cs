@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Production;
+using Imms.Mes.Picking;
 
 namespace Imms.Mes.Cutting
 {
     public partial class CuttingOrder : OrderEntity<long>
     {
-        public long ProductionOrderId { get; set; }        
+        public long ProductionOrderId { get; set; }
+        public long PickingOrderId { get; set; }
         public string CuttingTableNo { get; set; }
         public long FgMaterialId { get; set; }//成品料号
         public string FabricMaterialType { get; set; }  //面料类型
@@ -33,6 +35,7 @@ namespace Imms.Mes.Cutting
         public long OperatorId { get; set; }
 
         public virtual ProductionOrder ProductionOrder { get; set; }
+        public virtual PickingOrder PickingOrder { get; set; }
         public virtual ICollection<CuttingOrderSize> Sizes { get; set; }
         public virtual ICollection<CuttingMarker> Markers { get; set; }
         public virtual ICollection<CuttingOrderSpreadPly> SpreadPlies { get; set; }
@@ -194,9 +197,8 @@ namespace Imms.Mes.Cutting
                 .HasColumnName("operator_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.TimetartPlanned).HasColumnName("date_start_planned");
-
-            builder.Property(e => e.TimeEndPlanned).HasColumnName("date_end_planned");
+            builder.Property(e => e.TimetartPlanned).HasColumnName("time_start_planned");
+            builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
 
             builder.Property(e => e.QtyPlanned)
                 .HasColumnName("planned_qty")
@@ -211,6 +213,10 @@ namespace Imms.Mes.Cutting
                 .HasColumnName("production_order_id")
                 .HasColumnType("bigint(20)");
 
+            builder.Property(e => e.PickingOrderId)
+                            .HasColumnName("picking_order_id")
+                            .HasColumnType("bigint(20)");
+
             builder.Property(e => e.Width)
                     .HasColumnName("width")
                     .HasColumnType("double(8,4)");
@@ -220,6 +226,7 @@ namespace Imms.Mes.Cutting
                 .HasColumnType("bigint(20)");
 
             builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
+            builder.HasOne(e => e.PickingOrder).WithMany().HasForeignKey(e => e.PickingOrderId);
             builder.HasMany(e => e.Sizes).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
             builder.HasMany(e => e.Markers).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
             builder.HasMany(e => e.SpreadPlies).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);

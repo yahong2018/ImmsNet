@@ -61,8 +61,6 @@ namespace Imms.Mes.Exchange
                   dbContext.Set<BomOrder>().Add(bomOrder);
                   dbContext.Set<ProductionOrder>().Add(productionOrder);
                   dbContext.SaveChanges();
-
-                  DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_INSERT);
               });
         }
 

@@ -16,9 +16,14 @@ namespace Imms.Mes.Exchange
      */
     public class ToCad : IDataChangeNotifyEventListener
     {
-        public Type[] ListenTypes { get { return new Type[] { typeof(ProductionOrder) }; } set => throw new NotImplementedException(); }
+        Type[] IDataChangeNotifyEventListener.ListenTypes { get { return new Type[] { typeof(ProductionOrder) }; } set => throw new NotImplementedException(); }        
 
-        public void ProcessEvent(DataChangedNotifyEvent e)
+        IEntity[] IDataChangeNotifyEventListener.LoadUnProcessedItemFromDb()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDataChangeNotifyEventListener.ProcessEvent(DataChangedNotifyEvent e)
         {
             throw new NotImplementedException();
         }

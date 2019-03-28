@@ -9,13 +9,17 @@ namespace Imms.Data
 {
     public class DataChangedNotifier
     {
-        public static void Notify(DataChangedNotifyEvent e)
+        internal static void Notify(DataChangedNotifyEvent e)
         {
             ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, e);
         }
 
-        public static void Notify(IEntity item, int dmlType)
+        internal static void Notify(IEntity item, int dmlType)
         {
+            //
+            //TODO:在这里实现一次过滤，不需要的进行监控的数据，直接丢弃。
+            //
+            
             DataChangedNotifyEvent e = new DataChangedNotifyEvent()
             {
                 Entity = item,
@@ -24,6 +28,8 @@ namespace Imms.Data
 
             ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, e);
         }
+
+        private static readonly SortedDictionary<Guid, DateTime> DataChangedLastTime = new SortedDictionary<Guid, DateTime>();
     }
 
     public class DataChangeNotifyEventDispatcher
@@ -58,8 +64,8 @@ namespace Imms.Data
                 return;
             }
             this.teriminated = false;
-            this.thread = new Thread(this.Dispatch);
-            this.thread.Start();
+            this.dispatcherThread = new Thread(this.Dispatch);
+            this.dispatcherThread.Start();
             this.waitLock.Reset();
         }
 
@@ -98,7 +104,7 @@ namespace Imms.Data
 
         private readonly List<DataChangedNotifyEvent> changedEvents = new List<DataChangedNotifyEvent>();
         public bool teriminated { get; private set; }
-        private Thread thread;
+        private Thread dispatcherThread;
         private AutoResetEvent waitLock = new AutoResetEvent(true);
         private readonly List<IDataChangeNotifyEventListener> listeners = new List<IDataChangeNotifyEventListener>();
 
@@ -151,5 +157,6 @@ namespace Imms.Data
     {
         Type[] ListenTypes { get; set; }
         void ProcessEvent(DataChangedNotifyEvent e);
+        IEntity[] LoadUnProcessedItemFromDb();
     }
 }

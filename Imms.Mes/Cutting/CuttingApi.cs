@@ -24,7 +24,7 @@ namespace Imms.Mes.Cutting
             return result;
         }
 
-        [HttpPost("Start/{cutingOrderNo}&{operatorCode}")]
+        [HttpPost("StartCutting/{cutingOrderNo}&{operatorCode}")]
         public void StartCutting(string cuttingOrderNo, string operatorCode)
         {
             CuttingOrder cuttingOrder = CommonDAO.AssureExistsByFilter<CuttingOrder>(x => x.OrderNo == cuttingOrderNo);
@@ -34,8 +34,8 @@ namespace Imms.Mes.Cutting
             CuttingLogic.CuttingOrderStarted(cuttingOrder);
         }
 
-        [HttpPost("CutFinished")]
-        public void CutFinished(CutingReportDTO report)
+        [HttpPost("CuttingFinished")]
+        public void CuttingFinished(CutingReportDTO report)
         {
             CuttingOrder cuttingOrder = report.ToCuttingOrder();
             this.CuttingLogic.CuttinngOrderFinished(cuttingOrder);

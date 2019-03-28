@@ -19,7 +19,7 @@ namespace Imms.Mes.Exchange
 {
     public class FromCad : IThirdPartDataPullLogic
     {
-        public PickingLogic PickingLogic {get;set;}
+        public PickingLogic PickingLogic { get; set; }
 
         public string[] ExchangeRules
         {
@@ -49,15 +49,17 @@ namespace Imms.Mes.Exchange
             CommonDAO.UseDbContext((dbContext) =>
             {
                 PickingOrder pickingOrder = this.CreatePickingOrder(dto, productionOrder, dbContext);
-                this.AddCuttingOrders(dto, productionOrder, dbContext);
+                List<CuttingOrder> cuttingOrders = this.AddCuttingOrders(dto, productionOrder, dbContext);
+                foreach (CuttingOrder cuttingOrder in cuttingOrders)
+                {
+                    cuttingOrder.PickingOrder = pickingOrder;
+                }
+
                 this.AddQualityChecks(dto, productionOrder);
                 this.AddPatternRelations(dto, productionOrder);
                 this.UpdateProducitonData(productionOrder, dbContext);
 
-                dbContext.SaveChanges();
-
-                DataChangedNotifier.Notify(productionOrder, GlobalConstants.DML_OPERATION_UPDATE);
-                DataChangedNotifier.Notify(pickingOrder, GlobalConstants.DML_OPERATION_INSERT);
+                dbContext.SaveChanges();                
             });
         }
 
@@ -83,22 +85,23 @@ namespace Imms.Mes.Exchange
             }
         }
 
-        private void AddCuttingOrders(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
+        private List<CuttingOrder> AddCuttingOrders(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
         {
             List<CuttingOrder> cuttingOrders = this.CreateCuttingOrders(dto, productionOrder);
             foreach (CuttingOrder cuttingOrder in cuttingOrders)
             {
                 dbContext.Set<CuttingOrder>().Add(cuttingOrder);
             }
+            return cuttingOrders;
         }
 
         private PickingOrder CreatePickingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
         {
             List<Bom> boms = this.GetMaterialPickingBoms(dto, productionOrder);
-            BomOrder pickingBomOrder = PickingLogic.CreatePickingBomOrder(productionOrder,boms);            
+            BomOrder pickingBomOrder = PickingLogic.CreatePickingBomOrder(productionOrder, boms);
             dbContext.Set<BomOrder>().Add(pickingBomOrder);
 
-            PickingOrder pickingOrder = PickingLogic.CreatePickingOrder(productionOrder,pickingBomOrder);
+            PickingOrder pickingOrder = PickingLogic.CreatePickingOrder(productionOrder, pickingBomOrder);
             dbContext.Set<PickingOrder>().Add(pickingOrder);
 
             return pickingOrder;
@@ -264,7 +267,7 @@ namespace Imms.Mes.Exchange
             if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD)
             {
                 cuttingOrder.QtyPlanned = cuttingTable.TotalSizes.Sum(x => x.Qty);
-            }            
+            }
             else
             {
                 cuttingOrder.QtyPlanned = cuttingTable.Packages;
@@ -415,7 +418,7 @@ namespace Imms.Mes.Exchange
 
     public class ProductionOrderTailerDTO
     {
-        public string ProductionOrderNo { get; set; }        
+        public string ProductionOrderNo { get; set; }
         public string MaterialNo { get; set; }
         //
         //注意：CAD返回的只是面料的用量，辅料的用量需要根据层数、件数来计算

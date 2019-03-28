@@ -30,6 +30,9 @@ namespace Imms
         public const string TYPE_ORG_WORK_CENTER = "WORK_CENTER";
         public const string TYPE_ORG_WORK_LINE = "WORK_LINE";
         public const string TYPE_ORG_WORK_STATETION = "WORK_STATION";
+        //组织架构参数
+        public const string TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE = "WORK_STATION_TYPE";  //参数为工位类型
+
         //编码类型
         public const string TYPE_CODE_TABLE_MATERIAL_UNIT = "MATERIAL_UNIT";
         public const string TYPE_CODE_TABLE_SIZE = "SIZE";
