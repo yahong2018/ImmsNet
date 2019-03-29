@@ -100,12 +100,34 @@ namespace Imms.Mes.WorkFlow
             CuttingOrder cuttingOrder = e.Entity as CuttingOrder;
 
             //裁剪完成，安排缝制作业单
-            if (cuttingOrder == null || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
+            if (cuttingOrder == null
+                || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED
+                || cuttingOrder.CuttingTableNo == GlobalConstants.TYPE_MATERIAL_KT //KT床次   
+            )
             {
                 return;
             }
 
-            
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                long materialId = dbContext.Set<Bom>().Where(x =>
+                    x.IsMainFabric &&
+                    x.BomOrderId == (dbContext.Set<PickingOrder>()
+                        .Where(p => p.RecordId == cuttingOrder.PickingOrderId)
+                        .Select(p => p.PickingBomOrderId)
+                        .Single()
+                    )
+                ).Select(b => b.ComponentMaterialId)
+                .Single();
+
+                if (cuttingOrder.FabricMaterialId != materialId)//非主面料
+                {
+                    return;
+                }
+
+                //创建缝制作业单
+                
+            });
         }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();

@@ -12,7 +12,7 @@ namespace Imms.Mes.Picking
     public partial class PickingOrder : OrderEntity<long>
     {
         public long ProductionOrderId { get; set; }
-        public long PickingBomOrderId { get; set; }
+        public long PickingBomOrderId { get; set; }//如果是手工建领料单，则需要手工建一个领料的BomOrder和Boms
         public int Priority { get; set; }
 
         public DateTime TimeStartPlanned { get; set; }
@@ -51,7 +51,7 @@ namespace Imms.Mes.Picking
             builder.Property(e => e.PickedQty).HasColumnName("picked_qty").HasColumnType("double(10,4)");
 
             builder.HasOne(e => e.Bom).WithMany().HasForeignKey(e => e.BomId).IsRequired();
-            builder.HasOne(e => e.PickingOrder).WithMany(e => e.PickedItems).HasForeignKey(e => e.PickingOrderId).IsRequired();
+            builder.HasOne(e => e.PickingOrder).WithMany(e => e.PickedItems).HasForeignKey(e => e.PickingOrderId);
         }
     }
 
@@ -68,8 +68,8 @@ namespace Imms.Mes.Picking
             builder.Property(e => e.ContainerNo).IsRequired().HasColumnName("container_no").HasMaxLength(64).IsUnicode(false);
             builder.Property(e => e.OperatorId).HasColumnName("operator_id");
 
-            builder.HasOne(e => e.PickingBomOrder).WithMany().HasForeignKey(e => e.PickingBomOrderId).IsRequired();
-            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId).IsRequired();
+            builder.HasOne(e => e.PickingBomOrder).WithMany().HasForeignKey(e => e.PickingBomOrderId);
+            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
         }
     }
 }
