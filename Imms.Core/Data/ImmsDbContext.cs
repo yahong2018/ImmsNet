@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -10,7 +11,6 @@ namespace Imms.Data
     {
         public ImmsDbContext()
         {
-            this.ChangeTracker.StateChanged += StateChanged;
         }
 
         public ImmsDbContext(DbContextOptions options)
@@ -18,39 +18,51 @@ namespace Imms.Data
         {
         }
 
-        private void StateChanged(object sender, EntityStateChangedEventArgs e)
+        public override int SaveChanges()
         {
-            if (e.Entry.Entity is ITrackableEntity)
+            ChangeTracker.DetectChanges();
+
+            var modifiedEntities = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added || x.State == EntityState.Deleted);
+            foreach (var e in modifiedEntities)
             {
-                ITrackableEntity trackableEntity = e.Entry.Entity as ITrackableEntity;
-                if (e.NewState == EntityState.Added)
+                IEntity entity = (e as IEntity);
+                if (entity == null)
                 {
-                    trackableEntity.CreateBy = GlobalConstants.GetCurrentUser().RecordId;
-                    trackableEntity.CreateDate = DateTime.Now;
+                    continue;
                 }
-                else if (e.NewState == EntityState.Modified)
+
+                if (entity is ITrackableEntity)
                 {
-                    trackableEntity.UpdateBy = GlobalConstants.GetCurrentUser().RecordId;
-                    trackableEntity.UpdateDate = DateTime.Now;
+                    ITrackableEntity trackableEntity = entity as ITrackableEntity;
+                    if (e.State == EntityState.Added)
+                    {
+                        trackableEntity.CreateBy = GlobalConstants.GetCurrentUser().RecordId;
+                        trackableEntity.CreateDate = DateTime.Now;
+                    }
+                    else if (e.State == EntityState.Modified)
+                    {
+                        trackableEntity.UpdateBy = GlobalConstants.GetCurrentUser().RecordId;
+                        trackableEntity.UpdateDate = DateTime.Now;
+                    }
                 }
-            }
-            if (e.NewState == EntityState.Added || e.NewState == EntityState.Deleted || e.NewState == EntityState.Modified)
-            {
+
                 int dmlType = 0;
-                if (e.NewState == EntityState.Added)
+                if (e.State == EntityState.Added)
                 {
                     dmlType = GlobalConstants.DML_OPERATION_INSERT;
                 }
-                else if (e.NewState == EntityState.Deleted)
+                else if (e.State == EntityState.Deleted)
                 {
                     dmlType = GlobalConstants.DML_OPERATION_DELETE;
                 }
-                else if (e.NewState == EntityState.Modified)
+                else if (e.State == EntityState.Modified)
                 {
                     dmlType = GlobalConstants.DML_OPERATION_UPDATE;
                 }
-                DataChangedNotifier.Notify((e.Entry.Entity as IEntity), dmlType);
+                DataChangedNotifier.Instance.Notify(entity, dmlType);
             }
+
+            return base.SaveChanges();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

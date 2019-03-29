@@ -55,11 +55,6 @@ namespace Imms.Data
             }
         }
 
-        IEntity[] IDataChangeNotifyEventListener.LoadUnProcessedItemFromDb()
-        {
-            throw new NotImplementedException();
-        }
-
         public void RegisterPullLogic(IThirdPartDataPullLogic logic)
         {
             lock (this.logics)

@@ -6,6 +6,7 @@ namespace Imms
         public const int DML_OPERATION_INSERT = 0;
         public const int DML_OPERATION_UPDATE = 10;
         public const int DML_OPERATION_DELETE = 100;
+        public const int DML_OPERATION_LOAD = 127;
 
         //系统异常代码
         public const int EXCEPTION_CODE_NO_ERROR = 0; //无异常

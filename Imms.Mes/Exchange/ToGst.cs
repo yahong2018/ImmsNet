@@ -8,11 +8,6 @@ namespace Imms.Mes.Exchange{
     {
         public Type[] ListenTypes { get { return new Type[] { typeof(ProductionOrder) }; } set => throw new NotImplementedException(); }
 
-        public IEntity[] LoadUnProcessedItemFromDb()
-        {
-            throw new NotImplementedException();
-        }
-
         public void ProcessEvent(DataChangedNotifyEvent e)
         {
             throw new NotImplementedException();

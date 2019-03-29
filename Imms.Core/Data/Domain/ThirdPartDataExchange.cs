@@ -14,6 +14,7 @@ namespace Imms.Data.Domain
         public DateTime ReceiveTime { get; set; }
         public DateTime SendTime { get; set; }
         public string RawData { get; set; }
+        public int TaskStatus { get; set; }
     }
 
     public class ThridPartDataExcahngeConfigure : EntityConfigure<ThirdPartDataExchangeTask>
@@ -22,7 +23,7 @@ namespace Imms.Data.Domain
         {
             base.InternalConfigure(builder);
 
-            builder.ToTable("third_part_data_exchange");
+            builder.ToTable("third_part_data_exchange_task");
 
             builder.Property(e => e.ExchangeRuleCode).HasColumnName("exchange_rule_code");
             builder.Property(e => e.MessageId).HasColumnName("message_id");
@@ -32,6 +33,7 @@ namespace Imms.Data.Domain
             builder.Property(e => e.ReceiveTime).HasColumnName("receive_time");
             builder.Property(e => e.SendTime).HasColumnName("send_time");
             builder.Property(e => e.RawData).HasColumnName("raw_data");
+            builder.Property(e => e.TaskStatus).HasColumnName("task_status");
         }
     }
 }

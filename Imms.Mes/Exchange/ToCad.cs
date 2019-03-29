@@ -18,11 +18,6 @@ namespace Imms.Mes.Exchange
     {
         Type[] IDataChangeNotifyEventListener.ListenTypes { get { return new Type[] { typeof(ProductionOrder) }; } set => throw new NotImplementedException(); }        
 
-        IEntity[] IDataChangeNotifyEventListener.LoadUnProcessedItemFromDb()
-        {
-            throw new NotImplementedException();
-        }
-
         void IDataChangeNotifyEventListener.ProcessEvent(DataChangedNotifyEvent e)
         {
             throw new NotImplementedException();

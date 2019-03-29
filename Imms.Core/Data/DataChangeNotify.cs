@@ -9,30 +9,32 @@ namespace Imms.Data
 {
     public class DataChangedNotifier
     {
-        internal static void Notify(DataChangedNotifyEvent e)
+        public DataChangeNotifyEventDispatcher Dispatcher { get; set; }
+
+        public void Notify(DataChangedNotifyEvent e)
         {
-            ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, e);
+            ThreadPool.QueueUserWorkItem(Dispatcher.OnDateChanged, e);
         }
 
-        internal static void Notify(IEntity item, int dmlType)
+        public void Notify(IEntity item, int dmlType)
         {
-            //
-            //TODO:在这里实现一次过滤，不需要的进行监控的数据，直接丢弃。
-            //
-            
             DataChangedNotifyEvent e = new DataChangedNotifyEvent()
             {
                 Entity = item,
                 DMLType = dmlType
             };
 
-            ThreadPool.QueueUserWorkItem(DataChangeNotifyEventDispatcher.Instance.OnDateChanged, e);
+            ThreadPool.QueueUserWorkItem(Dispatcher.OnDateChanged, e);
         }
 
-        private static readonly SortedDictionary<Guid, DateTime> DataChangedLastTime = new SortedDictionary<Guid, DateTime>();
+        protected DataChangedNotifier()
+        {
+        }
+
+        public static readonly DataChangedNotifier Instance = new DataChangedNotifier();
     }
 
-    public class DataChangeNotifyEventDispatcher
+    public class DataChangeNotifyEventDispatcher : BaseService
     {
         protected virtual internal void OnDateChanged(object objE)
         {
@@ -57,62 +59,30 @@ namespace Imms.Data
             }
         }
 
-        public void Start()
+        protected override void DoInternalThreadProc()
         {
-            if (!this.teriminated)
+            DataChangedNotifyEvent[] changedEvents;
+            lock (this)
             {
-                return;
+                changedEvents = this.changedEvents.ToArray();
+                this.changedEvents.Clear();
             }
-            this.teriminated = false;
-            this.dispatcherThread = new Thread(this.Dispatch);
-            this.dispatcherThread.Start();
-            this.waitLock.Reset();
-        }
 
-        public void Stop()
-        {
-            this.teriminated = true;
-            waitLock.WaitOne();
-        }
-
-        private void Dispatch()
-        {
-            while (!teriminated)
+            foreach (DataChangedNotifyEvent e in changedEvents)
             {
-                Thread.Sleep(30);
-
-                DataChangedNotifyEvent[] changedEvents;
-                lock (this)
+                foreach (IDataChangeNotifyEventListener listener in this.listeners)
                 {
-                    changedEvents = this.changedEvents.ToArray();
-                    this.changedEvents.Clear();
-                }
-
-                foreach (DataChangedNotifyEvent e in changedEvents)
-                {
-                    foreach (IDataChangeNotifyEventListener listener in this.listeners)
+                    if (listener.ListenTypes.Contains(e.Entity.GetType()))
                     {
-                        if (listener.ListenTypes.Contains(e.Entity.GetType()))
-                        {
-                            listener.ProcessEvent(e);
-                        }
+                        listener.ProcessEvent(e);
                     }
                 }
             }
-            waitLock.Set();
         }
 
         private readonly List<DataChangedNotifyEvent> changedEvents = new List<DataChangedNotifyEvent>();
-        public bool teriminated { get; private set; }
-        private Thread dispatcherThread;
-        private AutoResetEvent waitLock = new AutoResetEvent(true);
-        private readonly List<IDataChangeNotifyEventListener> listeners = new List<IDataChangeNotifyEventListener>();
+        internal readonly List<IDataChangeNotifyEventListener> listeners = new List<IDataChangeNotifyEventListener>();
 
-        public static readonly DataChangeNotifyEventDispatcher Instance = new DataChangeNotifyEventDispatcher();
-        protected DataChangeNotifyEventDispatcher()
-        {
-            this.teriminated = false;
-        }
         public void RegisterListener(IDataChangeNotifyEventListener listener)
         {
             lock (this)
@@ -157,6 +127,5 @@ namespace Imms.Data
     {
         Type[] ListenTypes { get; set; }
         void ProcessEvent(DataChangedNotifyEvent e);
-        IEntity[] LoadUnProcessedItemFromDb();
     }
 }

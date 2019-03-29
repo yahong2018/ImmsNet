@@ -53,16 +53,19 @@ namespace Imms.Mes.WorkFlow
         private void PushToGstAndCad(DataChangedNotifyEvent e)
         {
             ProductionOrder productionOrder = e.Entity as ProductionOrder;
-            if (e.DMLType != GlobalConstants.DML_OPERATION_INSERT || productionOrder == null)
+            //初始化状态的订单，系统会自动推送给GST和CAD
+            if (productionOrder == null || productionOrder.OrderStatus != GlobalConstants.STATUS_ORDER_INITIATE)
             {
                 return;
             }
+
         }
 
         private void PushToAps(DataChangedNotifyEvent e)
         {
             ProductionOrder productionOrder = e.Entity as ProductionOrder;
-            if (e.DMLType != GlobalConstants.DML_OPERATION_UPDATE || productionOrder == null)
+            //只有订单状态有更改才会推送给APS
+            if (productionOrder == null || e.DMLType != GlobalConstants.DML_OPERATION_UPDATE)
             {
                 return;
             }
@@ -71,21 +74,21 @@ namespace Imms.Mes.WorkFlow
         private void PlanCuttingOrder(DataChangedNotifyEvent e)
         {
             PickingOrder pickingOrder = e.Entity as PickingOrder;
-            if (e.DMLType != GlobalConstants.DML_OPERATION_UPDATE || pickingOrder == null)
-            {
-                return;
-            }
-            if (pickingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
+            //领料完成，进行裁剪计划安排
+            if (pickingOrder == null || pickingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
             {
                 return;
             }
 
             WorkStation cuttingWorkStation = CommonDAO.GetOneByFilter<WorkStation>(x =>
-                        x.Parameters.Exists(p =>
-                             p.ParameterCode == GlobalConstants.TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE
-                             && p.ParameterValue == GlobalConstants.TYPE_WORK_STATION_CUTTING)
+                x.Parameters.Exists(p =>
+                    p.ParameterCode == GlobalConstants.TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE
+                 && p.ParameterValue == GlobalConstants.TYPE_WORK_STATION_CUTTING)
              );
-            CuttingOrder[] cuttingOrders = CommonDAO.GetAllByFilter<CuttingOrder>(x => x.PickingOrderId == pickingOrder.RecordId && x.OrderStatus == GlobalConstants.STATUS_ORDER_INITIATE);
+            CuttingOrder[] cuttingOrders = CommonDAO.GetAllByFilter<CuttingOrder>(x =>
+                x.PickingOrderId == pickingOrder.RecordId
+                && x.OrderStatus == GlobalConstants.STATUS_ORDER_INITIATE
+            );
             foreach (CuttingOrder cuttingOrder in cuttingOrders)
             {
                 CuttingLogic.PlanCuttingOrder(cuttingOrder, cuttingWorkStation);
@@ -95,19 +98,14 @@ namespace Imms.Mes.WorkFlow
         public void CreateProductionWorkOrder(DataChangedNotifyEvent e)
         {
             CuttingOrder cuttingOrder = e.Entity as CuttingOrder;
-            if (e.DMLType != GlobalConstants.DML_OPERATION_UPDATE || cuttingOrder == null)
-            {
-                return;
-            }
-            if (cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
-            {
-                return;
-            }
-        }
 
-        public IEntity[] LoadUnProcessedItemFromDb()
-        {
-            throw new NotImplementedException();
+            //裁剪完成，安排缝制作业单
+            if (cuttingOrder == null || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
+            {
+                return;
+            }
+
+            
         }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();
