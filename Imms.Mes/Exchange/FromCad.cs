@@ -59,7 +59,7 @@ namespace Imms.Mes.Exchange
                 this.AddPatternRelations(dto, productionOrder);
                 this.UpdateProducitonData(productionOrder, dbContext);
 
-                dbContext.SaveChanges();                
+                dbContext.SaveChanges();
             });
         }
 
@@ -343,13 +343,12 @@ namespace Imms.Mes.Exchange
                 //
                 //更新辅料：根据主料每个尺码的总计划裁剪数量
                 //
+                long mainFabricId = boms.Where(b => b.InnerBom.IsMainFabric) //是主面料
+                                   .Select(b => b.InnerBom.ComponentMaterialId)
+                                   .First();
                 int cuttingQty = productionOrder.QtyPlanned;
                 string mainFabricCode = dbContext.Set<Material>()
-                              .Where(m => m.RecordId == (
-                                   boms.Where(b => b.InnerBom.IsMainFabric)
-                                   .Select(b => b.InnerBom.ComponentMaterialId)
-                                   .First()
-                               ))
+                              .Where(m => m.RecordId == mainFabricId)
                                .Select(m => m.MaterialNo)
                                .First();
                 if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD && mainFabricCode != GlobalConstants.TYPE_MATERIAL_KT)

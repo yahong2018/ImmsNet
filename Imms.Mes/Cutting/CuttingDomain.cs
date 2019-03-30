@@ -31,7 +31,7 @@ namespace Imms.Mes.Cutting
         public string ContainerNo { get; set; }
         public DateTime? TimeStartActual { get; set; }
         public DateTime? TimeEndActual { get; set; }
-        public int QtyFinished { get; set; }
+        public int QtyActual { get; set; }
         public long OperatorId { get; set; }
 
         public virtual ProductionOrder ProductionOrder { get; set; }
@@ -184,7 +184,7 @@ namespace Imms.Mes.Cutting
                 .HasMaxLength(64)
                 .IsUnicode(false);
 
-            builder.Property(e => e.QtyFinished)
+            builder.Property(e => e.QtyActual)
                 .HasColumnName("finished_qty")
                 .HasColumnType("int(11)")
                 .HasDefaultValueSql("0");

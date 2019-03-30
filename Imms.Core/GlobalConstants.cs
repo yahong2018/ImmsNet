@@ -53,6 +53,10 @@ namespace Imms
         public const int TYPE_BOM_ORDER_PRODUCTION_ORDER = 50; //生产订单BOM
         public const int TYPE_BOM_ORDER_PICKING_ORDER = 60;   // 领料单BOM
         public const int TYPE_BOM_ORDER_WORK_ORDER = 70;    // 作业单BOM
+        //BOM类型
+        public const int TYPE_BOM_UNKNOWN = 0;   //未知的BOM类型：面料或者辅料
+        public const int TYPE_BOM_FABRIC = 1;   //面料
+        public const int TYPE_BOM_MAIN_FABRIC = 3;//主面料        
 
         //物料类型
         public const string TYPE_MATERIAL_KT = "KT";
