@@ -105,10 +105,6 @@ namespace Imms
         public const int MEDIA_TYPE_CUTTING_MARKER_CUT_MEDIA = 10;
         public const int MEDIA_TYPE_CUTTING_MARKER_CUT_FILE = 11;
 
-        //附件记录类型
-        public const int BELONG_TO_RECORD_TYPE_CUTTING_MARKER = 10;
-        public const int BELONG_TO_RECORD_TYPE_PRODUCTION_PATTERNIMAGES = 20;
-
         //其他
         public static Imms.Data.IDbContextFactory DbContextFactory = null;
         public static Logger DefaultLogger = new Logger();

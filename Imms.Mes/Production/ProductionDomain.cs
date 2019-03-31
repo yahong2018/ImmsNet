@@ -95,26 +95,30 @@ namespace Imms.Mes.Production
         public long BomOrderId { get; set; }
         public long OperationRoutingOrderId { get; set; }
         public long CuttingOrderId { get; set; }
-        public long SizeId { get; set; }
-        public DateTime PlannedStartDate { get; set; }
-        public DateTime PlannedEndDate { get; set; }
-        public DateTime? ActualStartDate { get; set; }
-        public DateTime? ActualEndDate { get; set; }
+        public string Size { get; set; }
+        public DateTime TimePlanStart { get; set; }
+        public DateTime TimePlanEnd { get; set; }
+        public DateTime? TimeActualStart { get; set; }
+        public DateTime? TimeActualEnd { get; set; }
         public byte SynFinishStatus { get; set; }
+
+        public virtual List<ProductionWorkOrderRouting> ProductionWorkOrderRoutings { get; set; } = new List<ProductionWorkOrderRouting>();
     }
 
-     public partial class ProductionWorkOrderRouting : TrackableEntity<long>
+    public partial class ProductionWorkOrderRouting : TrackableEntity<long>
     {
-        public long OperationRoutingOrderId { get; set; }
         public long ProductionWorkOrderId { get; set; }
         public long OperationRoutingId { get; set; }
         public long? OperatorId { get; set; }
         public long? WorkStationId { get; set; }
         public int? ScrapQty { get; set; }
         public int? CompleteQty { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? CompleteTime { get; set; }
+        public DateTime? TimeScheduled { get; set; }
+        public DateTime? TimeStarted { get; set; }
+        public DateTime? TimeCompleted { get; set; }
         public int OrderStatus { get; set; }
+
+        public virtual ProductionWorkOrder ProductionWorkOrder { get; set; }
     }
 
     public class ProductionWorkOrderRoutingConfigure : OrderEntityConfigure<ProductionWorkOrderRouting>
@@ -129,15 +133,11 @@ namespace Imms.Mes.Production
                     .HasColumnType("int(11)")
                     .HasDefaultValueSql("0");
 
-            builder.Property(e => e.CompleteTime).HasColumnName("complete_time");
+            builder.Property(e => e.TimeCompleted).HasColumnName("complete_time");
 
             builder.Property(e => e.OperationRoutingId)
                     .HasColumnName("operation_routing_id")
                     .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.OperationRoutingOrderId)
-                .HasColumnName("operation_routing_order_id")
-                .HasColumnType("bigint(20)");
 
             builder.Property(e => e.OperatorId)
                 .HasColumnName("operator_id")
@@ -156,11 +156,13 @@ namespace Imms.Mes.Production
                 .HasColumnType("int(11)")
                 .HasDefaultValueSql("0");
 
-            builder.Property(e => e.StartTime).HasColumnName("start_time");
+            builder.Property(e => e.TimeStarted).HasColumnName("start_time");
 
             builder.Property(e => e.WorkStationId)
                     .HasColumnName("work_station_id")
                     .HasColumnType("bigint(20)");
+
+            builder.HasOne(e => e.ProductionWorkOrder).WithMany(e => e.ProductionWorkOrderRoutings).HasForeignKey(e => e.ProductionWorkOrderId);
         }
     }
 
@@ -171,9 +173,9 @@ namespace Imms.Mes.Production
             base.InternalConfigure(builder);
             builder.ToTable("production_work_order");
 
-            builder.Property(e => e.ActualEndDate).HasColumnName("actual_end_date");
+            builder.Property(e => e.TimeActualEnd).HasColumnName("actual_end_date");
 
-            builder.Property(e => e.ActualStartDate).HasColumnName("actual_start_date");
+            builder.Property(e => e.TimeActualStart).HasColumnName("actual_start_date");
 
             builder.Property(e => e.BomOrderId)
                 .HasColumnName("bom_order_id")
@@ -187,17 +189,16 @@ namespace Imms.Mes.Production
                 .HasColumnName("operation_routing_order_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.PlannedEndDate).HasColumnName("planned_end_date");
+            builder.Property(e => e.TimePlanEnd).HasColumnName("planned_end_date");
 
-            builder.Property(e => e.PlannedStartDate).HasColumnName("planned_start_date");
+            builder.Property(e => e.TimePlanStart).HasColumnName("planned_start_date");
 
             builder.Property(e => e.ProductionOrderId)
                 .HasColumnName("production_order_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.SizeId)
-                .HasColumnName("size_id")
-                .HasColumnType("bigint(20)");
+            builder.Property(e => e.Size)
+                .HasColumnName("size");
 
             builder.Property(e => e.SynFinishStatus)
                 .HasColumnName("syn_finish_status")

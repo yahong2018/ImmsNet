@@ -1,6 +1,7 @@
 using Imms.Data;
 using Imms.Data.Domain;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -56,26 +57,25 @@ namespace Imms.Mes.Exchange
                     entry.State = EntityState.Modified;
 
                     dbContext.SaveChanges();
-
-                    this.SetNextAndPrevRoutingId(routingOrder.RecordId, dbContext);
+                    // this.SetNextAndPrevRoutingId(routingOrder.RecordId, dbContext);
                 });
 
                 scope.Complete();
             }
         }
 
-        private void SetNextAndPrevRoutingId(long routingOrderId, DbContext dbContext)
-        {
-            string sql = @"update operation_routing
-                   set o.next_operation_routing_id = n.record_id,
-                       o.prev_operation_routing_id = p.record_id
-                from operation_routing o 
-                           left join operation_routing n on o.next_operation_no = n.operation_no
-                           left join operation_routing p on o.prev_opreation_no = p.operation_no
-                where o.operation_routing_order_id = @0";
+        // private void SetNextAndPrevRoutingId(long routingOrderId, DbContext dbContext)
+        // {
+        //     string sql = @"update operation_routing
+        //            set o.next_operation_routing_id = n.record_id,
+        //                o.prev_operation_routing_id = p.record_id
+        //         from operation_routing o 
+        //                    left join operation_routing n on o.next_operation_no = n.operation_no
+        //                    left join operation_routing p on o.prev_opreation_no = p.operation_no
+        //         where o.operation_routing_order_id = @0";
 
-            dbContext.Database.ExecuteSqlCommand(sql, routingOrderId);
-        }
+        //     dbContext.Database.ExecuteSqlCommand(sql, routingOrderId);
+        // }
 
 
 
@@ -114,6 +114,13 @@ namespace Imms.Mes.Exchange
             {
                 result[i] = ConvertOperationRouting(dtos[i]);
             }
+            foreach(OperationRouting routing in result){
+                var prevOperations = result.Where(x=>x.NextOpertionNo == routing.OperationNo);
+                foreach(OperationRouting prev in prevOperations){
+                    routing.PrevOpreatons.Add(prev);
+                    prev.NextRouting = routing;
+                }
+            }
 
             return result;
         }
@@ -129,12 +136,7 @@ namespace Imms.Mes.Exchange
             routing.OperationName = operation.OperationName;
             routing.IsOutsource = dto.IsOutsource;
             routing.MachineTypeId = machineType.RecordId;
-            routing.NextOpertionNo = dto.NextOperationNo;
-            if (dto.PreOperations != null && dto.PreOperations.Length > 0)
-            {
-                routing.PrevOperationNo = dto.PreOperations[0];
-            }
-
+            routing.NextOpertionNo = dto.NextOperationNo;            
             routing.QaProcedure = dto.QaProcedure;
             routing.Requirement = dto.Requirement;
             routing.RequiredLevel = dto.RequiredLevel;

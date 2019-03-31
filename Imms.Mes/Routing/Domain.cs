@@ -31,12 +31,12 @@ namespace Imms.Mes.Routing
     {
         public long OperationRoutingOrderId { get; set; }
         public long OperationId { get; set; }
-        public string NextOpertionNo{get;set;}
+        public string NextOpertionNo { get; set; }
         public long? NextRoutingId { get; set; }
-        public long? PreRoutingId { get; set; }
-        public string PrevOperationNo{get;set;}
 
         public virtual OperationRoutingOrder RoutingOrder { get; set; }
+        public virtual List<OperationRouting> PrevOpreatons { get; set; } = new List<OperationRouting>();
+        public virtual OperationRouting NextRouting { get; set; }
     }
 
     public partial class OperationRoutingOrder : OrderEntity<long>
@@ -44,7 +44,7 @@ namespace Imms.Mes.Routing
         public int OrderType { get; set; }
         public long MaterialId { get; set; }
 
-        public virtual List<OperationRouting> Routings { get; set; }=new List<OperationRouting>();
+        public virtual List<OperationRouting> Routings { get; set; } = new List<OperationRouting>();
     }
 
     public class BaseOperationConfigure<E> : TrackableEntityConfigure<E> where E : BaseOperation
@@ -142,15 +142,12 @@ namespace Imms.Mes.Routing
                 .HasColumnName("operation_routing_order_id")
                 .HasColumnType("bigint(20)");
 
-            builder.Property(e => e.PreRoutingId)
-                   .HasColumnName("pre_routing_id")
-                   .HasColumnType("bigint(20)");
-
             builder.Property(e => e.NextRoutingId)
                 .HasColumnName("next_routing_id")
                 .HasColumnType("int(11)");
 
             builder.HasOne(e => e.RoutingOrder).WithMany(e => e.Routings).HasForeignKey(e => e.OperationRoutingOrderId);
+            builder.HasOne(e=>e.NextRouting).WithMany(e=>e.PrevOpreatons).HasForeignKey(e=>e.NextRoutingId);
         }
     }
 
