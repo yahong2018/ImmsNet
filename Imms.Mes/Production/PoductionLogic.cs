@@ -9,8 +9,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Mes.Production
 {
+    //
+    //功能：
+    //   生成缝制作业单(作业单、作业单BOM、缝制报工单）
+    //   获取某个工位所需要的作业单及其当前工序（工艺）  
+    //   作业单工艺报工   
+    //   派工
+    //    
     public class ProductionLogic
     {
+        
+        public ProductionWorkOrder[] GetProductionWorkOrdersByWorkStation(WorkStation WorkStation)
+        {
+            return null;
+        }
+
+        //
+        //生成缝制作业单
+        //
         public ProductionWorkOrder[] CreateCuttedWorkOrder(CuttingOrder cuttingOrder)
         {
             //裁剪完成，安排缝制作业单
@@ -68,7 +84,6 @@ namespace Imms.Mes.Production
                     dbContext.SaveChanges();
                 }
             });
-
 
             return result;
         }

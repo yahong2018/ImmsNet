@@ -101,6 +101,8 @@ namespace Imms.Mes.Production
         public DateTime? TimeActualEnd { get; set; }
         public byte SynFinishStatus { get; set; }
 
+        public virtual BomOrder BomOrder { get; set; }
+        public virtual OperationRoutingOrder OperationRoutingOrder { get; set; }
         public virtual List<ProductionWorkOrderRouting> ProductionWorkOrderRoutings { get; set; } = new List<ProductionWorkOrderRouting>();
     }
 
@@ -261,7 +263,7 @@ namespace Imms.Mes.Production
                 .HasColumnType("int(11)");
 
             builder.HasOne(e => e.RoutingOrder).WithMany(e => e.Routings).HasForeignKey(e => e.OperationRoutingOrderId);
-            builder.HasOne(e=>e.NextRouting).WithMany(e=>e.PrevOpreatons).HasForeignKey(e=>e.NextRoutingId);
+            builder.HasOne(e => e.NextRouting).WithMany(e => e.PrevOpreatons).HasForeignKey(e => e.NextRoutingId);
         }
     }
 
@@ -282,7 +284,7 @@ namespace Imms.Mes.Production
 
             builder.HasMany(e => e.Routings).WithOne(e => e.RoutingOrder).HasForeignKey(e => e.OperationRoutingOrderId);
         }
-    }    
+    }
 
     public class ProductionWorkOrderRoutingConfigure : OrderEntityConfigure<ProductionWorkOrderRouting>
     {

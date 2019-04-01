@@ -54,12 +54,13 @@ namespace Imms.Mes.MasterData
         public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
     }
 
-    public class WorkStation:WorkOrganizationUnit{
+    public class WorkStation : WorkOrganizationUnit
+    {
         [NotMapped]
         public string WorkStationCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
         [NotMapped]
         public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
-    }   
+    }
 
     public partial class WorkstationCheckIn : Entity<long>
     {
@@ -69,15 +70,14 @@ namespace Imms.Mes.MasterData
         public DateTime? CheckOutTime { get; set; }
     }
 
-public partial class Material : TrackableEntity<long>
-    {     
+    public partial class Material : TrackableEntity<long>
+    {
         public string MaterialNo { get; set; }
         public string MaterialName { get; set; }
         public long MaterialTypeId { get; set; }
         public long UnitId { get; set; }
         public decimal? Width { get; set; }
-        public decimal? Weight { get; set; }
-        public long? SizeId { get; set; }
+        public decimal? Weight { get; set; }        
         public decimal? Price { get; set; }
         public string Color { get; set; }
         public string Description { get; set; }
@@ -137,7 +137,7 @@ public partial class Material : TrackableEntity<long>
             builder.Property(e => e.ComponentMaterialNoPath).IsRequired().HasColumnName("component_material_no_path").HasMaxLength(130);
             builder.Property(e => e.ComponentQty).HasColumnName("component_qty");
             builder.Property(e => e.ComponentUnitId).HasColumnName("component_unit_id");
-            builder.Property(e => e.IsMainFabric).HasColumnName("is_fabric");
+            builder.Property(e => e.IsMainFabric).HasColumnName("is_main_fabric");
             builder.Property(e => e.ParentBomId).HasColumnName("parent_bom_id");
 
             builder.HasOne(e => e.BomOrder).WithMany(e => e.Boms).HasForeignKey(e => e.BomOrderId);
@@ -181,10 +181,6 @@ public partial class Material : TrackableEntity<long>
                     .HasColumnName("price")
                     .HasColumnType("decimal(10,2)");
 
-            builder.Property(e => e.SizeId)
-                .HasColumnName("size_id")
-                .HasColumnType("bigint(20)");
-
             builder.Property(e => e.UnitId)
                 .HasColumnName("unit_id")
                 .HasColumnType("bigint(20)");
@@ -219,15 +215,15 @@ public partial class Material : TrackableEntity<long>
                 .HasColumnName("work_station_id")
                 .HasColumnType("bigint(20)");
         }
-    } 
+    }
 
     public class WorkOrganizationUnitConfigure : IEntityTypeConfiguration<WorkOrganizationUnit>
     {
         public void Configure(EntityTypeBuilder<WorkOrganizationUnit> builder)
         {
-            builder.HasDiscriminator("organization_type",typeof(string))
+            builder.HasDiscriminator("organization_type", typeof(string))
             .HasValue<Plant>(GlobalConstants.TYPE_ORG_PLANT)
-            .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER);            
+            .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER);
         }
     }
 
