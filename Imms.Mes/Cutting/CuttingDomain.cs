@@ -36,9 +36,9 @@ namespace Imms.Mes.Cutting
 
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual PickingOrder PickingOrder { get; set; }
-        public virtual ICollection<CuttingOrderSize> Sizes { get; set; }
-        public virtual ICollection<CuttingMarker> Markers { get; set; }
-        public virtual ICollection<CuttingOrderSpreadPly> SpreadPlies { get; set; }
+        public virtual List<CuttingOrderSize> Sizes { get; set; } = new List<CuttingOrderSize>();
+        public virtual List<CuttingMarker> Markers { get; set; } = new List<CuttingMarker>();
+        public virtual List<CuttingOrderSpreadPly> SpreadPlies { get; set; } =new List<CuttingOrderSpreadPly>();
     }
 
     public partial class CuttingOrderSize : TrackableEntity<long>

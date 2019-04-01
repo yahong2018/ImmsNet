@@ -20,6 +20,7 @@ namespace Imms.Mes.WorkFlow
     public class MainFlow : IDataChangeNotifyEventListener
     {
         public CuttingLogic CuttingLogic { get; set; }
+        public ProductionLogic ProductionLogic { get; set; }
 
         public MainFlow()
         {
@@ -98,8 +99,12 @@ namespace Imms.Mes.WorkFlow
         public void CreateProductionWorkOrder(DataChangedNotifyEvent e)
         {
             CuttingOrder cuttingOrder = e.Entity as CuttingOrder;
+            if (cuttingOrder == null)
+            {
+                return;
+            }
 
-            
+            this.ProductionLogic.CreateCuttedWorkOrder(cuttingOrder);
         }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();

@@ -25,9 +25,15 @@ namespace Imms.Mes.Production
                 return null;
             }
 
-            ProductionWorkOrder[] result = new ProductionWorkOrder[cuttingOrder.QtyActual];
+            ProductionWorkOrder[] result = null;
             CommonDAO.UseDbContext(dbContext =>
             {
+                bool alReadyCreated = dbContext.Set<ProductionWorkOrder>().Where(x => x.CuttingOrderId == cuttingOrder.RecordId).Count() > 0;
+                if (alReadyCreated)
+                {
+                    return;
+                }
+
                 ProductionOrder productionOrder = dbContext.Set<ProductionOrder>()
                    .Where(x => x.RecordId == cuttingOrder.ProductionOrderId)
                    .Include(x => x.RoutingOrder).ThenInclude(x => x.Routings)
@@ -39,20 +45,28 @@ namespace Imms.Mes.Production
                   .Single();
                 var pickingBoms = dbContext.Set<Bom>().Where(x => x.BomOrderId == bomOrderId);
 
-                //创建缝制作业单 
-                foreach (CuttingOrderSize orderSize in cuttingOrder.Sizes)
+                result = new ProductionWorkOrder[cuttingOrder.QtyActual];
+                for (int i = 0; i < cuttingOrder.Sizes.Count; i++)
                 {
+                    CuttingOrderSize orderSize = cuttingOrder.Sizes[i];
+                    //创建作业单
                     ProductionWorkOrder productionWorkOrder = this.CreateProductionWorkOrder(cuttingOrder, productionOrder, orderSize);
+                    result[i] = productionWorkOrder;
 
+                    //创建缝制BOM
                     BomOrder bomOrder = this.CreateWorkOrderBom(productionOrder, cuttingOrder, pickingBoms);  //生成BOM
                     dbContext.Set<BomOrder>().Add(bomOrder);
 
-                    //生成工艺报工单
+                    //创建缝制工艺报工单
                     ProductionWorkOrderRouting[] workOrderRoutings = this.CreateWorkOrderRoutings(productionOrder.RoutingOrder.Routings);
                     foreach (ProductionWorkOrderRouting routing in workOrderRoutings)
                     {
                         routing.ProductionWorkOrder = productionWorkOrder;
+                        dbContext.Set<ProductionWorkOrderRouting>().Add(routing);
                     }
+                    dbContext.Set<ProductionWorkOrder>().Add(productionWorkOrder);
+
+                    dbContext.SaveChanges();
                 }
             });
 
