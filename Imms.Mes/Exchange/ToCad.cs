@@ -1,7 +1,7 @@
 using System;
 using Imms.Data;
 using Imms.Data.Domain;
-using Imms.Mes.Production;
+using Imms.Mes.Stitch;
 
 namespace Imms.Mes.Exchange
 {

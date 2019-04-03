@@ -3,7 +3,7 @@ using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Cutting;
 using Imms.Mes.Picking;
-using Imms.Mes.Production;
+using Imms.Mes.Stitch;
 
 namespace Imms.Mes.Exchange
 {

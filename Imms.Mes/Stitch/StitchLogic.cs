@@ -6,8 +6,9 @@ using Imms.Mes.Cutting;
 using Imms.Mes.MasterData;
 using Imms.Mes.Picking;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Imms.Mes.Production
+namespace Imms.Mes.Stitch
 {
     //
     //功能：
@@ -16,12 +17,51 @@ namespace Imms.Mes.Production
     //   作业单工艺报工   
     //   派工
     //    
-    public class ProductionLogic
+    public class StitchLogic
     {
-        
-        public ProductionWorkOrder[] GetProductionWorkOrdersByWorkStation(WorkStation WorkStation)
+        //
+        //获取某个工位所需要的作业单及其当前工序（工艺）  
+        //
+        public ProductionWorkOrderRouting[] GetWorkStationRoutings(WorkStation WorkStation)
         {
-            return null;
+            return CommonDAO.GetAllByFilter<ProductionWorkOrderRouting>(x =>
+                  x.WorkStationId == WorkStation.RecordId
+                  && x.OrderStatus == GlobalConstants.STATUS_ORDER_PLANNED
+            ).ToArray();
+        }
+
+        //
+        //作业单工艺报工
+        //
+        public void FinishWorkOrderRouting(ProductionWorkOrderRouting workOrderRouting)
+        {
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                workOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
+                workOrderRouting.TimeCompleted = DateTime.Now;
+
+                ProductionWorkOrder workOrder = dbContext.Set<ProductionWorkOrder>()
+                    .Where(x => x.RecordId == workOrderRouting.ProductionWorkOrderId)
+                    .Single();
+
+                bool isLastRouting = dbContext.Set<OperationRouting>().Where(x =>
+                     x.OperationRoutingOrderId == workOrder.OperationRoutingOrderId
+                     && x.RecordId == workOrderRouting.OperationRoutingId
+                     && x.NextRoutingId == null
+                     ).Count() > 0;
+
+                if (isLastRouting)
+                {
+                    workOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
+                    EntityEntry<ProductionWorkOrder> workOrderEntry = dbContext.Entry<ProductionWorkOrder>(workOrder);
+                    workOrderEntry.State = EntityState.Modified;
+                }
+
+                EntityEntry<ProductionWorkOrderRouting> routingEntry = dbContext.Entry<ProductionWorkOrderRouting>(workOrderRouting);
+                routingEntry.State = EntityState.Modified;
+
+                dbContext.SaveChanges();
+            });
         }
 
         //

@@ -4,7 +4,7 @@ using System.Text;
 using Imms.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Imms.Mes.Production;
+using Imms.Mes.Stitch;
 
 namespace Imms.Mes.Quality
 {

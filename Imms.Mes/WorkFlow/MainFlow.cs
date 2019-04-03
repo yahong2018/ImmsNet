@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Imms.Data;
 using Imms.Mes.Cutting;
 using Imms.Mes.Picking;
-using Imms.Mes.Production;
+using Imms.Mes.Stitch;
 using Imms.Mes.MasterData;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ namespace Imms.Mes.WorkFlow
     public class MainFlow : IDataChangeNotifyEventListener
     {
         public CuttingLogic CuttingLogic { get; set; }
-        public ProductionLogic ProductionLogic { get; set; }
+        public StitchLogic ProductionLogic { get; set; }
 
         public MainFlow()
         {
@@ -44,6 +44,10 @@ namespace Imms.Mes.WorkFlow
             //
             //PickingOrder:如果领料完成，则安排裁剪单
             //CuttingOrder:如果裁剪完成，则生成缝制作业单
+            //
+            //ProductionWorkOrderRouting:如果是最后一道工序，则作业单完成，否则派工到下一道工序。
+            //
+            //ProductionWorkOrder:如果缝制作业单已全部完成，则PO状态为已完成，否则修改PO的完成数量
             //
             foreach (ProcessHandler handler in this.Handlers)
             {

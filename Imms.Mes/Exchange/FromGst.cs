@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Imms.Mes.Production;
+using Imms.Mes.Stitch;
 using Imms.Mes.MasterData;
 
 namespace Imms.Mes.Exchange

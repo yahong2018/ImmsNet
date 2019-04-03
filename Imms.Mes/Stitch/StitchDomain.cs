@@ -7,7 +7,7 @@ using Imms.Data.Domain;
 using Imms.Mes.Quality;
 using Imms.Mes.MasterData;
 
-namespace Imms.Mes.Production
+namespace Imms.Mes.Stitch
 {
     public partial class ProductionOrder : OrderEntity<long>
     {

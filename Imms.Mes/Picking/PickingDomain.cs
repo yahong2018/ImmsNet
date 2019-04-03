@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
 using System.ComponentModel.DataAnnotations;
-using Imms.Mes.Production;
+using Imms.Mes.Stitch;
 using Imms.Mes.MasterData;
 
 namespace Imms.Mes.Picking
