@@ -40,23 +40,6 @@ namespace Imms.Mes.Stitch
                 workOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
                 workOrderRouting.TimeCompleted = DateTime.Now;
 
-                ProductionWorkOrder workOrder = dbContext.Set<ProductionWorkOrder>()
-                    .Where(x => x.RecordId == workOrderRouting.ProductionWorkOrderId)
-                    .Single();
-
-                bool isLastRouting = dbContext.Set<OperationRouting>().Where(x =>
-                     x.OperationRoutingOrderId == workOrder.OperationRoutingOrderId
-                     && x.RecordId == workOrderRouting.OperationRoutingId
-                     && x.NextRoutingId == null
-                     ).Count() > 0;
-
-                if (isLastRouting)
-                {
-                    workOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
-                    EntityEntry<ProductionWorkOrder> workOrderEntry = dbContext.Entry<ProductionWorkOrder>(workOrder);
-                    workOrderEntry.State = EntityState.Modified;
-                }
-
                 EntityEntry<ProductionWorkOrderRouting> routingEntry = dbContext.Entry<ProductionWorkOrderRouting>(workOrderRouting);
                 routingEntry.State = EntityState.Modified;
 

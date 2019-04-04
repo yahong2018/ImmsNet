@@ -102,6 +102,7 @@ namespace Imms.Mes.Stitch
         public byte SynFinishStatus { get; set; }
 
         public virtual BomOrder BomOrder { get; set; }
+        public virtual ProductionOrder ProductionOrder{get;set;}
         public virtual OperationRoutingOrder OperationRoutingOrder { get; set; }
         public virtual List<ProductionWorkOrderRouting> ProductionWorkOrderRoutings { get; set; } = new List<ProductionWorkOrderRouting>();
     }
@@ -112,8 +113,8 @@ namespace Imms.Mes.Stitch
         public long OperationRoutingId { get; set; }
         public long? OperatorId { get; set; }
         public long? WorkStationId { get; set; }
-        public int? ScrapQty { get; set; }
-        public int? CompleteQty { get; set; }
+        public int ScrapQty { get; set; }
+        public int CompleteQty { get; set; }
         public DateTime? TimeScheduled { get; set; }
         public DateTime? TimeStarted { get; set; }
         public DateTime? TimeCompleted { get; set; }

@@ -8,6 +8,7 @@ using Imms.Mes.Stitch;
 using Imms.Mes.MasterData;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Imms.Mes.WorkFlow
 {
@@ -27,6 +28,8 @@ namespace Imms.Mes.WorkFlow
             Handlers.Add(this.PushToGstAndCad);
             Handlers.Add(this.PushToAps);
             Handlers.Add(this.PlanCuttingOrder);
+            Handlers.Add(this.OnProductionWorkOrderFinished);
+            Handlers.Add(this.OnWorkOrderRoutingFinished);
         }
 
         public Type[] ListenTypes
@@ -109,6 +112,50 @@ namespace Imms.Mes.WorkFlow
             }
 
             this.ProductionLogic.CreateCuttedWorkOrder(cuttingOrder);
+        }
+
+        public void OnWorkOrderRoutingFinished(DataChangedNotifyEvent e)
+        {
+            ProductionWorkOrderRouting workOrderRouting = e.Entity as ProductionWorkOrderRouting;
+            if (workOrderRouting == null || workOrderRouting.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
+            {
+                return;
+            }
+
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                ProductionWorkOrder workOrder = dbContext.Set<ProductionWorkOrder>()
+                                    .Where(x => x.RecordId == workOrderRouting.ProductionWorkOrderId)                                      
+                                    .Single();
+
+                bool isLastRouting = dbContext.Set<OperationRouting>().Where(x =>
+                     x.OperationRoutingOrderId == workOrder.OperationRoutingOrderId
+                     && x.RecordId == workOrderRouting.OperationRoutingId
+                     && x.NextRoutingId == null
+                     ).Count() > 0;
+
+                if (isLastRouting)
+                {
+                    workOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
+                    workOrder.TimeActualEnd = DateTime.Now;
+                    EntityEntry<ProductionWorkOrder> workOrderEntry = dbContext.Entry<ProductionWorkOrder>(workOrder);
+                    workOrderEntry.State = EntityState.Modified;               
+                }
+
+                dbContext.SaveChanges();
+            });
+        }
+
+        public void OnProductionWorkOrderFinished(DataChangedNotifyEvent e)
+        {
+            ProductionWorkOrder workOrder = e.Entity as ProductionWorkOrder;
+            if(workOrder==null || workOrder.OrderStatus!=GlobalConstants.STATUS_ORDER_FINISHED)            {
+                return;
+            }
+
+            ProductionOrder productionOrder = CommonDAO.GetOneByFilter<ProductionOrder>(x=>x.RecordId==workOrder.ProductionOrderId);
+            productionOrder.QtyFinished +=1;           
+
         }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();

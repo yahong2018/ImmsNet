@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace Imms.Data
             ChangeTracker.DetectChanges();
 
             var modifiedEntities = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added || x.State == EntityState.Deleted);
+            List<DataChangedNotifyEvent> eventList = new List<DataChangedNotifyEvent>();
             foreach (var e in modifiedEntities)
             {
                 IEntity entity = (e as IEntity);
@@ -59,10 +61,14 @@ namespace Imms.Data
                 {
                     dmlType = GlobalConstants.DML_OPERATION_UPDATE;
                 }
-                DataChangedNotifier.Instance.Notify(entity, dmlType);
+                eventList.Add(new DataChangedNotifyEvent() { Entity = entity, DMLType = dmlType });
             }
-
-            return base.SaveChanges();
+            int result = base.SaveChanges();
+            foreach (DataChangedNotifyEvent e in eventList)
+            {
+                DataChangedNotifier.Instance.Notify(e);
+            }
+            return result;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
