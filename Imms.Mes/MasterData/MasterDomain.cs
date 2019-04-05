@@ -10,17 +10,13 @@ namespace Imms.Mes.MasterData
 {
     public class Size : TreeCode
     {
-        [NotMapped]
         public string SizeCode { get { return base.CodeNo; } set { base.CodeNo = value; } }
-        [NotMapped]
         public string SizeName { get { return base.CodeName; } set { base.CodeName = value; } }
     }
 
     public class MachineType : TreeCode
     {
-        [NotMapped]
         public string MachineTypeNo { get { return base.CodeNo; } set { base.CodeNo = value; } }
-        [NotMapped]
         public string MachineTypeName { get { return base.CodeName; } set { base.CodeName = value; } }
     }
 
@@ -40,26 +36,41 @@ namespace Imms.Mes.MasterData
 
     public class Plant : WorkOrganizationUnit
     {
-        [NotMapped]
         public string PlantCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
-        [NotMapped]
         public string PlantName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
     }
 
     public class WorkCenter : WorkOrganizationUnit
     {
-        [NotMapped]
-        public string WorkStationCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
-        [NotMapped]
-        public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
+        public string WorkCenterCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
+        public string WorkCenterName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
+        
+        public int MainOrbitLength{get;set;}
+    }
+
+    public class ProductionLine : WorkOrganizationUnit
+    {
+        public string LineCode { get; set; }
+        public string LineName { get; set; }
+
+        public int Sequence { get; set; }
+        public int LineDistance { get; set; }
     }
 
     public class WorkStation : WorkOrganizationUnit
     {
-        [NotMapped]
         public string WorkStationCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
-        [NotMapped]
         public string WorkStationName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
+
+        public string WorkStationType { get; set; }
+        public long MachineTypeId { get; set; }
+        public bool IsOnLine { get; set; }
+        public long OperatorId { get; set; }
+        public bool IsAvailable { get; set; }
+        public int MaxWip { get; set; }
+        public int CurrentWip { get; set; }
+        public int WipInTransit { get; set; }
+        public int Sequence { get; set; }
     }
 
     public partial class WorkstationCheckIn : Entity<long>
@@ -77,7 +88,7 @@ namespace Imms.Mes.MasterData
         public long MaterialTypeId { get; set; }
         public long UnitId { get; set; }
         public decimal? Width { get; set; }
-        public decimal? Weight { get; set; }        
+        public decimal? Weight { get; set; }
         public decimal? Price { get; set; }
         public string Color { get; set; }
         public string Description { get; set; }
@@ -223,9 +234,37 @@ namespace Imms.Mes.MasterData
         {
             builder.HasDiscriminator("organization_type", typeof(string))
             .HasValue<Plant>(GlobalConstants.TYPE_ORG_PLANT)
-            .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER);
+            .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER)
+            .HasValue<WorkStation>(GlobalConstants.TYPE_ORG_WORK_STATETION);
         }
     }
+
+    public class PlantConfigure : IEntityTypeConfiguration<Plant>
+    {
+        public void Configure(EntityTypeBuilder<Plant> builder)
+        {
+            builder.Ignore(e => e.PlantCode);
+            builder.Ignore(e => e.PlantName);
+        }
+    }
+    public class WorkCenterConfigure : IEntityTypeConfiguration<WorkCenter>
+    {
+        public void Configure(EntityTypeBuilder<WorkCenter> builder)
+        {
+            builder.Ignore(e => e.WorkCenterCode);
+            builder.Ignore(e => e.WorkCenterName);
+        }
+    }
+
+    public class WorkStationConfigure : IEntityTypeConfiguration<WorkStation>
+    {
+        public void Configure(EntityTypeBuilder<WorkStation> builder)
+        {
+            builder.Ignore(e => e.WorkStationCode);
+            builder.Ignore(e => e.WorkStationName);
+        }
+    }
+
 
     public class OperatorCapabilityConfigure : TrackableEntityConfigure<OperatorCapability>
     {
@@ -245,7 +284,6 @@ namespace Imms.Mes.MasterData
             builder.Property(e => e.SkillLevel)
                    .HasColumnName("skill_level")
                    .HasColumnType("tinyint(4)");
-
         }
     }
 
@@ -270,14 +308,32 @@ namespace Imms.Mes.MasterData
         }
     }
 
-    public class TreeCodeConfigure : TrackableEntityConfigure<TreeCode>
+    public class TreeCodeConfigure : IEntityTypeConfiguration<TreeCode>
     {
-        protected override void InternalConfigure(EntityTypeBuilder<TreeCode> builder)
+        public void Configure(EntityTypeBuilder<TreeCode> builder)
         {
             builder.HasDiscriminator("code_type", typeof(string))
                 .HasValue<Size>(GlobalConstants.TYPE_CODE_TABLE_SIZE)
                 .HasValue<MachineType>(GlobalConstants.TYPE_CODE_TABLE_MACHINE_TYPE)
                 ;
+        }
+    }
+
+    public class SizeConfigure : IEntityTypeConfiguration<Size>
+    {
+        public void Configure(EntityTypeBuilder<Size> builder)
+        {
+            builder.Ignore(e => e.SizeCode);
+            builder.Ignore(e => e.SizeName);
+        }
+    }
+
+    public class MachineTypeCofigure : IEntityTypeConfiguration<MachineType>
+    {
+        public void Configure(EntityTypeBuilder<MachineType> builder)
+        {
+            builder.Ignore(e => e.MachineTypeNo);
+            builder.Ignore(e => e.MachineTypeName);
         }
     }
 }

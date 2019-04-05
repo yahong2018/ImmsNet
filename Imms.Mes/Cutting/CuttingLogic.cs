@@ -11,17 +11,25 @@ namespace Imms.Mes.Cutting
 {
     public class CuttingLogic
     {
-        public void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation)
+        public void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation, DbContext dbContext)
         {
-            CommonDAO.UseDbContext((dbContext) =>
-            {
-                cuttingOrder.TimetartPlanned = DateTime.Now;
-                cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成
-                cuttingOrder.WorkStationId = cuttingWorkStation.RecordId;
-                cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
+            cuttingOrder.TimetartPlanned = DateTime.Now;
+            cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成
+            cuttingOrder.WorkStationId = cuttingWorkStation.RecordId;
+            cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
 
-                EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
-                entry.State = EntityState.Modified;
+            EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
+            entry.State = EntityState.Modified;
+        }
+
+        public void PlanCuttingOrders(CuttingOrder[] cuttingOrders, WorkStation cuttingWorkStation)
+        {
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                foreach (CuttingOrder cuttingOrder in cuttingOrders)
+                {
+                    this.PlanCuttingOrder(cuttingOrder, cuttingWorkStation,dbContext);
+                }
 
                 dbContext.SaveChanges();
             });
@@ -39,6 +47,7 @@ namespace Imms.Mes.Cutting
                 ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING;
                 productionOrder.DateStartActual = DateTime.Now;   //开始裁剪表示已开始生产，此时，这个单据不可以被删除。
+                
                 EntityEntry<ProductionOrder> entryProductionOrder = dbContext.Attach<ProductionOrder>(productionOrder);
                 entryProductionOrder.State = EntityState.Modified;
 
@@ -58,7 +67,7 @@ namespace Imms.Mes.Cutting
                 entry.State = EntityState.Modified;
 
                 ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
-                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED;                
+                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED;
 
                 long materialId = dbContext.Set<Bom>().Where(x =>
                    x.IsMainFabric &&

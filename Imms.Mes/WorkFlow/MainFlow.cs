@@ -13,10 +13,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 namespace Imms.Mes.WorkFlow
 {
     /*
+
       1.向CAD、GST发送数据:ProductionOrder
       2.领料完成以后，安排裁剪单:PickingOrder
       3.裁剪完成以后，生成缝制作业单:CuttingOrder
       4.向APS汇报进度:ProductionOrder
+      5.向MCS派工：ProductionWorkOrderRouting
+      6.缝制作业单完成以后，更新ProductoinOrder的进度，同时会触发第4条
      */
     public class MainFlow : IDataChangeNotifyEventListener
     {
@@ -25,11 +28,12 @@ namespace Imms.Mes.WorkFlow
 
         public MainFlow()
         {
-            Handlers.Add(this.PushToGstAndCad);
-            Handlers.Add(this.PushToAps);
+            Handlers.Add(this.SynchronizeProductionOrderToGstAndCad);
+            Handlers.Add(this.ReporOrderStatusToAps);
             Handlers.Add(this.PlanCuttingOrder);
-            Handlers.Add(this.OnProductionWorkOrderFinished);
-            Handlers.Add(this.OnWorkOrderRoutingFinished);
+            Handlers.Add(this.CreateProductionWorkOrder);
+            Handlers.Add(this.DispatchWorkOrderRouting);
+            Handlers.Add(this.OnProductionWorkOrderFinished);            
         }
 
         public Type[] ListenTypes
@@ -48,8 +52,6 @@ namespace Imms.Mes.WorkFlow
             //PickingOrder:如果领料完成，则安排裁剪单
             //CuttingOrder:如果裁剪完成，则生成缝制作业单
             //
-            //ProductionWorkOrderRouting:如果是最后一道工序，则作业单完成，否则派工到下一道工序。
-            //
             //ProductionWorkOrder:如果缝制作业单已全部完成，则PO状态为已完成，否则修改PO的完成数量
             //
             foreach (ProcessHandler handler in this.Handlers)
@@ -58,22 +60,20 @@ namespace Imms.Mes.WorkFlow
             }
         }
 
-        private void PushToGstAndCad(DataChangedNotifyEvent e)
+        private void SynchronizeProductionOrderToGstAndCad(DataChangedNotifyEvent e)
         {
-            ProductionOrder productionOrder = e.Entity as ProductionOrder;
             //初始化状态的订单，系统会自动推送给GST和CAD
-            if (productionOrder == null || productionOrder.OrderStatus != GlobalConstants.STATUS_ORDER_INITIATE)
+            if (!(e.Entity is ProductionOrder productionOrder) || productionOrder.OrderStatus != GlobalConstants.STATUS_ORDER_INITIATE)
             {
                 return;
             }
 
         }
 
-        private void PushToAps(DataChangedNotifyEvent e)
+        private void ReporOrderStatusToAps(DataChangedNotifyEvent e)
         {
-            ProductionOrder productionOrder = e.Entity as ProductionOrder;
             //只有订单状态有更改才会推送给APS
-            if (productionOrder == null || e.DMLType != GlobalConstants.DML_OPERATION_UPDATE)
+            if (!(e.Entity is ProductionOrder productionOrder) || e.DMLType != GlobalConstants.DML_OPERATION_UPDATE)
             {
                 return;
             }
@@ -81,9 +81,8 @@ namespace Imms.Mes.WorkFlow
 
         private void PlanCuttingOrder(DataChangedNotifyEvent e)
         {
-            PickingOrder pickingOrder = e.Entity as PickingOrder;
             //领料完成，进行裁剪计划安排
-            if (pickingOrder == null || pickingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
+            if (!(e.Entity is PickingOrder pickingOrder) || pickingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
             {
                 return;
             }
@@ -97,65 +96,48 @@ namespace Imms.Mes.WorkFlow
                 x.PickingOrderId == pickingOrder.RecordId
                 && x.OrderStatus == GlobalConstants.STATUS_ORDER_INITIATE
             );
-            foreach (CuttingOrder cuttingOrder in cuttingOrders)
-            {
-                CuttingLogic.PlanCuttingOrder(cuttingOrder, cuttingWorkStation);
-            }
+            CuttingLogic.PlanCuttingOrders(cuttingOrders, cuttingWorkStation);
         }
 
-        public void CreateProductionWorkOrder(DataChangedNotifyEvent e)
+        private void CreateProductionWorkOrder(DataChangedNotifyEvent e)
         {
-            CuttingOrder cuttingOrder = e.Entity as CuttingOrder;
-            if (cuttingOrder == null)
+            //裁剪完成以后，生成缝制作业单
+            if (!(e.Entity is CuttingOrder cuttingOrder) || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
             {
                 return;
             }
 
-            this.ProductionLogic.CreateCuttedWorkOrder(cuttingOrder);
+            this.ProductionLogic.CreateStitchWorkOrder(cuttingOrder);
         }
 
-        public void OnWorkOrderRoutingFinished(DataChangedNotifyEvent e)
+        private void DispatchWorkOrderRouting(DataChangedNotifyEvent e)
         {
-            ProductionWorkOrderRouting workOrderRouting = e.Entity as ProductionWorkOrderRouting;
-            if (workOrderRouting == null || workOrderRouting.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
+            //派工:向MCS发送派工信息
+            if (!(e.Entity is ProductionWorkOrderRouting workOrderRouting) || workOrderRouting.OrderStatus != GlobalConstants.STATUS_ORDER_PLANNED)
+            {
+                return;
+            }
+            //
+            //向MCS发送派工信息
+            //
+        }
+
+        private void OnProductionWorkOrderFinished(DataChangedNotifyEvent e)
+        {
+            //缝制作业单完成以后，更新生产订单的状态
+            if (!(e.Entity is ProductionWorkOrder workOrder)
+                || workOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
             {
                 return;
             }
 
-            CommonDAO.UseDbContext(dbContext =>
+            ProductionOrder productionOrder = CommonDAO.GetOneByFilter<ProductionOrder>(x => x.RecordId == workOrder.ProductionOrderId);
+            productionOrder.QtyFinished += 1;
+            if (productionOrder.QtyFinished == productionOrder.QtyActual)
             {
-                ProductionWorkOrder workOrder = dbContext.Set<ProductionWorkOrder>()
-                                    .Where(x => x.RecordId == workOrderRouting.ProductionWorkOrderId)                                      
-                                    .Single();
-
-                bool isLastRouting = dbContext.Set<OperationRouting>().Where(x =>
-                     x.OperationRoutingOrderId == workOrder.OperationRoutingOrderId
-                     && x.RecordId == workOrderRouting.OperationRoutingId
-                     && x.NextRoutingId == null
-                     ).Count() > 0;
-
-                if (isLastRouting)
-                {
-                    workOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
-                    workOrder.TimeActualEnd = DateTime.Now;
-                    EntityEntry<ProductionWorkOrder> workOrderEntry = dbContext.Entry<ProductionWorkOrder>(workOrder);
-                    workOrderEntry.State = EntityState.Modified;               
-                }
-
-                dbContext.SaveChanges();
-            });
-        }
-
-        public void OnProductionWorkOrderFinished(DataChangedNotifyEvent e)
-        {
-            ProductionWorkOrder workOrder = e.Entity as ProductionWorkOrder;
-            if(workOrder==null || workOrder.OrderStatus!=GlobalConstants.STATUS_ORDER_FINISHED)            {
-                return;
+                productionOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
             }
-
-            ProductionOrder productionOrder = CommonDAO.GetOneByFilter<ProductionOrder>(x=>x.RecordId==workOrder.ProductionOrderId);
-            productionOrder.QtyFinished +=1;           
-
+            CommonDAO.Update(productionOrder);
         }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();

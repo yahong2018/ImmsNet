@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Imms.Data;
+using Imms.Data.Domain;
 using Imms.Mes.Cutting;
 using Imms.Mes.MasterData;
 using Imms.Mes.Picking;
@@ -33,7 +35,7 @@ namespace Imms.Mes.Stitch
         //
         //作业单工艺报工
         //
-        public void FinishWorkOrderRouting(ProductionWorkOrderRouting workOrderRouting)
+        public void WorkOrderRoutingReport(ProductionWorkOrderRouting workOrderRouting)
         {
             CommonDAO.UseDbContext(dbContext =>
             {
@@ -43,14 +45,149 @@ namespace Imms.Mes.Stitch
                 EntityEntry<ProductionWorkOrderRouting> routingEntry = dbContext.Entry<ProductionWorkOrderRouting>(workOrderRouting);
                 routingEntry.State = EntityState.Modified;
 
+                ProductionWorkOrder workOrder = dbContext.Set<ProductionWorkOrder>()
+                    .Where(x => x.RecordId == workOrderRouting.ProductionWorkOrderId)
+                    .Single();
+                //如果是最后一道工艺则报工，否则派工到下一(N)道工艺
+                OperationRouting currentRouting = dbContext.Set<OperationRouting>().Where(x => x.RecordId == workOrderRouting.OperationRoutingId).Include(x => x.NextRouting).Single();
+                bool isLastRouting = (currentRouting.NextRouting == null);
+                if (isLastRouting)
+                {
+                    workOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
+                    workOrder.TimeActualEnd = DateTime.Now;
+                    EntityEntry<ProductionWorkOrder> workOrderEntry = dbContext.Entry<ProductionWorkOrder>(workOrder);
+                    workOrderEntry.State = EntityState.Modified;
+                }
+                else
+                {
+                    ProductionWorkOrderRouting nextWorkOrderRouting = dbContext.Set<ProductionWorkOrderRouting>().Where(x =>
+                        x.OperationRoutingId == currentRouting.NextRoutingId
+                         && x.ProductionWorkOrderId == workOrderRouting.ProductionWorkOrderId
+                    ).Single();
+                    ThreadPool.QueueUserWorkItem<ProductionWorkOrderRouting[]>(this.ScheduleWorkOrderRouting,
+                       new ProductionWorkOrderRouting[] { workOrderRouting, nextWorkOrderRouting },
+                       false
+                    );
+                }
+
                 dbContext.SaveChanges();
             });
+        }
+
+        private void ScheduleWorkOrderRouting(ProductionWorkOrderRouting[] workOrderRoutings)
+        {
+            ProductionWorkOrderRouting currentWorkOrderRouting = workOrderRoutings[0];
+            ProductionWorkOrderRouting nextWorkOrderRouting = workOrderRoutings[1];
+            this.ScheduleWorkOrderRouting(currentWorkOrderRouting, nextWorkOrderRouting);
+        }
+
+        //
+        //派工
+        //
+        public void ScheduleWorkOrderRouting(ProductionWorkOrderRouting prevWorkOrderRouting, ProductionWorkOrderRouting currentWorkOrderRouting)
+        {
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                WorkStation prevWorkStation = SingletonDataService.Instance.WorkStations.Where(x => x.RecordId == prevWorkOrderRouting.WorkStationId).Single();
+                OperationRouting operationRouting = dbContext.Set<OperationRouting>().Where(x => x.RecordId == currentWorkOrderRouting.OperationRoutingId).Single();
+                lock (SingletonDataService.Instance)
+                {
+                    var workStationWrapper = (
+                        from w in SingletonDataService.Instance.WorkStations
+                        join c in SingletonDataService.Instance.OperatorCapabilities on w.OperatorId equals c.OperatorId
+                        where w.IsOnLine        //工位已联线
+                             && w.IsAvailable   //工位可用
+                             && w.MachineTypeId == operationRouting.MachineTypeId  //机器类型匹配
+                             && (w.CurrentWip + w.WipInTransit) < w.MaxWip         //WIP
+                             && c.OperationId == operationRouting.OperationId      //工艺
+                             && c.SkillLevel >= operationRouting.RequiredLevel     //技能等级                        
+                        select new
+                        {
+                            WorkStation = w,
+                            SkillLevel = c.SkillLevel,
+                            Distance = this.ComputeWorkStationDispatchDistance(prevWorkStation, w)
+                        }
+                    ).OrderBy(x => x.Distance)    //距离最短
+                    .OrderBy(x => x.WorkStation.WipInTransit + x.WorkStation.CurrentWip) //WIP最小
+                    .OrderByDescending(x => x.SkillLevel)   //技能最高
+                    .OrderBy(x => x.WorkStation.RecordId)   // 编号最小
+                    .FirstOrDefault();
+
+                    if (workStationWrapper == null)
+                    {
+                        return;
+                    }
+
+                    //进行派工
+                    WorkStation currentWorkStation = workStationWrapper.WorkStation;
+                    currentWorkStation.WipInTransit += 1;
+                    SingletonDataService.Instance.UpdateWorkStation(currentWorkStation, dbContext);
+
+                    currentWorkOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
+                    currentWorkOrderRouting.TimeScheduled = DateTime.Now;
+                    currentWorkOrderRouting.WorkStationId = currentWorkStation.RecordId;
+                    EntityEntry<ProductionWorkOrderRouting> workRorderRoutingEntry = dbContext.Entry(currentWorkOrderRouting);
+                    workRorderRoutingEntry.State = EntityState.Modified;
+
+                    dbContext.SaveChanges();
+                }
+            });
+        }
+
+        //
+        //计算两个工位之间的派工距离:单主轨、单向行驶
+        //
+        public int ComputeWorkStationDispatchDistance(WorkStation a, WorkStation b)
+        {
+            ProductionLine lineA = SingletonDataService.Instance.ProudctionLines.Where(x => x.RecordId == a.ParentOrganizationId).Single();
+            ProductionLine lineB = SingletonDataService.Instance.ProudctionLines.Where(x => x.RecordId == b.ParentOrganizationId).Single();
+            if (a.ParentOrganizationId == b.ParentOrganizationId)
+            {   //同产线
+                return ComputeWorkStationDispatchDistance(lineA, a, b);
+            }
+            else
+            {
+                int lineDistance = SingletonDataService.Instance.ProudctionLines.Where(x => x.Sequence > lineA.Sequence && x.Sequence <= lineB.Sequence).Sum(x => x.LineDistance);
+                if (lineA.Sequence < lineB.Sequence) //不同产线：从小号产线往大号产线派工
+                {
+                    return lineDistance + this.ComputeWorkStationDispatchDistance(lineA, a, b);
+                }
+                else //不同产线：从大号产线往小号产线派工                    
+                {
+                    int mainOrbitLength = SingletonDataService.Instance.WorkCenters.Where(x => x.RecordId == lineA.ParentOrganizationId).Select(x => x.MainOrbitLength).Single();
+                    return (mainOrbitLength - lineDistance) + this.ComputeWorkStationDispatchDistance(lineA, a, b);
+                }
+            }
+        }
+
+        private int ComputeWorkStationDispatchDistance(ProductionLine lineA, WorkStation a, WorkStation b)
+        {
+            int workStationCount = SingletonDataService.Instance.WorkStations.Where(x => x.ParentOrganizationId == lineA.RecordId).Count();
+            if (a.Sequence < b.Sequence)
+            {
+                if (a.ParentOrganizationId == b.ParentOrganizationId)
+                {
+                    return b.Sequence - a.Sequence;
+                }
+                else
+                {
+                    return workStationCount + (b.Sequence - a.Sequence);
+                }
+            }
+            else
+            {
+                if (a.ParentOrganizationId == b.ParentOrganizationId)
+                {
+                    workStationCount += workStationCount; //单向行驶，同产线要多转半圈
+                }
+                return workStationCount - (b.Sequence - a.Sequence);
+            }
         }
 
         //
         //生成缝制作业单
         //
-        public ProductionWorkOrder[] CreateCuttedWorkOrder(CuttingOrder cuttingOrder)
+        public ProductionWorkOrder[] CreateStitchWorkOrder(CuttingOrder cuttingOrder)
         {
             //裁剪完成，安排缝制作业单
             if (cuttingOrder == null
@@ -123,10 +260,12 @@ namespace Imms.Mes.Stitch
 
         private BomOrder CreateWorkOrderBom(ProductionOrder productionOrder, CuttingOrder cuttingOrder, IQueryable<Bom> boms)
         {
-            BomOrder bomOrder = new BomOrder();
-            bomOrder.BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER;
-            bomOrder.MaterialId = cuttingOrder.FgMaterialId;
-            bomOrder.OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL;
+            BomOrder bomOrder = new BomOrder
+            {
+                BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER,
+                MaterialId = cuttingOrder.FgMaterialId,
+                OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL
+            };
 
             foreach (Bom bom in boms)
             {
