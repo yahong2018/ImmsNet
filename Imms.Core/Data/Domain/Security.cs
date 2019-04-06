@@ -15,16 +15,15 @@ namespace Imms.Data.Domain
         public bool IsOnline { get; set; }
         public DateTime? LastLoginTime { get; set; }
 
-        // public override string ToString()
-        // {
-        //     return $"UserCode:{this.UserCode},UserName:{this.UserName},UserStatus:{this.UserStatus},Email:{this.Email}"
-        //           + $"IsOnLine:{this.IsOnline},LastLoinTime:{this.LastLoginTime}";
-        // }
+        public virtual List<RoleUser> Roles { get; set; } = new List<RoleUser>();
     }
     public partial class SystemRole : Entity<long>
     {
         public string RoleCode { get; set; }
         public string RoleName { get; set; }
+
+        public virtual List<RoleUser> Users { get; set; } = new List<RoleUser>();
+        public virtual List<RolePrivilege> Privileges { get; set; } = new List<RolePrivilege>();
     }
 
     public partial class SystemProgram : Entity<string>
@@ -36,12 +35,20 @@ namespace Imms.Data.Domain
         public int ShowOrder { get; set; }
         public string Parameters { get; set; }
         public string ParentId { get; set; }
+
+        public virtual List<ProgramPrivilege> Privielges { get; set; } = new List<ProgramPrivilege>();
+
+        public virtual List<SystemProgram> Children { get; set; } = new List<SystemProgram>();
+        public virtual SystemProgram Parent { get; set; }
     }
 
     public partial class RoleUser : Entity<long>
     {
         public long RoleId { get; set; }
         public long UserId { get; set; }
+
+        public virtual SystemRole Role { get; set; }
+        public virtual SystemUser User { get; set; }        
     }
 
     public partial class RolePrivilege : Entity<long>
@@ -50,6 +57,9 @@ namespace Imms.Data.Domain
         public long RoleId { get; set; }
         public string ProgramId { get; set; }
         public string PrivilegeCode { get; set; }
+
+        public virtual ProgramPrivilege PorgramPrivielge { get; set; }
+        public virtual SystemRole Role { get; set; }        
     }
 
     public partial class ProgramPrivilege : Entity<long>
@@ -57,6 +67,8 @@ namespace Imms.Data.Domain
         public string ProgramId { get; set; }
         public string PrivilegeCode { get; set; }
         public string PrivilegeName { get; set; }
+
+        public virtual SystemProgram Program { get; set; }
     }
 
     public class ProgramPrivilegeConfigure : EntityConfigure<ProgramPrivilege>
@@ -69,6 +81,8 @@ namespace Imms.Data.Domain
             builder.Property(e => e.PrivilegeCode).IsRequired().HasColumnName("privilege_code").HasMaxLength(50).IsUnicode(false);
             builder.Property(e => e.PrivilegeName).IsRequired().HasColumnName("privilege_name").HasMaxLength(120).IsUnicode(false);
             builder.Property(e => e.ProgramId).IsRequired().HasColumnName("program_id").HasMaxLength(50).IsUnicode(false);
+
+            builder.HasOne(e => e.Program).WithMany(e => e.Privielges).HasForeignKey(x => x.ProgramId).HasConstraintName("program_id");
         }
     }
 
@@ -83,6 +97,9 @@ namespace Imms.Data.Domain
             builder.Property(e => e.ProgramId).IsRequired().HasColumnName("program_id").HasMaxLength(50).IsUnicode(false);
             builder.Property(e => e.ProgramPrivilegeId).HasColumnName("program_privilege_id").HasColumnType("bigint(20)");
             builder.Property(e => e.RoleId).HasColumnName("role_id").HasColumnType("bigint(20)");
+
+            builder.HasOne(e => e.Role).WithMany(e => e.Privileges).HasForeignKey(e => e.RoleId).HasConstraintName("role_id");
+            builder.HasOne(e => e.PorgramPrivielge).WithMany().HasForeignKey(e => e.ProgramPrivilegeId).HasConstraintName("program_privilege_id");
         }
     }
     public class RoleUserConfigure : EntityConfigure<RoleUser>
@@ -94,6 +111,9 @@ namespace Imms.Data.Domain
 
             builder.Property(e => e.RoleId).HasColumnName("role_id").HasColumnType("bigint(20)");
             builder.Property(e => e.UserId).HasColumnName("user_id").HasColumnType("bigint(20)");
+
+            builder.HasOne(e => e.User).WithMany(e => e.Roles).HasForeignKey(e => e.UserId).HasConstraintName("user_id");
+            builder.HasOne(e => e.Role).WithMany(e => e.Users).HasForeignKey(e => e.RoleId).HasConstraintName("role_id");
         }
     }
 
@@ -111,6 +131,8 @@ namespace Imms.Data.Domain
             builder.Property(e => e.ProgramName).IsRequired().HasColumnName("program_name").HasMaxLength(120).IsUnicode(false);
             builder.Property(e => e.ShowOrder).HasColumnName("show_order").HasColumnType("int(11)");
             builder.Property(e => e.Url).IsRequired().HasColumnName("url").HasMaxLength(255).IsUnicode(false);
+
+            builder.HasMany(e => e.Children).WithOne(e => e.Parent).HasForeignKey(e => e.ParentId).HasConstraintName("parent_id").HasPrincipalKey(x => x.RecordId);
         }
     }
 

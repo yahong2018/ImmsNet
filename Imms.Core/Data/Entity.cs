@@ -44,15 +44,15 @@ namespace Imms.Data
 
         public override string ToString()
         {
-            Type type = this.GetType();
+            Guid key = this.GetType().GUID;
             lock (_Properties)
             {
-                if (!_Properties.ContainsKey(type))
+                if (!_Properties.ContainsKey(key))
                 {
-                    _Properties.Add(type, type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+                    _Properties.Add(key, this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
                 }
             }
-            PropertyInfo[] properties = _Properties[type];
+            PropertyInfo[] properties = _Properties[key];
             StringBuilder stringBuilder = new StringBuilder();
             foreach (PropertyInfo property in properties)
             {
@@ -68,7 +68,7 @@ namespace Imms.Data
             return stringBuilder.ToString();
         }
 
-        private static readonly SortedList<Type, PropertyInfo[]> _Properties = new SortedList<Type, PropertyInfo[]>();
+        private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();
     }
 
     public interface ITrackableEntity
