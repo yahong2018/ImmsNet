@@ -93,6 +93,7 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new Imms.Data.Domain.TreeCodeConfigure());
             modelBuilder.ApplyConfiguration(new PlanCodeConfigure());
             modelBuilder.ApplyConfiguration(new CodeSeedConfigure());
+            modelBuilder.ApplyConfiguration(new MaterialUnitConfigure());
             modelBuilder.ApplyConfiguration(new Imms.Data.Domain.WorkOrganizationUnitConfigure());            
 
             base.OnModelCreating(modelBuilder);

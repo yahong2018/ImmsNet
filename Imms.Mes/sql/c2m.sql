@@ -58,10 +58,7 @@ create table tree_code  (
   code_no                            varchar(10)                    not null,         -- 编码
   code_name                          varchar(30)                    not null,         -- 名称
   description                        varchar(250)                   null,            -- 描述
-
-  parent_id                          bigint                         not null default 0,        -- 上级
-  code_no_path                       varchar(110)                   not null,        -- 最大层级为10级，中间以'\'隔开
-  code_name_path                     varchar(330)                   not null,
+  parent_id                          bigint                         not null default 0,        -- 上级  
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -76,10 +73,10 @@ create table tree_code  (
   index idx_tree_code_04(code_type)
 );
 
-insert into tree_code (code_type, code_no,code_name, description, parent_id, code_no_path, code_name_path,create_by,create_date ) values (0,'sz','尺码', null, 0,'sz','尺码',1,sysdate());
-insert into tree_code (code_type, code_no,code_name, description, parent_id, code_no_path, code_name_path,create_by,create_date ) values (1,'dfect', '缺陷代码', null, 0,'defect','缺陷代码',1,sysdate());
-insert into tree_code (code_type, code_no,code_name, description, parent_id, code_no_path, code_name_path,create_by,create_date ) values (2,'equipment', '设备类别', null, 0,'equipment','设备类别',1,sysdate());
-insert into tree_code (code_type, code_no,code_name, description, parent_id, code_no_path, code_name_path,create_by,create_date ) values (3,'material', '物料类别', null, 0,'material','物料类别',1,sysdate());
+insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (0,'size','尺码', null, 0,1,sysdate());
+insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (1,'defect', '缺陷代码', null, 0,1,sysdate());
+insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (2,'equipment', '设备类别', null, 0,1,sysdate());
+insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (3,'material', '物料类别', null, 0,1,sysdate());
 
 --
 -- 生产组织单元
@@ -95,7 +92,7 @@ create table work_organization_unit  (
 
   main_orbit_length        int                             not null default 0, -- 主轨长度(工作中心专用)：以工位间隔为单位  
   line_distance            int                             not null default 0, -- 相对前一产线的间隔(生产线专用)
-  work_station_type        varchar(50)                     not null default ''，-- 工作中心类型
+  work_station_type        varchar(50)                     not null default '', -- 工作中心类型
   machine_type_id          bigint                          not null default 0,  -- 机器类型
   is_on_line               bit                             not null default 1,  -- 是否在线
   operator_id              bigint                          not null default 0,  -- 当前操作员
@@ -111,7 +108,9 @@ create table work_organization_unit  (
   opt_flag                             int                          not null default 0,
 
   primary key (record_id) ,  
-  index idx_work_organization_unit_01(organization_code) 
+  index idx_work_organization_unit_01(organization_code),
+  index idx_work_organization_unit_02(organization_type),
+  index idx_work_organization_unit_03(parent_organization_id)
 );
 
 --

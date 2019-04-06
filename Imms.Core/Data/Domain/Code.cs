@@ -37,8 +37,9 @@ namespace Imms.Data.Domain
         public string CodeName { get; set; }
         public string Description { get; set; }
         public long ParentId { get; set; }
-        public string CodeNoPath { get; set; }
-        public string CodeNamePath { get; set; }
+
+        public virtual List<TreeCode> Children { get; set; } = new List<TreeCode>();
+        public virtual TreeCode Parent { get; set; }
     }
 
     public class TreeCodeConfigure : TrackableEntityConfigure<TreeCode>
@@ -48,12 +49,12 @@ namespace Imms.Data.Domain
             base.InternalConfigure(builder);
             builder.ToTable("tree_code");
 
-            builder.Property(e => e.CodeName).IsRequired().HasColumnName("code_name").HasMaxLength(30).IsUnicode(false);
-            builder.Property(e => e.CodeNamePath).IsRequired().HasColumnName("code_name_path").HasMaxLength(330).IsUnicode(false);
             builder.Property(e => e.CodeNo).IsRequired().HasColumnName("code_no").HasMaxLength(10).IsUnicode(false);
-            builder.Property(e => e.CodeNoPath).IsRequired().HasColumnName("code_no_path").HasMaxLength(110).IsUnicode(false);
+            builder.Property(e => e.CodeName).IsRequired().HasColumnName("code_name").HasMaxLength(30).IsUnicode(false);
             builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(250).IsUnicode(false);
             builder.Property(e => e.ParentId).HasColumnName("parent_id").HasColumnType("bigint(20)").HasDefaultValueSql("0");
+
+            builder.HasMany(e => e.Children).WithOne(e => e.Parent).HasForeignKey(e => e.ParentId).HasConstraintName("parent_id");
         }
     }
 
@@ -78,8 +79,8 @@ namespace Imms.Data.Domain
     {
         public void Configure(EntityTypeBuilder<MaterialUnit> builder)
         {
-            builder.Ignore(e=>e.UnitNo);
-            builder.Ignore(e=>e.UnitName);
+            builder.Ignore(e => e.UnitNo);
+            builder.Ignore(e => e.UnitName);
         }
     }
 

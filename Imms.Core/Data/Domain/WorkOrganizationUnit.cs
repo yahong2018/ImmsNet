@@ -15,6 +15,9 @@ namespace Imms.Data.Domain
         public int SequenceNo { get; set; }
         public string Description { get; set; }
         public long ParentOrganizationId { get; set; }
+
+        public virtual List<WorkOrganizationUnit> Children{get;set;}=new List<WorkOrganizationUnit>();
+        public virtual WorkOrganizationUnit Parent{get;set;}
     }
 
     public class WorkOrganizationUnitConfigure : TrackableEntityConfigure<WorkOrganizationUnit>
@@ -29,6 +32,8 @@ namespace Imms.Data.Domain
             builder.Property(e=>e.SequenceNo).HasColumnName("sequence_no");
             builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(250).IsUnicode(false);
             builder.Property(e => e.ParentOrganizationId).HasColumnName("parent_organization_id").HasColumnType("bigint(20)");
+
+            builder.HasMany(e=>e.Children).WithOne(e=>e.Parent).HasForeignKey(e=>e.ParentOrganizationId).HasConstraintName("parent_organization_id");
         }
     }
 }
