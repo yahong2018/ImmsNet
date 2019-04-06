@@ -6,38 +6,13 @@ using Xunit;
 
 namespace Imms.Test
 {
-    public class CoreDbContextTest
+    public class AdminQueryTest
     {
-        static CoreDbContextTest()
+        static AdminQueryTest()
         {
             GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
         }
-        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
-
-        //  [Fact]        
-        public void TestSystemUserInsertAndSelect(DbContext dbContext)
-        {
-            SystemUser theNewUser = CreateNewUser();
-            dbContext.Set<SystemUser>().Add(theNewUser);
-            Assert.True(dbContext.SaveChanges() == 1);
-            foreach (SystemUser user in dbContext.Set<SystemUser>())
-            {
-                Console.WriteLine(user.ToString());
-            }
-        }
-
-        private SystemUser CreateNewUser()
-        {
-            SystemUser user = new SystemUser();
-            user.UserCode = "C00001";
-            user.UserName = "刘永红";
-            user.Pwd = "123456";
-            user.Email = "yonghong.liu@zhxh.com";
-            user.IsOnline = false;
-            user.LastLoginTime = DateTime.Now.AddDays(-1);
-
-            return user;
-        }
+        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();        
 
         [Fact]
         public void TestGetRoleUser()
