@@ -13,6 +13,7 @@ namespace Imms.Mes.Picking
     {
         public long ProductionOrderId { get; set; }
         public long PickingBomOrderId { get; set; }//如果是手工建领料单，则需要手工建一个领料的BomOrder和Boms
+        public int OrderType { get; set; }   //领料单类型：裁剪面料、辅料
         public int Priority { get; set; }
 
         public DateTime TimeStartPlanned { get; set; }

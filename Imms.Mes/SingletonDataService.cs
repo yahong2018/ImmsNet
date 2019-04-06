@@ -11,8 +11,9 @@ namespace Imms.Mes
 
         public List<WorkStation> WorkStations { get; set; }
         public List<OperatorCapability> OperatorCapabilities { get; set; }
-        public List<ProductionLine> ProudctionLines { get; set; }
+        public List<WorkLine> ProudctionLines { get; set; }
         public List<WorkCenter> WorkCenters{get;set;}
+        public List<Size> Sizes{get;set;}
 
         public void UpdateWorkStation(WorkStation workStation, DbContext dbContext)
         {

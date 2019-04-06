@@ -31,7 +31,7 @@ namespace Imms.Mes.Cutting
             SystemUser user = CommonDAO.AssureExistsByFilter<SystemUser>(x => x.UserCode == operatorCode);
             cuttingOrder.OperatorId = user.RecordId;
 
-            CuttingLogic.CuttingOrderStarted(cuttingOrder);
+            CuttingLogic.StartCuttingOrder(cuttingOrder);
         }
 
         [HttpPost("CuttingFinished")]
@@ -47,7 +47,7 @@ namespace Imms.Mes.Cutting
         public string CuttingOrdreNo;
         public string ContainerNo;
         public string OperatorCode;
-        public SortedDictionary<string, int> Sizes { get; set; } = new SortedDictionary<string, int>();
+        public SortedDictionary<long, int> Sizes { get; set; } = new SortedDictionary<long, int>();
 
         public CuttingOrder ToCuttingOrder()
         {
@@ -58,10 +58,10 @@ namespace Imms.Mes.Cutting
                 result.ContainerNo = this.ContainerNo;
                 SystemUser user = dbContext.Set<SystemUser>().Where(x => x.UserCode == this.OperatorCode).Single();
                 result.OperatorId = user.RecordId;
-                foreach (KeyValuePair<string, int> item in this.Sizes)
+                foreach (KeyValuePair<long, int> item in this.Sizes)
                 {
-                    CuttingOrderSize size =  result.Sizes.Where(x=>x.Size==item.Key).Single();
-                    size.QtyActual = item.Value;                    
+                    CuttingOrderSize size =  result.Sizes.Where(x=>x.SizeId==item.Key).Single();
+                    size.QtyFinished = item.Value;                    
                 }
             });
 

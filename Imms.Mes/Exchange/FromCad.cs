@@ -48,11 +48,11 @@ namespace Imms.Mes.Exchange
 
             CommonDAO.UseDbContext((dbContext) =>
             {
-                PickingOrder pickingOrder = this.CreatePickingOrder(dto, productionOrder, dbContext);
+                PickingOrder[] pickingOrders = this.CreatePickingOrder(dto, productionOrder, dbContext);
                 List<CuttingOrder> cuttingOrders = this.AddCuttingOrders(dto, productionOrder, dbContext);
                 foreach (CuttingOrder cuttingOrder in cuttingOrders)
                 {
-                    cuttingOrder.PickingOrder = pickingOrder;
+                    cuttingOrder.PickingOrder = pickingOrders[0]; //第0个领料单为裁剪料的领料单
                 }
 
                 this.AddQualityChecks(dto, productionOrder);
@@ -66,7 +66,8 @@ namespace Imms.Mes.Exchange
         private void UpdateProducitonData(ProductionOrder productionOrder, DbContext dbContext)
         {
             EntityEntry<ProductionOrder> entry = dbContext.Attach<ProductionOrder>(productionOrder);
-            productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_TECH_ALL_READY;
+            productionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY);  //BOM已准备
+            productionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY);//裁剪技术文件已准备
             entry.State = EntityState.Modified;
         }
 
@@ -95,16 +96,35 @@ namespace Imms.Mes.Exchange
             return cuttingOrders;
         }
 
-        private PickingOrder CreatePickingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
+        private PickingOrder[] CreatePickingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
         {
-            List<Bom> boms = this.GetMaterialPickingBoms(dto, productionOrder);
-            BomOrder pickingBomOrder = PickingLogic.CreatePickingBomOrder(productionOrder, boms);
-            dbContext.Set<BomOrder>().Add(pickingBomOrder);
+            PickingOrder[] result = new PickingOrder[2];
+            List<Bom>[] boms = this.GetMaterialPickingBoms(dto, productionOrder);
+            BomOrder[] pickingBomOrders = this.CreatePickingBomOrders(productionOrder, boms);
+            dbContext.Set<BomOrder>().AddRange(pickingBomOrders);
 
-            PickingOrder pickingOrder = PickingLogic.CreatePickingOrder(productionOrder, pickingBomOrder);
-            dbContext.Set<PickingOrder>().Add(pickingOrder);
+            PickingOrder[] pickingOrders = this.CreatePickingOrders(productionOrder, pickingBomOrders);
+            dbContext.Set<PickingOrder>().AddRange(pickingOrders);
 
-            return pickingOrder;
+            return result;
+        }
+
+        private BomOrder[] CreatePickingBomOrders(ProductionOrder productionOrder, List<Bom>[] pickingBoms)
+        {
+            BomOrder[] result = new BomOrder[2];
+            result[0] = PickingLogic.CreatePickingBomOrder(productionOrder, pickingBoms[0]);
+            result[1] = PickingLogic.CreatePickingBomOrder(productionOrder, pickingBoms[1]);
+
+            return result;
+        }
+
+        private PickingOrder[] CreatePickingOrders(ProductionOrder productionOrder, BomOrder[] pickingBomOrders)
+        {
+            PickingOrder[] result = new PickingOrder[2];
+            result[0] = PickingLogic.CreatePickingOrder(productionOrder, pickingBomOrders[0], GlobalConstants.TYPE_PICKING_ORDER_CUTTING);
+            result[1] = PickingLogic.CreatePickingOrder(productionOrder, pickingBomOrders[1], GlobalConstants.TYPE_PICKING_ORDER_STITCH);
+
+            return result;
         }
 
         private List<ProductionOrderPatternRelation> ImportPartterImage(ProductionOrderTailerDTO dto)
@@ -206,9 +226,10 @@ namespace Imms.Mes.Exchange
                     CuttingOrderSize cuttingOrderSize = new CuttingOrderSize();
                     cuttingOrderSize.CuttingOrder = cuttingOrder;
                     cuttingOrderSize.QtyPlanned = size.Qty;
-                    cuttingOrderSize.Size = size.Size;
+                    Size innerSize = SingletonDataService.Instance.Sizes.Where(x => x.CodeNo == size.Size).Single();
+                    cuttingOrderSize.SizeId = innerSize.RecordId;
                     cuttingOrderSize.QtyLayer = 1;
-                    cuttingOrderSize.QtyActual = 0;
+                    cuttingOrderSize.QtyFinished = 0;
 
                     cuttingOrder.Sizes.Add(cuttingOrderSize);
                 }
@@ -279,29 +300,38 @@ namespace Imms.Mes.Exchange
             return cuttingOrder;
         }
 
-        private List<Bom> GetMaterialPickingBoms(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private List<Bom>[] GetMaterialPickingBoms(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
         {
+            List<Bom>[] result = new List<Bom>[2];
+            List<Bom> cuttingBomList = new List<Bom>();
+            List<Bom> stitchBomList = new List<Bom>();
+            result[0] = cuttingBomList;
+            result[1] = stitchBomList;
+
             //
             //1.更新主料
             //2.更新辅料
             //
             using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
             {
-                var boms = (from b in dbContext.Set<Bom>()
-                            join m in dbContext.Set<Material>() on b.ComponentMaterialId equals m.RecordId
-                            where b.BomOrderId == productionOrder.BomOrderId
-                            select new
-                            {
-                                InnerBom = b,
-                                m.MaterialNo
-                            }
-                    );
+                var allBoms = (from b in dbContext.Set<Bom>()
+                               join m in dbContext.Set<Material>() on b.ComponentMaterialId equals m.RecordId
+                               where b.BomOrderId == productionOrder.BomOrderId
+                               select new
+                               {
+                                   InnerBom = b,
+                                   m.MaterialNo
+                               }
+                    ).ToList();
+                var stiches = (from b in allBoms where !(dto.ComponentUsages.Select(c => c.ComponentNo).Contains(b.MaterialNo)) select b).ToList();
+                var cuttings = (from b in allBoms where (dto.ComponentUsages.Select(c => c.ComponentNo).Contains(b.MaterialNo)) select b).ToList();
+
                 //
                 //主料：返回的物料编码如果在生产BOM里面有的话就直接更新，如果没有的话就根据返回的物料找它的子件，用量更新在子件上（抽象BOM）。
                 //
                 foreach (ComponentUsageDTO usage in dto.ComponentUsages)
                 {
-                    var theBom = boms.Where(x => x.MaterialNo == usage.ComponentNo).FirstOrDefault();
+                    var theBom = cuttings.Where(x => x.MaterialNo == usage.ComponentNo).FirstOrDefault();
                     if (theBom != null)
                     {
                         theBom.InnerBom.ComponentQty = usage.Qty;
@@ -320,7 +350,7 @@ namespace Imms.Mes.Exchange
                             }
                         ).ToArray();
 
-                        var boms_2 = (from a in boms join b in boms_1 on a.MaterialNo equals b.MaterialNo select a);
+                        var boms_2 = (from a in cuttings join b in boms_1 on a.MaterialNo equals b.MaterialNo select a);
                         foreach (var bom in boms_2)
                         {
                             bom.InnerBom.ComponentQty = usage.Qty;
@@ -333,17 +363,18 @@ namespace Imms.Mes.Exchange
                 var details = dto.Hems.SelectMany(x => x.Details);
                 foreach (var detail in details)
                 {
-                    var bom_1 = (from b in boms where b.MaterialNo == detail.ComponentNo select b);
+                    var bom_1 = (from b in cuttings where b.MaterialNo == detail.ComponentNo select b);
                     foreach (var b in bom_1)
                     {
                         b.InnerBom.ComponentQty = detail.Value;
                     }
                 }
+                cuttingBomList = cuttings.Select(x => x.InnerBom).ToList();
 
                 //
                 //更新辅料：根据主料每个尺码的总计划裁剪数量
                 //
-                long mainFabricId = boms.Where(b => b.InnerBom.IsMainFabric) //是主面料
+                long mainFabricId = cuttings.Where(b => b.InnerBom.IsMainFabric) //是主面料
                                    .Select(b => b.InnerBom.ComponentMaterialId)
                                    .First();
                 int cuttingQty = productionOrder.QtyPlanned;
@@ -359,16 +390,17 @@ namespace Imms.Mes.Exchange
                          .Sum(x => x.TotalSizes.Sum(y => y.Qty));
                 }
 
-                var accessories = (from b in boms where !(dto.ComponentUsages.Select(c => c.ComponentNo).Contains(b.MaterialNo)) select b);
                 //var accessories = boms.Where(x =>   dto.ComponentUsages.Select(c=>c.ComponentNo));
                 //(from m in dto.ComponentUsages where m.ComponentNo == x.MaterialNo select m).Count() == 0
-                foreach (var b in accessories)
+                foreach (var b in stiches)
                 {
                     b.InnerBom.ComponentQty *= cuttingQty;
                 }
 
-                return boms.Select(x => x.InnerBom).ToList();
+                stitchBomList = stiches.Select(x => x.InnerBom).ToList();
             }
+
+            return result;
         }
 
         private void ValidateMaterialMarkers(MaterialMarkerDTO[] materialMarkers)

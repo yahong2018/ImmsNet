@@ -89,10 +89,21 @@ create table work_organization_unit  (
   organization_type        varchar(128)                    not null,  -- 生产组织单元类别：工厂,工作中心,生产线,工位
   organization_code        varchar(10)                     not null,
   organization_name        varchar(50)                     not null,
-  description              varchar(250)                    null ,
-  parameters               varchar(3000)                   null,      -- 参数
+  sequence_no              int                             not null default 1, -- 顺序号
+  description              varchar(250)                    null ,  
   parent_organization_id   bigint                          not null,  -- 上级生产单元，顶级为0
 
+  main_orbit_length        int                             not null default 0, -- 主轨长度(工作中心专用)：以工位间隔为单位  
+  line_distance            int                             not null default 0, -- 相对前一产线的间隔(生产线专用)
+  work_station_type        varchar(50)                     not null default ''，-- 工作中心类型
+  machine_type_id          bigint                          not null default 0,  -- 机器类型
+  is_on_line               bit                             not null default 1,  -- 是否在线
+  operator_id              bigint                          not null default 0,  -- 当前操作员
+  is_available             bit                             not null default 1,  -- 是否可用
+  wip_max                  int                             not null default 0,  -- 最大WIP数
+  wip_current              int                             not null default 0,  -- 当前WIP数
+  wip_in_transit           int                             not null default 0,  -- 在途WIP数
+  
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
   update_by                            bigint                       null,
@@ -116,7 +127,7 @@ create table operator  (
   create_date                          datetime                     not null,
   update_by                            bigint                       null,
   update_date                          datetime                     null,
-  opt_flag                            int                          not null default 0,
+  opt_flag                             int                          not null default 0,
 
   primary key (record_id) ,
   index idx_operator_01(user_id) ,
@@ -377,6 +388,7 @@ create table production_order  (
   record_id                   bigint    auto_increment          not null,  
   order_no                    varchar(12)       not null,
   order_status                int               not null   default 0,
+  order_type                  int               not null,
 
   requirement_order_no        varchar(12)       null,
   schedule_order_no           varchar(12)       null, 
@@ -384,20 +396,20 @@ create table production_order  (
   fg_material_id              bigint            not null, -- 成品物料
   priority                    tinyint           not null,
   work_center_id              bigint            null , 
-  planned_qty                 int               null ,  
-
+  
   routing_order_id            bigint            null , -- 生产工艺
   bom_order_id                bigint            null,  -- bom
 
-  finished_qty                int               null ,
-  second_quality_qty          int               null , -- 次品数量
-  defect_qty                  int               null ,
-  actual_qty                  int               null ,
+  qty_planned                 int               null ,  
+  qty_finished                int               not null default 0,
+  qty_second_quality          int               not null default 0, -- 次品数量
+  qty_defect                  int               not null default 0,
+  qty_actual                  int               not null default 0,
 
-  planned_start_date          datetime          not null ,
-  planned_end_date            datetime          not null ,
-  actual_start_date           datetime          null ,
-  actual_end_date             datetime          null ,    
+  time_start_planned          datetime          not null ,
+  time_end_planned            datetime          not null ,
+  time_start_actual           datetime          null ,
+  time_end_actual             datetime          null ,    
   
   create_by                   bigint            not null,
   create_date                 datetime          not null,
@@ -420,7 +432,6 @@ create table production_order_size  (
   record_id                    bigint  auto_increment  not null ,
   production_order_id          bigint                  not null,  
   size_id                      bigint                  not null,
---  size_code                    varchar(10)             not null,
   qyt_planned                  int                     null,
 
   create_by                    bigint                  not null,
@@ -453,8 +464,6 @@ create table production_order_measure  (
   index idx_order_measure_01(production_order_id)  
 );
 
-
-
 --
 -- 领料单
 --
@@ -462,6 +471,7 @@ create table material_picking_order  (
   record_id                            bigint                       not null auto_increment,
   order_no                             varchar(12)                  not null,
   order_status                         int                          not null,
+  order_type                           int                          not null,
   picking_bom_order_id                 bigint                       not null,
   time_picking_planned                 datetime                     not null,
   time_picking_actual                  datetime                     not null,
@@ -512,8 +522,7 @@ create table cutting_order  (
 
   production_order_id         bigint              not null             ,-- 生产订单主键
   cutting_table_no            varchar(64)         null                 ,-- 床次  
-  container_no                varchar(64)         null                 ,-- 裁剪单容器
-  planned_qty                 int                 not null   default 0 ,-- 计划数量  
+  container_no                varchar(64)         null                 ,-- 裁剪单容器  
   fg_material_id              varchar(64)         not null                 ,-- 成品物料号
   fabric_material_type        varchar(64)         not null                 ,-- 面料类型
   fabric_material_id          bigint              not null                 ,-- 面料物料主键
@@ -522,15 +531,17 @@ create table cutting_order  (
   length                      double(8,4)         not null                 ,-- 长度
   cutting_efficiency          double(7,4)         not null                 ,-- 利用率
 
-  work_station_id             bigint              null                  ,-- 裁剪工位
+  work_station_id             bigint              null                     ,-- 裁剪工位
+  
+  qty_planned                 int                 not null   default 0     ,-- 计划数量  
+  time_start_planned          datetime            not null                 ,-- 计划开工时间  
+  time_end_planned            datetime            not null                 ,-- 计划完成时间
 
-  planned_cutting_date        datetime            not null                 ,-- 计划裁剪时间  
-  planned_end_date            datetime            not null                 ,-- 计划完成时间
-
-  actual_cutting_date         datetime(0)         null                 ,-- 实际裁剪时间
-  actual_end_date             datetime(0)         null                 ,-- 实际完成时间
-  finished_qty                int                 not null   default 0 ,-- 实际完工数量
-  operator_id                 bigint              null,                 -- 裁剪人
+  time_start_actual           datetime            null                   ,-- 实际开工时间
+  time_end_actual             datetime            null                   ,-- 实际完成时间
+  qty_actual                  int                 not null   default 0   , -- 实际数量
+  qty_finished                int                 not null   default 0   ,-- 完工数量
+  operator_id                 bigint              null,                   -- 裁剪人
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -551,11 +562,11 @@ create table cutting_order  (
 create table cutting_order_size  (
   record_id                   bigint              not null        auto_increment,
   cutting_order_id            bigint              not null ,   -- 裁剪单主键  
-  size                        varchar(10)         null,        -- 尺码
-  layer_qty                   int                 null,        -- 单层配比数量
-  planned_qty                 int                 null,        -- 计划裁剪数量
-  actual_qty                  int                 null,        -- 实际裁剪数量
-  created_work_order_qty      int                 null,        -- 已创建作业单数量
+  size_id                     varchar(10)         null,        -- 尺码
+  qty_layer                   int                 null,        -- 单层配比数量
+  qty_planned                 int                 null,        -- 计划数量
+  qty_finished                int                 null,        -- 完工数量
+  -- created_work_order_qty      int                 null,        -- 已创建作业单数量
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,

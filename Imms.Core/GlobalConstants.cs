@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
 namespace Imms
 {
     public static class GlobalConstants
@@ -51,6 +54,9 @@ namespace Imms
         public const int TYPE_OPERATION_ORDER_MATERIAL = 10;
         public const int TYPE_OPERATION_ORDER_PRODUCTION = 11;
         public const int TYPE_OPERATION_ORDER_WORKORDER = 12;
+        //领料单类型
+        public const int TYPE_PICKING_ORDER_CUTTING = 30;
+        public const int TYPE_PICKING_ORDER_STITCH = 31;        
         //BOM单类型
         public const int TYPE_BOM_ORDER_PART = 10;      //部件BOM
         public const int TYPE_BOM_ORDER_STANDARD = 20;  //标准BOM
@@ -66,6 +72,7 @@ namespace Imms
 
         //物料类型
         public const string TYPE_MATERIAL_KT = "KT";
+
         //工位类型        
         public const string TYPE_WORK_STATION_CUTTING = "CUTTING"; //裁剪
         public const string TYPE_WORK_STATION_HANGING = "HANGING"; //上吊挂
@@ -101,7 +108,8 @@ namespace Imms
         public const int STATUS_PRODUCTION_ORDER_SEWED = 2048;    //已完成缝制    *
 
         //领料单
-        public const int STATUS_PICKING_ORDER_PREPARED = STATUS_PRODUCTION_ORDER_PICKING; //物料已准备好 | 开始领料        
+        public const int STATUS_PICKING_ORDER_PREPARED = STATUS_PRODUCTION_ORDER_PICKING; //物料已准备好 | 开始领料   
+        
         //裁剪单
         public const int STATUS_CUTTING_ORDER_CUTTING = STATUS_PRODUCTION_ORDER_CUTTING;  //开始裁剪
 
@@ -120,6 +128,12 @@ namespace Imms
         public static Imms.Data.Domain.SystemUser GetCurrentUser()
         {
             return CurrentUserGetFunction();
+        }
+
+        public static void ModifyEntityStatus<T>(T item,DbContext dbContext) where T:class
+        {
+            EntityEntry<T> entry = dbContext.Attach<T>(item);
+            entry.State = EntityState.Modified;
         }
     }
 

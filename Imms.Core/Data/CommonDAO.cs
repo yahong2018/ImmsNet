@@ -34,35 +34,7 @@ namespace Imms.Data
             {
                 return dbContext.Set<T>().Where(filter).FirstOrDefault();
             }
-        }
-
-        public static T GetOneByWhere<T>(string where, params object[] parameters) where T : class
-        {
-            using (DbContext dbContext = GlobalConstants.DbContextFactory.GetContext())
-            {
-                return dbContext.Set<T>().Where(where, parameters).FirstOrDefault();
-            }
-        }
-
-        public static T AssureExistsByFilter<T>(string where, params object[] parameters) where T : class
-        {
-            T result = GetOneByWhere<T>(where, parameters);
-            if (result == null)
-            {
-                string tableName = typeof(T).Name;
-                StringBuilder stringBuilder = new StringBuilder();
-                foreach (object obj in parameters)
-                {
-                    stringBuilder.Append(obj.ToString());
-                    stringBuilder.Append(",");
-                }
-
-                string log = $"系统错误:{tableName}中没有找到条件为{where},值为{stringBuilder.ToString()}'的数据！";
-                GlobalConstants.DefaultLogger.Error(log);
-                throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, log);
-            }
-            return result;
-        }
+        }       
 
         public static T AssureExistsByFilter<T>(Expression<Func<T, bool>> filter, bool throwException = true) where T : class
         {

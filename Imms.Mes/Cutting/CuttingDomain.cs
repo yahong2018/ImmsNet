@@ -23,8 +23,9 @@ namespace Imms.Mes.Cutting
         public double Length { get; set; }
         public double CuttingEfficiency { get; set; }
 
-        public int QtyPlanned { get; set; }
         public long WorkStationId { get; set; }
+
+        public int QtyPlanned { get; set; }
         public DateTime? TimetartPlanned { get; set; }
         public DateTime? TimeEndPlanned { get; set; }
 
@@ -32,23 +33,24 @@ namespace Imms.Mes.Cutting
         public DateTime? TimeStartActual { get; set; }
         public DateTime? TimeEndActual { get; set; }
         public int QtyActual { get; set; }
+        public int QtyFinished { get; set; }
         public long OperatorId { get; set; }
 
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual PickingOrder PickingOrder { get; set; }
         public virtual List<CuttingOrderSize> Sizes { get; set; } = new List<CuttingOrderSize>();
         public virtual List<CuttingMarker> Markers { get; set; } = new List<CuttingMarker>();
-        public virtual List<CuttingOrderSpreadPly> SpreadPlies { get; set; } =new List<CuttingOrderSpreadPly>();
+        public virtual List<CuttingOrderSpreadPly> SpreadPlies { get; set; } = new List<CuttingOrderSpreadPly>();
     }
 
     public partial class CuttingOrderSize : TrackableEntity<long>
     {
         public long CuttingOrderId { get; set; }
-        public string Size { get; set; }
+        public long SizeId { get; set; }
         public int QtyLayer { get; set; }
         public int QtyPlanned { get; set; }
-        public int QtyActual { get; set; }
-        public int? QtyCreatedWorkOrder { get; set; }
+        public int QtyFinished { get; set; }
+        // public int? QtyCreatedWorkOrder { get; set; }
 
         public virtual CuttingOrder CuttingOrder { get; set; }
     }
@@ -115,31 +117,11 @@ namespace Imms.Mes.Cutting
             base.InternalConfigure(builder);
             builder.ToTable("cutting_order_size");
 
-            builder.Property(e => e.QtyActual)
-                    .HasColumnName("actual_qty")
-                    .HasColumnType("int(11)");
-
-            builder.Property(e => e.QtyCreatedWorkOrder)
-                    .HasColumnName("created_work_order_qty")
-                    .HasColumnType("int(11)");
-
-            builder.Property(e => e.CuttingOrderId)
-                .HasColumnName("cutting_order_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.QtyLayer)
-                .HasColumnName("layer_qty")
-                .HasColumnType("int(11)");
-
-            builder.Property(e => e.QtyPlanned)
-                    .HasColumnName("planned_qty")
-                    .HasColumnType("int(11)");
-
-            builder.Property(e => e.Size)
-                .HasColumnName("size")
-                .HasMaxLength(10)
-                .IsUnicode(false);
-
+            builder.Property(e => e.QtyFinished).HasColumnName("actual_qty").HasColumnType("int(11)");
+            builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.QtyLayer).HasColumnName("layer_qty").HasColumnType("int(11)");
+            builder.Property(e => e.QtyPlanned).HasColumnName("planned_qty").HasColumnType("int(11)");
+            builder.Property(e => e.SizeId).HasColumnName("size").HasMaxLength(10).IsUnicode(false);
             builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Sizes).HasForeignKey(e => e.CuttingOrderId);
         }
     }
@@ -151,79 +133,30 @@ namespace Imms.Mes.Cutting
             base.InternalConfigure(builder);
 
             builder.ToTable("cutting_order");
+            builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.PickingOrderId).HasColumnName("picking_order_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.ContainerNo).HasColumnName("container_no").HasMaxLength(64).IsUnicode(false);
+            builder.Property(e => e.CuttingTableNo).HasColumnName("cutting_table_no").HasMaxLength(64).IsUnicode(false);
+            builder.Property(e => e.Plies).HasColumnName("plies").HasColumnType("int(11)");
+            builder.Property(e => e.Width).HasColumnName("width").HasColumnType("double(8,4)");
 
-            builder.Property(e => e.TimeStartActual).HasColumnName("date_start_actual");
-            builder.Property(e => e.TimeEndActual).HasColumnName("date_end_actual");
-            builder.Property(e => e.ContainerNo)
-                .HasColumnName("container_no")
-                .HasMaxLength(64)
-                .IsUnicode(false);
+            builder.Property(e => e.FabricMaterialId).HasColumnName("fabric_material_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.FabricMaterialType).IsRequired().HasColumnName("fabric_material_type").HasMaxLength(64).IsUnicode(false);
+            builder.Property(e => e.FgMaterialId).IsRequired().HasColumnName("fg_material_id").HasMaxLength(64).IsUnicode(false);
+            builder.Property(e => e.Length).HasColumnName("length").HasColumnType("double(8,4)");
+            builder.Property(e => e.CuttingEfficiency).HasColumnName("cutting_efficiency").HasColumnType("double(7,4)");
 
-            builder.Property(e => e.CuttingEfficiency)
-                    .HasColumnName("cutting_efficiency")
-                    .HasColumnType("double(7,4)");
-
-            builder.Property(e => e.CuttingTableNo)
-                .HasColumnName("cutting_table_no")
-                .HasMaxLength(64)
-                .IsUnicode(false);
-
-            builder.Property(e => e.FabricMaterialId)
-                .HasColumnName("fabric_material_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.FabricMaterialType)
-                .IsRequired()
-                .HasColumnName("fabric_material_type")
-                .HasMaxLength(64)
-                .IsUnicode(false);
-
-            builder.Property(e => e.FgMaterialId)
-                .IsRequired()
-                .HasColumnName("fg_material_id")
-                .HasMaxLength(64)
-                .IsUnicode(false);
-
-            builder.Property(e => e.QtyActual)
-                .HasColumnName("finished_qty")
-                .HasColumnType("int(11)")
-                .HasDefaultValueSql("0");
-
-            builder.Property(e => e.Length)
-                .HasColumnName("length")
-                .HasColumnType("double(8,4)");
-
-            builder.Property(e => e.OperatorId)
-                .HasColumnName("operator_id")
-                .HasColumnType("bigint(20)");
-
+            builder.Property(e => e.WorkStationId).HasColumnName("work_station_id").HasColumnType("bigint(20)");
             builder.Property(e => e.TimetartPlanned).HasColumnName("time_start_planned");
             builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
+            builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned").HasColumnType("int(11)").HasDefaultValueSql("0");
 
-            builder.Property(e => e.QtyPlanned)
-                .HasColumnName("planned_qty")
-                .HasColumnType("int(11)")
-                .HasDefaultValueSql("0");
+            builder.Property(e => e.TimeStartActual).HasColumnName("time_start_actual");
+            builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");
+            builder.Property(e => e.QtyActual).HasColumnName("qty_actual").HasColumnType("int(11)").HasDefaultValueSql("0");
+            builder.Property(e => e.QtyFinished).HasColumnName("qty_finished").HasColumnType("int(11)").HasDefaultValueSql("0");
 
-            builder.Property(e => e.Plies)
-                .HasColumnName("plies")
-                .HasColumnType("int(11)");
-
-            builder.Property(e => e.ProductionOrderId)
-                .HasColumnName("production_order_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.PickingOrderId)
-                            .HasColumnName("picking_order_id")
-                            .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.Width)
-                    .HasColumnName("width")
-                    .HasColumnType("double(8,4)");
-
-            builder.Property(e => e.WorkStationId)
-                .HasColumnName("work_station_id")
-                .HasColumnType("bigint(20)");
+            builder.Property(e => e.OperatorId).HasColumnName("operator_id").HasColumnType("bigint(20)");
 
             builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
             builder.HasOne(e => e.PickingOrder).WithMany().HasForeignKey(e => e.PickingOrderId);

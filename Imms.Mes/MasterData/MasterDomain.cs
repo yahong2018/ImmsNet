@@ -44,16 +44,15 @@ namespace Imms.Mes.MasterData
     {
         public string WorkCenterCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
         public string WorkCenterName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
-        
-        public int MainOrbitLength{get;set;}
+
+        public int MainOrbitLength { get; set; }
     }
 
-    public class ProductionLine : WorkOrganizationUnit
+    public class WorkLine : WorkOrganizationUnit
     {
         public string LineCode { get; set; }
         public string LineName { get; set; }
 
-        public int Sequence { get; set; }
         public int LineDistance { get; set; }
     }
 
@@ -67,10 +66,9 @@ namespace Imms.Mes.MasterData
         public bool IsOnLine { get; set; }
         public long OperatorId { get; set; }
         public bool IsAvailable { get; set; }
-        public int MaxWip { get; set; }
-        public int CurrentWip { get; set; }
+        public int WipMax { get; set; }
+        public int WipCurrent { get; set; }
         public int WipInTransit { get; set; }
-        public int Sequence { get; set; }
     }
 
     public partial class WorkstationCheckIn : Entity<long>
@@ -162,47 +160,15 @@ namespace Imms.Mes.MasterData
             base.InternalConfigure(builder);
             builder.ToTable("material");
 
-            builder.Property(e => e.Color)
-                    .HasColumnName("color")
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
-
-            builder.Property(e => e.Description)
-                    .HasColumnName("description")
-                    .HasMaxLength(250)
-                    .IsUnicode(false);
-
-            builder.Property(e => e.MaterialName)
-                .IsRequired()
-                .HasColumnName("material_name")
-                .HasMaxLength(30)
-                .IsUnicode(false);
-
-            builder.Property(e => e.MaterialNo)
-                .IsRequired()
-                .HasColumnName("material_no")
-                .HasMaxLength(12)
-                .IsUnicode(false);
-
-            builder.Property(e => e.MaterialTypeId)
-                .HasColumnName("material_type_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.Price)
-                    .HasColumnName("price")
-                    .HasColumnType("decimal(10,2)");
-
-            builder.Property(e => e.UnitId)
-                .HasColumnName("unit_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.Weight)
-                    .HasColumnName("weight")
-                    .HasColumnType("decimal(10,4)");
-
-            builder.Property(e => e.Width)
-                .HasColumnName("width")
-                .HasColumnType("decimal(10,4)");
+            builder.Property(e => e.Color).HasColumnName("color").HasMaxLength(20).IsUnicode(false);
+            builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(250).IsUnicode(false);
+            builder.Property(e => e.MaterialName).IsRequired().HasColumnName("material_name").HasMaxLength(30).IsUnicode(false);
+            builder.Property(e => e.MaterialNo).IsRequired().HasColumnName("material_no").HasMaxLength(12).IsUnicode(false);
+            builder.Property(e => e.MaterialTypeId).HasColumnName("material_type_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.Price).HasColumnName("price").HasColumnType("decimal(10,2)");
+            builder.Property(e => e.UnitId).HasColumnName("unit_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.Weight).HasColumnName("weight").HasColumnType("decimal(10,4)");
+            builder.Property(e => e.Width).HasColumnName("width").HasColumnType("decimal(10,4)");
         }
     }
 
@@ -215,16 +181,9 @@ namespace Imms.Mes.MasterData
             builder.ToTable("workstation_check_in");
 
             builder.Property(e => e.CheckInTime).HasColumnName("check_in_time");
-
             builder.Property(e => e.CheckOutTime).HasColumnName("check_out_time");
-
-            builder.Property(e => e.OperatorId)
-                .HasColumnName("operator_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.WorkStationId)
-                .HasColumnName("work_station_id")
-                .HasColumnType("bigint(20)");
+            builder.Property(e => e.OperatorId).HasColumnName("operator_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.WorkStationId).HasColumnName("work_station_id").HasColumnType("bigint(20)");
         }
     }
 
@@ -235,7 +194,9 @@ namespace Imms.Mes.MasterData
             builder.HasDiscriminator("organization_type", typeof(string))
             .HasValue<Plant>(GlobalConstants.TYPE_ORG_PLANT)
             .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER)
-            .HasValue<WorkStation>(GlobalConstants.TYPE_ORG_WORK_STATETION);
+            .HasValue<WorkStation>(GlobalConstants.TYPE_ORG_WORK_STATETION)
+            .HasValue<WorkLine>(GlobalConstants.TYPE_ORG_WORK_LINE)
+            ;
         }
     }
 
@@ -253,6 +214,19 @@ namespace Imms.Mes.MasterData
         {
             builder.Ignore(e => e.WorkCenterCode);
             builder.Ignore(e => e.WorkCenterName);
+
+            builder.Property(e => e.MainOrbitLength).HasColumnName("main_orbit_length");
+        }
+    }
+
+    public class WorkLineConfigure : IEntityTypeConfiguration<WorkLine>
+    {
+        public void Configure(EntityTypeBuilder<WorkLine> builder)
+        {
+            builder.Ignore(e => e.LineCode);
+            builder.Ignore(e => e.LineName);
+
+            builder.Property(e => e.LineDistance).HasColumnName("line_distance");
         }
     }
 
@@ -262,6 +236,15 @@ namespace Imms.Mes.MasterData
         {
             builder.Ignore(e => e.WorkStationCode);
             builder.Ignore(e => e.WorkStationName);
+
+            builder.Property(e => e.WorkStationType).HasColumnName("work_station_type");
+            builder.Property(e => e.MachineTypeId).HasColumnName("machine_type_id");
+            builder.Property(e => e.IsOnLine).HasColumnName("is_on_line");
+            builder.Property(e => e.OperatorId).HasColumnName("operator_id");
+            builder.Property(e => e.IsAvailable).HasColumnName("is_available");
+            builder.Property(e => e.WipMax).HasColumnName("wip_max");
+            builder.Property(e => e.WipCurrent).HasColumnName("wip_current");
+            builder.Property(e => e.WipInTransit).HasColumnName("wip_in_transit");
         }
     }
 
@@ -273,17 +256,9 @@ namespace Imms.Mes.MasterData
             base.InternalConfigure(builder);
             builder.ToTable("operator_capability");
 
-            builder.Property(e => e.OperationId)
-                    .HasColumnName("operation_id")
-                    .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.OperatorId)
-                .HasColumnName("operator_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.SkillLevel)
-                   .HasColumnName("skill_level")
-                   .HasColumnType("tinyint(4)");
+            builder.Property(e => e.OperationId).HasColumnName("operation_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.OperatorId).HasColumnName("operator_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.SkillLevel).HasColumnName("skill_level").HasColumnType("tinyint(4)");
         }
     }
 
@@ -294,17 +269,9 @@ namespace Imms.Mes.MasterData
             base.InternalConfigure(builder);
             builder.ToTable("operator");
 
-            builder.Property(e => e.OrganizationId)
-                .HasColumnName("organization_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.SupervisorId)
-                .HasColumnName("supervisor_id")
-                .HasColumnType("bigint(20)");
-
-            builder.Property(e => e.UserId)
-                    .HasColumnName("user_id")
-                    .HasColumnType("bigint(20)");
+            builder.Property(e => e.OrganizationId).HasColumnName("organization_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.SupervisorId).HasColumnName("supervisor_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.UserId).HasColumnName("user_id").HasColumnType("bigint(20)");
         }
     }
 

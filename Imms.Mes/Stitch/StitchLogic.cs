@@ -40,7 +40,7 @@ namespace Imms.Mes.Stitch
             CommonDAO.UseDbContext(dbContext =>
             {
                 workOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
-                workOrderRouting.TimeCompleted = DateTime.Now;
+                workOrderRouting.TimeFinished = DateTime.Now;
 
                 EntityEntry<ProductionWorkOrderRouting> routingEntry = dbContext.Entry<ProductionWorkOrderRouting>(workOrderRouting);
                 routingEntry.State = EntityState.Modified;
@@ -98,7 +98,7 @@ namespace Imms.Mes.Stitch
                         where w.IsOnLine        //工位已联线
                              && w.IsAvailable   //工位可用
                              && w.MachineTypeId == operationRouting.MachineTypeId  //机器类型匹配
-                             && (w.CurrentWip + w.WipInTransit) < w.MaxWip         //WIP
+                             && (w.WipCurrent + w.WipInTransit) < w.WipMax         //WIP
                              && c.OperationId == operationRouting.OperationId      //工艺
                              && c.SkillLevel >= operationRouting.RequiredLevel     //技能等级                        
                         select new
@@ -108,7 +108,7 @@ namespace Imms.Mes.Stitch
                             Distance = this.ComputeWorkStationDispatchDistance(prevWorkStation, w)
                         }
                     ).OrderBy(x => x.Distance)    //距离最短
-                    .OrderBy(x => x.WorkStation.WipInTransit + x.WorkStation.CurrentWip) //WIP最小
+                    .OrderBy(x => x.WorkStation.WipInTransit + x.WorkStation.WipCurrent) //WIP最小
                     .OrderByDescending(x => x.SkillLevel)   //技能最高
                     .OrderBy(x => x.WorkStation.RecordId)   // 编号最小
                     .FirstOrDefault();
@@ -139,16 +139,16 @@ namespace Imms.Mes.Stitch
         //
         public int ComputeWorkStationDispatchDistance(WorkStation a, WorkStation b)
         {
-            ProductionLine lineA = SingletonDataService.Instance.ProudctionLines.Where(x => x.RecordId == a.ParentOrganizationId).Single();
-            ProductionLine lineB = SingletonDataService.Instance.ProudctionLines.Where(x => x.RecordId == b.ParentOrganizationId).Single();
+            WorkLine lineA = SingletonDataService.Instance.ProudctionLines.Where(x => x.RecordId == a.ParentOrganizationId).Single();
+            WorkLine lineB = SingletonDataService.Instance.ProudctionLines.Where(x => x.RecordId == b.ParentOrganizationId).Single();
             if (a.ParentOrganizationId == b.ParentOrganizationId)
             {   //同产线
                 return ComputeWorkStationDispatchDistance(lineA, a, b);
             }
             else
             {
-                int lineDistance = SingletonDataService.Instance.ProudctionLines.Where(x => x.Sequence > lineA.Sequence && x.Sequence <= lineB.Sequence).Sum(x => x.LineDistance);
-                if (lineA.Sequence < lineB.Sequence) //不同产线：从小号产线往大号产线派工
+                int lineDistance = SingletonDataService.Instance.ProudctionLines.Where(x => x.SequenceNo > lineA.SequenceNo && x.SequenceNo <= lineB.SequenceNo).Sum(x => x.LineDistance);
+                if (lineA.SequenceNo < lineB.SequenceNo) //不同产线：从小号产线往大号产线派工
                 {
                     return lineDistance + this.ComputeWorkStationDispatchDistance(lineA, a, b);
                 }
@@ -160,18 +160,18 @@ namespace Imms.Mes.Stitch
             }
         }
 
-        private int ComputeWorkStationDispatchDistance(ProductionLine lineA, WorkStation a, WorkStation b)
+        private int ComputeWorkStationDispatchDistance(WorkLine lineA, WorkStation a, WorkStation b)
         {
             int workStationCount = SingletonDataService.Instance.WorkStations.Where(x => x.ParentOrganizationId == lineA.RecordId).Count();
-            if (a.Sequence < b.Sequence)
+            if (a.SequenceNo < b.SequenceNo)
             {
                 if (a.ParentOrganizationId == b.ParentOrganizationId)
                 {
-                    return b.Sequence - a.Sequence;
+                    return b.SequenceNo - a.SequenceNo;
                 }
                 else
                 {
-                    return workStationCount + (b.Sequence - a.Sequence);
+                    return workStationCount + (b.SequenceNo - a.SequenceNo);
                 }
             }
             else
@@ -180,7 +180,7 @@ namespace Imms.Mes.Stitch
                 {
                     workStationCount += workStationCount; //单向行驶，同产线要多转半圈
                 }
-                return workStationCount - (b.Sequence - a.Sequence);
+                return workStationCount - (b.SequenceNo - a.SequenceNo);
             }
         }
 
@@ -252,7 +252,7 @@ namespace Imms.Mes.Stitch
         {
             ProductionWorkOrder productionWorkOrder = new ProductionWorkOrder();
             productionWorkOrder.CuttingOrderId = cuttingOrder.RecordId;
-            productionWorkOrder.Size = orderSize.Size;
+            productionWorkOrder.SizeId = orderSize.SizeId;
             productionWorkOrder.OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE;
             productionWorkOrder.ProductionOrderId = productionOrder.RecordId;
             return productionWorkOrder;

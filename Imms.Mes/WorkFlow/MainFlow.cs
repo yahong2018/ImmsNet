@@ -14,9 +14,7 @@ namespace Imms.Mes.WorkFlow
 {
     /*
 
-      1.向CAD、GST发送数据:ProductionOrder
-      2.领料完成以后，安排裁剪单:PickingOrder
-      3.裁剪完成以后，生成缝制作业单:CuttingOrder
+      1.向CAD、GST发送数据:ProductionOrder       
       4.向APS汇报进度:ProductionOrder
       5.向MCS派工：ProductionWorkOrderRouting
       6.缝制作业单完成以后，更新ProductoinOrder的进度，同时会触发第4条
@@ -29,8 +27,7 @@ namespace Imms.Mes.WorkFlow
         public MainFlow()
         {
             Handlers.Add(this.SynchronizeProductionOrderToGstAndCad);
-            Handlers.Add(this.ReporOrderStatusToAps);
-            Handlers.Add(this.PlanCuttingOrder);
+            Handlers.Add(this.ReporOrderStatusToAps);            
             Handlers.Add(this.CreateProductionWorkOrder);
             Handlers.Add(this.DispatchWorkOrderRouting);
             Handlers.Add(this.OnProductionWorkOrderFinished);            
@@ -77,27 +74,7 @@ namespace Imms.Mes.WorkFlow
             {
                 return;
             }
-        }
-
-        private void PlanCuttingOrder(DataChangedNotifyEvent e)
-        {
-            //领料完成，进行裁剪计划安排
-            if (!(e.Entity is PickingOrder pickingOrder) || pickingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
-            {
-                return;
-            }
-
-            WorkStation cuttingWorkStation = CommonDAO.GetOneByFilter<WorkStation>(x =>
-                x.Parameters.Exists(p =>
-                    p.ParameterCode == GlobalConstants.TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE
-                 && p.ParameterValue == GlobalConstants.TYPE_WORK_STATION_CUTTING)
-             );
-            CuttingOrder[] cuttingOrders = CommonDAO.GetAllByFilter<CuttingOrder>(x =>
-                x.PickingOrderId == pickingOrder.RecordId
-                && x.OrderStatus == GlobalConstants.STATUS_ORDER_INITIATE
-            );
-            CuttingLogic.PlanCuttingOrders(cuttingOrders, cuttingWorkStation);
-        }
+        }       
 
         private void CreateProductionWorkOrder(DataChangedNotifyEvent e)
         {

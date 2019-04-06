@@ -11,11 +11,15 @@ using System.Threading;
 using Imms.Mes.MasterData;
 using Imms.Mes.Stitch;
 using Imms.Mes.Picking;
+using Imms.Mes.Cutting;
 
 namespace Imms.Mes.Picking
 {
     public class PickingLogic
     {
+        private PickingLogic() { }
+        public static readonly PickingLogic Instance = new PickingLogic();
+
         //
         //生成领料BOM
         //
@@ -40,16 +44,13 @@ namespace Imms.Mes.Picking
         //
         //生成领料单
         //
-        public PickingOrder CreatePickingOrder(ProductionOrder productionOrder, BomOrder pickingBomOrder)
+        public PickingOrder CreatePickingOrder(ProductionOrder productionOrder, BomOrder pickingBomOrder, int bomOrderType)
         {
-            if (productionOrder.OrderStatus < GlobalConstants.STATUS_PRODUCTION_ORDER_TECH_ALL_READY)
-            {
-                return null;
-            }
             PickingOrder pickingOrder = new PickingOrder();
             pickingOrder.ProductionOrder = productionOrder;
             pickingOrder.Priority = productionOrder.Priority;
             pickingOrder.PickingBomOrder = pickingBomOrder;
+            pickingOrder.OrderType = bomOrderType;
 
             pickingOrder.TimeStartPlanned = DateTime.Now;
             pickingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认为30分钟内领料完成，以后要根据工序来配置
@@ -71,11 +72,9 @@ namespace Imms.Mes.Picking
                 ProductionOrder productionOrder = dbContext.Set<ProductionOrder>().Where(x => x.RecordId == pickingOrder.ProductionOrderId).Single();
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING;
 
-                //数据保存
-                EntityEntry<PickingOrder> pickingEntry = dbContext.Attach<PickingOrder>(pickingOrder);
-                pickingEntry.State = EntityState.Modified;
-                EntityEntry<ProductionOrder> productionOrderEntry = dbContext.Attach<ProductionOrder>(productionOrder);
-                productionOrderEntry.State = EntityState.Modified;
+                //数据保存              
+                GlobalConstants.ModifyEntityStatus<PickingOrder>(pickingOrder, dbContext);
+                GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
                 dbContext.SaveChanges();
             });
         }
@@ -87,23 +86,57 @@ namespace Imms.Mes.Picking
         {
             CommonDAO.UseDbContext((dbContext) =>
             {
+                pickingOrder.TimeEndActual = DateTime.Now;
+                pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;  //领料已完成,但这个时候并不等于开始生产
+
                 //更新生产订单
                 ProductionOrder productionOrder = (
                     from po in dbContext.Set<ProductionOrder>()
                     where po.RecordId == pickingOrder.ProductionOrderId
                     select po
                 ).First();
-                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;                
-                pickingOrder.TimeEndActual = DateTime.Now;
-                pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;  //领料已完成,但这个时候并不等于开始生产
+                productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;
+
+                //计划裁剪订单
+                IQueryable<CuttingOrder> cuttingOrders = this.PlanCuttingOrder(pickingOrder, productionOrder.WorkCenterId, dbContext);
 
                 //数据保存                
-                EntityEntry<PickingOrder> pickingOrderEntry = dbContext.Entry<PickingOrder>(pickingOrder);
-                pickingOrderEntry.State = EntityState.Modified;
-                EntityEntry<ProductionOrder> productionOrderEntry = dbContext.Entry<ProductionOrder>(productionOrder);
-                productionOrderEntry.State = EntityState.Modified;
+                GlobalConstants.ModifyEntityStatus<PickingOrder>(pickingOrder, dbContext);
+                GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
+                foreach (CuttingOrder cuttingOrder in cuttingOrders)
+                {
+                    GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
+                }
                 dbContext.SaveChanges();
             });
+        }
+
+        private IQueryable<CuttingOrder> PlanCuttingOrder(PickingOrder pickingOrder, long workCenterId, DbContext dbContext)
+        {
+            if (pickingOrder.OrderType == GlobalConstants.TYPE_PICKING_ORDER_CUTTING)
+            {
+                return null;
+            }
+
+            WorkStation cuttingWorkStation =  //1个车间只有1个裁剪工位
+                    (from w in dbContext.Set<WorkStation>()
+                     join c in dbContext.Set<WorkCenter>() on w.ParentOrganizationId equals c.RecordId  //裁剪工位直属车间，不设裁剪线
+                     where c.RecordId == workCenterId
+                         && w.WorkStationType == GlobalConstants.TYPE_WORK_STATION_CUTTING
+                     select w
+                    ).Single();
+
+            var cuttingOrders = dbContext.Set<CuttingOrder>().Where(x =>
+                x.PickingOrderId == pickingOrder.RecordId
+                && x.OrderStatus == GlobalConstants.STATUS_ORDER_INITIATE
+            );
+
+            foreach (CuttingOrder cuttingOrder in cuttingOrders)
+            {
+                CuttingLogic.Instance.PlanCuttingOrder(cuttingOrder, cuttingWorkStation);
+            }
+
+            return cuttingOrders;
         }
     }
 }

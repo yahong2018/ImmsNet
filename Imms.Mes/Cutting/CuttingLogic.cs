@@ -11,46 +11,48 @@ namespace Imms.Mes.Cutting
 {
     public class CuttingLogic
     {
-        public void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation, DbContext dbContext)
+        private CuttingLogic() { }
+        public static readonly CuttingLogic Instance = new CuttingLogic();
+
+        public void PlanCuttingOrders(WorkStation cuttingWorkStation, params CuttingOrder[] cuttingOrders)
+        {
+            if (cuttingOrders == null || cuttingOrders.Length == 0)
+            {
+                return;
+            }
+
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                foreach (CuttingOrder cuttingOrder in cuttingOrders)
+                {
+                    this.PlanCuttingOrder(cuttingOrder, cuttingWorkStation);
+                    GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
+                }
+                dbContext.SaveChanges();
+            });
+        }
+
+        internal void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation)
         {
             cuttingOrder.TimetartPlanned = DateTime.Now;
             cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成
             cuttingOrder.WorkStationId = cuttingWorkStation.RecordId;
             cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
-
-            EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
-            entry.State = EntityState.Modified;
         }
 
-        public void PlanCuttingOrders(CuttingOrder[] cuttingOrders, WorkStation cuttingWorkStation)
-        {
-            CommonDAO.UseDbContext(dbContext =>
-            {
-                foreach (CuttingOrder cuttingOrder in cuttingOrders)
-                {
-                    this.PlanCuttingOrder(cuttingOrder, cuttingWorkStation,dbContext);
-                }
-
-                dbContext.SaveChanges();
-            });
-        }
-
-        public void CuttingOrderStarted(CuttingOrder cuttingOrder)
+        public void StartCuttingOrder(CuttingOrder cuttingOrder)
         {
             CommonDAO.UseDbContext((dbContext) =>
             {
                 cuttingOrder.OrderStatus = GlobalConstants.STATUS_CUTTING_ORDER_CUTTING;
                 cuttingOrder.TimeStartActual = DateTime.Now;
-                EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
-                entry.State = EntityState.Modified;
 
                 ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING;
-                productionOrder.DateStartActual = DateTime.Now;   //开始裁剪表示已开始生产，此时，这个单据不可以被删除。
-                
-                EntityEntry<ProductionOrder> entryProductionOrder = dbContext.Attach<ProductionOrder>(productionOrder);
-                entryProductionOrder.State = EntityState.Modified;
+                productionOrder.TimeStartActual = DateTime.Now;   //开始裁剪表示已开始生产，此时，这个单据不可以被删除。
 
+                GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
+                GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
                 dbContext.SaveChanges();
             });
         }
@@ -61,14 +63,11 @@ namespace Imms.Mes.Cutting
             {
                 cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
                 cuttingOrder.TimeEndActual = DateTime.Now;
-                int qtyActual = cuttingOrder.Sizes.Sum(x => x.QtyActual);
-                cuttingOrder.QtyActual = qtyActual;
-                EntityEntry<CuttingOrder> entry = dbContext.Attach<CuttingOrder>(cuttingOrder);
-                entry.State = EntityState.Modified;
+                int qtyActual = cuttingOrder.Sizes.Sum(x => x.QtyFinished);
+                cuttingOrder.QtyActual = qtyActual;                
 
                 ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED;
-
                 long materialId = dbContext.Set<Bom>().Where(x =>
                    x.IsMainFabric &&
                    x.BomOrderId == (dbContext.Set<PickingOrder>()
@@ -80,11 +79,11 @@ namespace Imms.Mes.Cutting
                .Single();
                 if (cuttingOrder.FabricMaterialId == materialId)//只有主面料的床次报工，才计算生产订单的实际生产量
                 {
-                    productionOrder.QtyActual += cuttingOrder.QtyActual;   //实际生产量为实际的裁剪量
-                    EntityEntry<ProductionOrder> entryProductionOrder = dbContext.Attach<ProductionOrder>(productionOrder);
-                    entryProductionOrder.State = EntityState.Modified;
+                    productionOrder.QtyActual += cuttingOrder.QtyActual;   //实际生产量为实际的裁剪量                    
                 }
 
+                GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
+                GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
                 dbContext.SaveChanges();
             });
         }
