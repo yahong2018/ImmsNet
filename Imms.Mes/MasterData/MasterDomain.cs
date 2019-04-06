@@ -106,7 +106,7 @@ namespace Imms.Mes.MasterData
         public long BomOrderId { get; set; }
         public long ComponentMaterialId { get; set; }
         public long? ComponentAbstractMaterialId { get; set; }
-        public double ComponentQty { get; set; }
+        public double QtyComponent { get; set; }
         public long ComponentUnitId { get; set; }
         public string ComponentMaterialNoPath { get; set; }
         public string ComponentMaterialNamePath { get; set; }
@@ -144,7 +144,7 @@ namespace Imms.Mes.MasterData
             builder.Property(e => e.ComponentMaterialId).IsRequired().HasColumnName("component_material_id");
             builder.Property(e => e.ComponentMaterialNamePath).IsRequired().HasColumnName("component_material_name_path").HasMaxLength(330);
             builder.Property(e => e.ComponentMaterialNoPath).IsRequired().HasColumnName("component_material_no_path").HasMaxLength(130);
-            builder.Property(e => e.ComponentQty).HasColumnName("component_qty");
+            builder.Property(e => e.QtyComponent).HasColumnName("qty_component");
             builder.Property(e => e.ComponentUnitId).HasColumnName("component_unit_id");
             builder.Property(e => e.IsMainFabric).HasColumnName("is_main_fabric");
             builder.Property(e => e.ParentBomId).HasColumnName("parent_bom_id");

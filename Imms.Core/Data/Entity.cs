@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -39,6 +41,34 @@ namespace Imms.Data
 
             return ((IComparable)this.RecordId).CompareTo(((IEntity)obj).RecordId);
         }
+
+        public override string ToString()
+        {
+            Type type = this.GetType();
+            lock (_Properties)
+            {
+                if (!_Properties.ContainsKey(type))
+                {
+                    _Properties.Add(type, type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+                }
+            }
+            PropertyInfo[] properties = _Properties[type];
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (PropertyInfo property in properties)
+            {
+                object value = property.GetValue(this);
+                if (value == null)
+                {
+                    value = "[null]";
+                }
+                stringBuilder.Append($"{property.Name}={value.ToString()};");
+            }
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
+
+            return stringBuilder.ToString();
+        }
+
+        private static readonly SortedList<Type, PropertyInfo[]> _Properties = new SortedList<Type, PropertyInfo[]>();
     }
 
     public interface ITrackableEntity

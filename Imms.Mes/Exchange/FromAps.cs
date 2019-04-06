@@ -165,7 +165,7 @@ namespace Imms.Mes.Exchange
             {
                 ComponentAbstractMaterialId = abstractMaterial.RecordId,
                 ComponentMaterialId = componentMaterial.RecordId,
-                ComponentQty = dto.Qty,
+                QtyComponent = dto.Qty,
                 IsMainFabric = dto.IsMainFabric,
                 ComponentUnitId = unit.RecordId
             };

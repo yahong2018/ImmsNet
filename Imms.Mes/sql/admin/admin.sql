@@ -94,7 +94,7 @@ create table system_app(
    PRIMARY key(record_id)             
 );
 
-create table system_data_exchange_rule(
+create table data_exchange_rule(
   record_id               BIGINT  AUTO_INCREMENT       not null,
   exchange_rule_code      varchar(255)                 not null,
   src_system_id           BIGINT                       not null,
@@ -106,7 +106,7 @@ create table system_data_exchange_rule(
   PRIMARY key(record_id)
 );
 
-create table system_exchange_data_log
+create table data_exchange_task
 (
     record_id               BIGINT   AUTO_INCREMENT    NOT NULL,    
     exchange_rule_code      varchar(255)               not null,

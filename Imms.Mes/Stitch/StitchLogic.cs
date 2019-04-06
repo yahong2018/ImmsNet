@@ -271,7 +271,7 @@ namespace Imms.Mes.Stitch
             {
                 bom.BomOrderId = 0;
                 bom.BomOrder = bomOrder;
-                bom.ComponentQty = (productionOrder.QtyPlanned / bom.ComponentQty) * cuttingOrder.QtyActual;
+                bom.QtyComponent = (productionOrder.QtyPlanned / bom.QtyComponent) * cuttingOrder.QtyActual;
 
                 bomOrder.Boms.Add(bom);
             }

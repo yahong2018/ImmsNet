@@ -79,45 +79,45 @@ namespace Imms.Mes
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
 
-            modelBuilder.ApplyConfiguration(new BomConfigure());
-            modelBuilder.ApplyConfiguration(new BomOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new BomConfigure());
+            // modelBuilder.ApplyConfiguration(new BomOrderConfigure());
 
-            modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
-            modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
-            modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
+            // modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
+            // modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
 
-            modelBuilder.ApplyConfiguration(new MaterialConfigure());
-            modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
-            // modelBuilder.ApplyConfiguration(new MaterialPickingOrderDetailConfigure());
-            // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleConfigure());
-            // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleBomConfigure());
+            // modelBuilder.ApplyConfiguration(new MaterialConfigure());
+            // modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
+            // // modelBuilder.ApplyConfiguration(new MaterialPickingOrderDetailConfigure());
+            // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleConfigure());
+            // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleBomConfigure());
 
-            modelBuilder.ApplyConfiguration(new OperationConfigure());
-            modelBuilder.ApplyConfiguration(new OperationRoutingConfigure());
-            modelBuilder.ApplyConfiguration(new OperationRoutingOrderConfigure());
-            modelBuilder.ApplyConfiguration(new OperatorConfigure());
-            modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
+            // modelBuilder.ApplyConfiguration(new OperationConfigure());
+            // modelBuilder.ApplyConfiguration(new OperationRoutingConfigure());
+            // modelBuilder.ApplyConfiguration(new OperationRoutingOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new OperatorConfigure());
+            // modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
 
-            modelBuilder.ApplyConfiguration(new ProductionOrderMeasureConfigure());
-            modelBuilder.ApplyConfiguration(new ProductionOrderSizeConfigure());
-            modelBuilder.ApplyConfiguration(new ProductionOrderConfigure());
-            modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
-            modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
-            modelBuilder.ApplyConfiguration(new ProductionOrderPatternRelationConfigure());
+            // modelBuilder.ApplyConfiguration(new ProductionOrderMeasureConfigure());
+            // modelBuilder.ApplyConfiguration(new ProductionOrderSizeConfigure());
+            // modelBuilder.ApplyConfiguration(new ProductionOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
+            // modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
+            // modelBuilder.ApplyConfiguration(new ProductionOrderPatternRelationConfigure());
 
-            // modelBuilder.ApplyConfiguration(new RequirementOrderConfigure());
-            // modelBuilder.ApplyConfiguration(new ScheduleOrderConfigure());    
+            // // modelBuilder.ApplyConfiguration(new RequirementOrderConfigure());
+            // // modelBuilder.ApplyConfiguration(new ScheduleOrderConfigure());    
 
-            modelBuilder.ApplyConfiguration(new QualityCheckConfigure());
-            modelBuilder.ApplyConfiguration(new QualityCheckDetailConfigure());
+            // modelBuilder.ApplyConfiguration(new QualityCheckConfigure());
+            // modelBuilder.ApplyConfiguration(new QualityCheckDetailConfigure());
 
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkOrganizationUnitConfigure());
-            modelBuilder.ApplyConfiguration(new WorkstationCheckInConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.TreeCodeConfigure());
+            // modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkOrganizationUnitConfigure());
+            // modelBuilder.ApplyConfiguration(new WorkstationCheckInConfigure());
+            // modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.TreeCodeConfigure());
 
-            // modelBuilder.ApplyConfiguration(new Imms.Mes.Domain.Test.HeaderConfigure());
-            // modelBuilder.ApplyConfiguration(new Imms.Mes.Domain.Test.BodyConfigure());
-            // modelBuilder.ApplyConfiguration(new Imms.Mes.Domain.Test.FootConfigure());
+            // // modelBuilder.ApplyConfiguration(new Imms.Mes.Domain.Test.HeaderConfigure());
+            // // modelBuilder.ApplyConfiguration(new Imms.Mes.Domain.Test.BodyConfigure());
+            // // modelBuilder.ApplyConfiguration(new Imms.Mes.Domain.Test.FootConfigure());
 
             base.OnModelCreating(modelBuilder);
         }

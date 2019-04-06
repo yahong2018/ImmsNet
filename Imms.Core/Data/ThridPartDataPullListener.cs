@@ -13,7 +13,7 @@ namespace Imms.Data
 {
     public class ThridPartDataPullListener : IDataChangeNotifyEventListener
     {
-        Type[] IDataChangeNotifyEventListener.ListenTypes { get { return new Type[] { typeof(ThirdPartDataExchangeTask) }; } set => throw new NotImplementedException(); }
+        Type[] IDataChangeNotifyEventListener.ListenTypes { get { return new Type[] { typeof(DataExchangeTask) }; } set => throw new NotImplementedException(); }
 
         void IDataChangeNotifyEventListener.ProcessEvent(DataChangedNotifyEvent e)
         {
@@ -22,7 +22,7 @@ namespace Imms.Data
                 return;
             }
 
-            ThirdPartDataExchangeTask log = (ThirdPartDataExchangeTask)e.Entity;
+            DataExchangeTask log = (DataExchangeTask)e.Entity;
             foreach (IThirdPartDataPullLogic logic in this.logics)
             {
                 bool isMatch = (from r in logic.ExchangeRules where r == log.ExchangeRuleCode select r).Count() > 0;

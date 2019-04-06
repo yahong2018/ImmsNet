@@ -176,7 +176,6 @@ create table bom_order
   order_status      int                                         not null,
 
   bom_order_type    int                                         not null  , -- 基准bom
-    -- ,-- part: "部件bom", standard: "基准bom", order: "订单bom", design: "设计bom",  manufacture: "生产bom",  work: "作业bom"
   material_id       bigint                                      not null,     
 
   create_by                            bigint                       not null,
@@ -200,11 +199,11 @@ create table bom
   bom_order_id                     bigint                     not null,  
   component_material_id            bigint                     not null, -- 子件物料id
   component_abstract_material_id   bigint                     null,     -- 子件抽象物料id
-  component_qty                    float(8,2)                 not null, -- 子件用量
+  qty_component                    float(8,2)                 not null, -- 子件用量
   component_unit_id                int                        not null, -- 子件单位
   component_material_no_path       varchar(130)               not null,
   component_material_name_path     varchar(330)               not null,
-  is_fabric                        bit                        not null, -- 是否主面料
+  is_main_fabric                   bit                        not null, -- 是否主面料
   parent_bom_id                    bigint                     not null, -- 上级bom id
 
   create_by                            bigint                       not null,

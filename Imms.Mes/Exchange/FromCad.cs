@@ -334,7 +334,7 @@ namespace Imms.Mes.Exchange
                     var theBom = cuttings.Where(x => x.MaterialNo == usage.ComponentNo).FirstOrDefault();
                     if (theBom != null)
                     {
-                        theBom.InnerBom.ComponentQty = usage.Qty;
+                        theBom.InnerBom.QtyComponent = usage.Qty;
                     }
                     else
                     {
@@ -353,7 +353,7 @@ namespace Imms.Mes.Exchange
                         var boms_2 = (from a in cuttings join b in boms_1 on a.MaterialNo equals b.MaterialNo select a);
                         foreach (var bom in boms_2)
                         {
-                            bom.InnerBom.ComponentQty = usage.Qty;
+                            bom.InnerBom.QtyComponent = usage.Qty;
                         }
                     }
                 }
@@ -366,7 +366,7 @@ namespace Imms.Mes.Exchange
                     var bom_1 = (from b in cuttings where b.MaterialNo == detail.ComponentNo select b);
                     foreach (var b in bom_1)
                     {
-                        b.InnerBom.ComponentQty = detail.Value;
+                        b.InnerBom.QtyComponent = detail.Value;
                     }
                 }
                 cuttingBomList = cuttings.Select(x => x.InnerBom).ToList();
@@ -394,7 +394,7 @@ namespace Imms.Mes.Exchange
                 //(from m in dto.ComponentUsages where m.ComponentNo == x.MaterialNo select m).Count() == 0
                 foreach (var b in stiches)
                 {
-                    b.InnerBom.ComponentQty *= cuttingQty;
+                    b.InnerBom.QtyComponent *= cuttingQty;
                 }
 
                 stitchBomList = stiches.Select(x => x.InnerBom).ToList();
