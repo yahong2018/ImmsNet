@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Imms.Data.Domain;
 using Xunit;
+using Imms.Mes.MasterData;
 
 namespace Imms.Test
 {
@@ -23,33 +24,21 @@ namespace Imms.Test
                 Console.WriteLine(codeSeed);
             }
         }
-
-        [Fact]
-        public void TestTreeCode()
-        {
-            foreach (TreeCode tree in dbContext.Set<TreeCode>())
-            {
-                Console.WriteLine(tree);
-            }
-        }
-
-        
+   
 
         [Fact]
         public void TestPlanCode()
         {
-            foreach (PlanCode code in dbContext.Set<PlanCode>())
+            Console.WriteLine("Equipment Type...");
+            foreach (EquipmentType code in dbContext.Set<EquipmentType>())
             {
                 Console.WriteLine(code);
             }
-        }
 
-        [Fact]
-        public void TestMaterialUnit()
-        {
-            foreach (MaterialUnit unit in dbContext.Set<MaterialUnit>())
-            {
-                Console.WriteLine(unit);
+            Console.WriteLine("Material Type...");
+
+            foreach(MaterialType materialType in dbContext.Set<MaterialType>()){
+                Console.WriteLine(materialType);
             }
         }
     }

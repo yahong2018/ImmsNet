@@ -79,6 +79,17 @@ namespace Imms.Mes
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
 
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkOrganizationUnitConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.PlantConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkCenterConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkLineConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkStationConfigure());
+
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.PlanCodeConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.EquipmentTypeCofigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.MaterialTypeeCofigure());
+            modelBuilder.ApplyConfiguration(new MaterialConfigure());
+
             // modelBuilder.ApplyConfiguration(new BomConfigure());
             // modelBuilder.ApplyConfiguration(new BomOrderConfigure());
 
@@ -86,7 +97,7 @@ namespace Imms.Mes
             // modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
             // modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
 
-            // modelBuilder.ApplyConfiguration(new MaterialConfigure());
+            
             // modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
             // // modelBuilder.ApplyConfiguration(new MaterialPickingOrderDetailConfigure());
             // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleConfigure());
@@ -111,7 +122,7 @@ namespace Imms.Mes
             // modelBuilder.ApplyConfiguration(new QualityCheckConfigure());
             // modelBuilder.ApplyConfiguration(new QualityCheckDetailConfigure());
 
-            // modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkOrganizationUnitConfigure());
+
             // modelBuilder.ApplyConfiguration(new WorkstationCheckInConfigure());
             // modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.TreeCodeConfigure());
 

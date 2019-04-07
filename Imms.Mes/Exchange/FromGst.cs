@@ -129,7 +129,7 @@ namespace Imms.Mes.Exchange
         {
             OperationRouting routing = new OperationRouting();
             Operation operation = CommonDAO.AssureExistsByFilter<Operation>(x=>x.OperationNo == dto.OperationNo);
-            MachineType machineType = CommonDAO.AssureExistsByFilter<MachineType>( x=>x.CodeNo == dto.MachineType);
+            EquipmentType machineType = CommonDAO.AssureExistsByFilter<EquipmentType>( x=>x.CodeNo == dto.MachineType);
 
             routing.OperationId = operation.RecordId;
             routing.OperationNo = operation.OperationNo;

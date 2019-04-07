@@ -30,10 +30,11 @@ namespace Imms
         public const int SYSTEM_ID_KANBAN = 4;
 
         //组织机构类型
-        public const string TYPE_ORG_PLANT = "PLANT";
-        public const string TYPE_ORG_WORK_CENTER = "WORK_CENTER";
-        public const string TYPE_ORG_WORK_LINE = "WORK_LINE";
-        public const string TYPE_ORG_WORK_STATETION = "WORK_STATION";
+        public const string TYPE_ORG_PLANT = "ORG_LANT";
+        public const string TYPE_ORG_WORK_CENTER = "ORG_WORK_CENTER";
+        public const string TYPE_ORG_WORK_LINE = "ORG_WORK_LINE";
+        public const string TYPE_ORG_WORK_STATETION = "ORG_WORK_STATION";
+
         //组织架构参数
         public const string TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE = "WORK_STATION_TYPE";  //工位类型
         public const string TYPE_ORG_PARAMETER_TYPE_STATUS_IS_ON_LINE = "STATUS_IS_ON_LINE";  //离线|在线
@@ -43,10 +44,14 @@ namespace Imms
         public const string VALUE_ORG_PARAMETER_STATUS_ON_LINE = "OFF_LINE"; //离线
         public const string VALUE_ORG_PARAMETER_STATUS_OFF_LINE = "OFF_LINE"; //离线
 
-        //编码类型
-        public const string TYPE_CODE_TABLE_MATERIAL_UNIT = "MATERIAL_UNIT";
-        public const string TYPE_CODE_TABLE_SIZE = "SIZE";
-        public const string TYPE_CODE_TABLE_MACHINE_TYPE = "MACHINE_TYPE";
+        //编码类型        
+        public const string TYPE_CODE_TYPE_EQUIPMENT_TYPE = "EQUIPMENT_TYPE";//设备类型      
+        public const string TYPE_CODE_TYPE_MATERIAL_TYPE = "MATERIAL_TYPE";  //物料类型
+
+        //树形编码
+        public const string TYPE_CODE_TYPE_DEFECT = "TREE_CODE_TYPE_DEFECT";//缺陷代码
+
+
         //生产订单类型
         public const int TYPE_PRODUCTION_ORDER_STANDARD = 0;
         public const int TYPE_PRODUCTION_ORDER_CUSTOM = 1;
@@ -56,7 +61,7 @@ namespace Imms
         public const int TYPE_OPERATION_ORDER_WORKORDER = 12;
         //领料单类型
         public const int TYPE_PICKING_ORDER_CUTTING = 30;
-        public const int TYPE_PICKING_ORDER_STITCH = 31;        
+        public const int TYPE_PICKING_ORDER_STITCH = 31;
         //BOM单类型
         public const int TYPE_BOM_ORDER_PART = 10;      //部件BOM
         public const int TYPE_BOM_ORDER_STANDARD = 20;  //标准BOM
@@ -82,6 +87,12 @@ namespace Imms
         public const string TYPE_WORK_STATION_PRINTING = "PRINTING"; // 印染
         public const string TYPE_WORK_STATION_CUTTINGPRINTER = "CUTTINGPRINTER"; // 实样切割打印机     
         public const string TYPE_WORK_STATION_PICKING = "PICKING";// 领料工位
+
+        //尺码类型
+        public const int TYPE_SIZE_TYPE_DIMENSION = 0;  //尺寸
+        public const int TYPE_SIZE_TYPE_YARD = 1; //尺码
+        public const int TYPE_SIZE_TYPE_TOP = 2;//上装
+        public const int TYPE_SIZE_TYPE_BOTTOM = 3;//下装
 
         //BOM状态
         public const int STATUS_BOM_ORDER_NORMAL = 0;
@@ -109,7 +120,7 @@ namespace Imms
 
         //领料单
         public const int STATUS_PICKING_ORDER_PREPARED = STATUS_PRODUCTION_ORDER_PICKING; //物料已准备好 | 开始领料   
-        
+
         //裁剪单
         public const int STATUS_CUTTING_ORDER_CUTTING = STATUS_PRODUCTION_ORDER_CUTTING;  //开始裁剪
 
@@ -118,6 +129,17 @@ namespace Imms
         //媒体类型
         public const int MEDIA_TYPE_CUTTING_MARKER_CUT_MEDIA = 10;
         public const int MEDIA_TYPE_CUTTING_MARKER_CUT_FILE = 11;
+
+        //旋转方向
+        public const int DIRECTION_ROTATE_CLOCK_WISE = 0;  //顺时针
+        public const int DIRECTION_ROTATE_ANTI_CLOCK_WISE = 1;//逆时针
+        //方位
+        public const int DIRECTON_LEFT = 0; //左边
+        public const int DIRECTON_RIGHT = 1;//右边
+
+        //男/女
+        public const int GENDER_MALE = 0; //男
+        public const int GENDER_FEMAIL = 1;//女
 
         //其他
         public static Imms.Data.IDbContextFactory DbContextFactory = null;
@@ -130,7 +152,7 @@ namespace Imms
             return CurrentUserGetFunction();
         }
 
-        public static void ModifyEntityStatus<T>(T item,DbContext dbContext) where T:class
+        public static void ModifyEntityStatus<T>(T item, DbContext dbContext) where T : class
         {
             EntityEntry<T> entry = dbContext.Attach<T>(item);
             entry.State = EntityState.Modified;

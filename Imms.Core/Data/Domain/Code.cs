@@ -23,12 +23,6 @@ namespace Imms.Data.Domain
         public string Description { get; set; }
     }
 
-    public class MaterialUnit : PlanCode
-    {
-        public string UnitNo { get { return base.CodeNo; } set { base.CodeNo = value; } }
-        public string UnitName { get { return base.CodeName; } set { base.CodeName = value; } }
-    }
-
     public partial class TreeCode : TrackableEntity<long>
     {
         //  public string CodeType { get; set; }
@@ -65,24 +59,12 @@ namespace Imms.Data.Domain
             base.InternalConfigure(builder);
             builder.ToTable("plan_code");
 
-            builder.HasDiscriminator("code_type", typeof(string))
-                .HasValue<MaterialUnit>(GlobalConstants.TYPE_CODE_TABLE_MATERIAL_UNIT)
-                ;
-
             builder.Property(e => e.CodeName).IsRequired().HasColumnName("code_name").HasMaxLength(30).IsUnicode(false);
             builder.Property(e => e.CodeNo).IsRequired().HasColumnName("code_no").HasMaxLength(10).IsUnicode(false);
             builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(250).IsUnicode(false);
         }
     }
 
-    public class MaterialUnitConfigure : IEntityTypeConfiguration<MaterialUnit>
-    {
-        public void Configure(EntityTypeBuilder<MaterialUnit> builder)
-        {
-            builder.Ignore(e => e.UnitNo);
-            builder.Ignore(e => e.UnitName);
-        }
-    }
 
     public class CodeSeedConfigure : EntityConfigure<CodeSeed>
     {

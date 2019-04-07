@@ -108,10 +108,10 @@ namespace Imms.Mes.Exchange
 
         private ProductionOrderSize ConvertSize(OrderSizeDTO dto)
         {
-            Size size = CommonDAO.AssureExistsByFilter<Size>(x=>x.CodeNo == dto.Size);
+            // Size size = CommonDAO.AssureExistsByFilter<Size>(x=>x.CodeNo == dto.Size);
             ProductionOrderSize orderSize = new ProductionOrderSize
             {
-                SizeId = size.RecordId,
+                Size = dto.Size,
                 QytPlanned = dto.PlannedQty
             };
             return orderSize;
@@ -159,7 +159,6 @@ namespace Imms.Mes.Exchange
         {
             Material abstractMaterial = CommonDAO.AssureExistsByFilter<Material>(x=>x.MaterialNo == dto.ComponentAbstractMaterial);
             Material componentMaterial = CommonDAO.AssureExistsByFilter<Material>(x=>x.MaterialNo == dto.MaterialCode);
-            MaterialUnit unit = CommonDAO.AssureExistsByFilter<MaterialUnit>(x=>x.CodeNo == dto.ComponentMaterialUnit);
 
             Bom bom = new Bom()
             {
@@ -167,7 +166,7 @@ namespace Imms.Mes.Exchange
                 ComponentMaterialId = componentMaterial.RecordId,
                 QtyComponent = dto.Qty,
                 IsMainFabric = dto.IsMainFabric,
-                ComponentUnitId = unit.RecordId
+                ComponentUnit = dto.ComponentMaterialUnit
             };
 
             return bom;

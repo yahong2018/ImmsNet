@@ -225,9 +225,8 @@ namespace Imms.Mes.Exchange
                 {
                     CuttingOrderSize cuttingOrderSize = new CuttingOrderSize();
                     cuttingOrderSize.CuttingOrder = cuttingOrder;
-                    cuttingOrderSize.QtyPlanned = size.Qty;
-                    Size innerSize = SingletonDataService.Instance.Sizes.Where(x => x.CodeNo == size.Size).Single();
-                    cuttingOrderSize.SizeId = innerSize.RecordId;
+                    cuttingOrderSize.QtyPlanned = size.Qty;                    
+                    cuttingOrderSize.Size = size.Size;
                     cuttingOrderSize.QtyLayer = 1;
                     cuttingOrderSize.QtyFinished = 0;
 

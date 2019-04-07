@@ -8,16 +8,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Imms.Mes.MasterData
 {
-    public class Size : TreeCode
+    public class EquipmentType : PlanCode
     {
-        public string SizeCode { get { return base.CodeNo; } set { base.CodeNo = value; } }
-        public string SizeName { get { return base.CodeName; } set { base.CodeName = value; } }
-    }
-
-    public class MachineType : TreeCode
-    {
-        public string MachineTypeNo { get { return base.CodeNo; } set { base.CodeNo = value; } }
-        public string MachineTypeName { get { return base.CodeName; } set { base.CodeName = value; } }
+        public string EquipmentTypeNo { get { return base.CodeNo; } set { base.CodeNo = value; } }
+        public string EquipmentTypeName { get { return base.CodeName; } set { base.CodeName = value; } }
     }
 
     public partial class Operator : TrackableEntity<long>
@@ -38,6 +32,7 @@ namespace Imms.Mes.MasterData
     {
         public string PlantCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
         public string PlantName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
+        public double CostPriceRatio { get; set; }
     }
 
     public class WorkCenter : WorkOrganizationUnit
@@ -46,14 +41,16 @@ namespace Imms.Mes.MasterData
         public string WorkCenterName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
 
         public int MainOrbitLength { get; set; }
+        public int RotateDirection { get; set; }
     }
 
     public class WorkLine : WorkOrganizationUnit
     {
-        public string LineCode { get; set; }
-        public string LineName { get; set; }
+        public string LineCode { get { return base.OrganizationCode; } set { base.OrganizationCode = value; } }
+        public string LineName { get { return base.OrganizationName; } set { base.OrganizationName = value; } }
 
         public int LineDistance { get; set; }
+        public int RotateDirection { get; set; }
     }
 
     public class WorkStation : WorkOrganizationUnit
@@ -69,6 +66,7 @@ namespace Imms.Mes.MasterData
         public int WipMax { get; set; }
         public int WipCurrent { get; set; }
         public int WipInTransit { get; set; }
+        public int Direction { get; set; }
     }
 
     public partial class WorkstationCheckIn : Entity<long>
@@ -84,12 +82,20 @@ namespace Imms.Mes.MasterData
         public string MaterialNo { get; set; }
         public string MaterialName { get; set; }
         public long MaterialTypeId { get; set; }
-        public long UnitId { get; set; }
+        public string Unit { get; set; }
         public decimal? Width { get; set; }
         public decimal? Weight { get; set; }
         public decimal? Price { get; set; }
         public string Color { get; set; }
         public string Description { get; set; }
+
+        public virtual MaterialType MaterialType { get; set; }
+    }
+
+    public class MaterialType : PlanCode
+    {
+        public string MaterialTypeCode { get { return base.CodeNo; } set { base.CodeNo = value; } }
+        public string MaterialTypeName { get { return base.CodeName; } set { base.CodeName = value; } }
     }
 
     public partial class BomOrder : OrderEntity<long>
@@ -107,7 +113,7 @@ namespace Imms.Mes.MasterData
         public long ComponentMaterialId { get; set; }
         public long? ComponentAbstractMaterialId { get; set; }
         public double QtyComponent { get; set; }
-        public long ComponentUnitId { get; set; }
+        public string ComponentUnit { get; set; }
         public string ComponentMaterialNoPath { get; set; }
         public string ComponentMaterialNamePath { get; set; }
         public bool IsMainFabric { get; set; }
@@ -145,7 +151,7 @@ namespace Imms.Mes.MasterData
             builder.Property(e => e.ComponentMaterialNamePath).IsRequired().HasColumnName("component_material_name_path").HasMaxLength(330);
             builder.Property(e => e.ComponentMaterialNoPath).IsRequired().HasColumnName("component_material_no_path").HasMaxLength(130);
             builder.Property(e => e.QtyComponent).HasColumnName("qty_component");
-            builder.Property(e => e.ComponentUnitId).HasColumnName("component_unit_id");
+            builder.Property(e => e.ComponentUnit).HasColumnName("component_unit");
             builder.Property(e => e.IsMainFabric).HasColumnName("is_main_fabric");
             builder.Property(e => e.ParentBomId).HasColumnName("parent_bom_id");
 
@@ -162,11 +168,11 @@ namespace Imms.Mes.MasterData
 
             builder.Property(e => e.Color).HasColumnName("color").HasMaxLength(20).IsUnicode(false);
             builder.Property(e => e.Description).HasColumnName("description").HasMaxLength(250).IsUnicode(false);
-            builder.Property(e => e.MaterialName).IsRequired().HasColumnName("material_name").HasMaxLength(30).IsUnicode(false);
-            builder.Property(e => e.MaterialNo).IsRequired().HasColumnName("material_no").HasMaxLength(12).IsUnicode(false);
+            builder.Property(e => e.MaterialName).IsRequired().HasColumnName("material_name").HasMaxLength(50).IsUnicode(false);
+            builder.Property(e => e.MaterialNo).IsRequired().HasColumnName("material_no").HasMaxLength(20).IsUnicode(false);
             builder.Property(e => e.MaterialTypeId).HasColumnName("material_type_id").HasColumnType("bigint(20)");
             builder.Property(e => e.Price).HasColumnName("price").HasColumnType("decimal(10,2)");
-            builder.Property(e => e.UnitId).HasColumnName("unit_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.Unit).HasColumnName("unit").HasColumnType("varchar(20)");
             builder.Property(e => e.Weight).HasColumnName("weight").HasColumnType("decimal(10,4)");
             builder.Property(e => e.Width).HasColumnName("width").HasColumnType("decimal(10,4)");
         }
@@ -194,8 +200,8 @@ namespace Imms.Mes.MasterData
             builder.HasDiscriminator("organization_type", typeof(string))
             .HasValue<Plant>(GlobalConstants.TYPE_ORG_PLANT)
             .HasValue<WorkCenter>(GlobalConstants.TYPE_ORG_WORK_CENTER)
-            .HasValue<WorkStation>(GlobalConstants.TYPE_ORG_WORK_STATETION)
             .HasValue<WorkLine>(GlobalConstants.TYPE_ORG_WORK_LINE)
+            .HasValue<WorkStation>(GlobalConstants.TYPE_ORG_WORK_STATETION)
             ;
         }
     }
@@ -206,6 +212,8 @@ namespace Imms.Mes.MasterData
         {
             builder.Ignore(e => e.PlantCode);
             builder.Ignore(e => e.PlantName);
+
+            builder.Property(e => e.CostPriceRatio).HasColumnName("cost_price_ratio").HasColumnType("double(8,4)");
         }
     }
     public class WorkCenterConfigure : IEntityTypeConfiguration<WorkCenter>
@@ -216,6 +224,7 @@ namespace Imms.Mes.MasterData
             builder.Ignore(e => e.WorkCenterName);
 
             builder.Property(e => e.MainOrbitLength).HasColumnName("main_orbit_length");
+            builder.Property(e => e.RotateDirection).HasColumnName("rotate_direction");
         }
     }
 
@@ -227,6 +236,7 @@ namespace Imms.Mes.MasterData
             builder.Ignore(e => e.LineName);
 
             builder.Property(e => e.LineDistance).HasColumnName("line_distance");
+            builder.Property(e => e.RotateDirection).HasColumnName("rotate_direction");
         }
     }
 
@@ -239,12 +249,13 @@ namespace Imms.Mes.MasterData
 
             builder.Property(e => e.WorkStationType).HasColumnName("work_station_type");
             builder.Property(e => e.MachineTypeId).HasColumnName("machine_type_id");
-            builder.Property(e => e.IsOnLine).HasColumnName("is_on_line");
+            builder.Property(e => e.IsOnLine).HasColumnName("is_on_line").HasColumnType("bit");
             builder.Property(e => e.OperatorId).HasColumnName("operator_id");
-            builder.Property(e => e.IsAvailable).HasColumnName("is_available");
+            builder.Property(e => e.IsAvailable).HasColumnName("is_available").HasColumnType("bit");
             builder.Property(e => e.WipMax).HasColumnName("wip_max");
             builder.Property(e => e.WipCurrent).HasColumnName("wip_current");
             builder.Property(e => e.WipInTransit).HasColumnName("wip_in_transit");
+            builder.Property(e => e.Direction).HasColumnName("direction");
         }
     }
 
@@ -275,32 +286,34 @@ namespace Imms.Mes.MasterData
         }
     }
 
-    public class TreeCodeConfigure : IEntityTypeConfiguration<TreeCode>
+    public class PlanCodeConfigure : IEntityTypeConfiguration<PlanCode>
     {
-        public void Configure(EntityTypeBuilder<TreeCode> builder)
+        public void Configure(EntityTypeBuilder<PlanCode> builder)
         {
             builder.HasDiscriminator("code_type", typeof(string))
-                .HasValue<Size>(GlobalConstants.TYPE_CODE_TABLE_SIZE)
-                .HasValue<MachineType>(GlobalConstants.TYPE_CODE_TABLE_MACHINE_TYPE)
+                .HasValue<EquipmentType>(GlobalConstants.TYPE_CODE_TYPE_EQUIPMENT_TYPE)
+                .HasValue<MaterialType>(GlobalConstants.TYPE_CODE_TYPE_MATERIAL_TYPE)
                 ;
         }
     }
 
-    public class SizeConfigure : IEntityTypeConfiguration<Size>
+    public class EquipmentTypeCofigure : IEntityTypeConfiguration<EquipmentType>
     {
-        public void Configure(EntityTypeBuilder<Size> builder)
+        public void Configure(EntityTypeBuilder<EquipmentType> builder)
         {
-            builder.Ignore(e => e.SizeCode);
-            builder.Ignore(e => e.SizeName);
+            builder.Ignore(e => e.EquipmentTypeNo);
+            builder.Ignore(e => e.EquipmentTypeName);
         }
     }
 
-    public class MachineTypeCofigure : IEntityTypeConfiguration<MachineType>
+    public class MaterialTypeeCofigure : IEntityTypeConfiguration<MaterialType>
     {
-        public void Configure(EntityTypeBuilder<MachineType> builder)
+        public void Configure(EntityTypeBuilder<MaterialType> builder)
         {
-            builder.Ignore(e => e.MachineTypeNo);
-            builder.Ignore(e => e.MachineTypeName);
+            builder.Ignore(e => e.MaterialTypeCode);
+            builder.Ignore(e => e.MaterialTypeName);
         }
     }
+
+
 }

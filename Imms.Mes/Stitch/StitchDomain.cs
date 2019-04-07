@@ -61,8 +61,7 @@ namespace Imms.Mes.Stitch
     public partial class ProductionOrderSize : TrackableEntity<long>
     {
         public long ProductionOrderId { get; set; }
-        public long SizeId { get; set; }
-        //  public string SizeCode { get; set; }
+        public string Size { get; set; }        
         public int QytPlanned { get; set; }
 
         public virtual ProductionOrder ProductionOrder { get; set; }
@@ -94,7 +93,7 @@ namespace Imms.Mes.Stitch
         public long BomOrderId { get; set; }
         public long OperationRoutingOrderId { get; set; }
         public long CuttingOrderId { get; set; }
-        public long SizeId { get; set; }
+        public string Size { get; set; }
         public DateTime TimePlanStart { get; set; }
         public DateTime TimePlanEnd { get; set; }
         public DateTime? TimeActualStart { get; set; }
@@ -263,7 +262,7 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.TimePlanEnd).HasColumnName("planned_end_date");
             builder.Property(e => e.TimePlanStart).HasColumnName("planned_start_date");
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.SizeId).HasColumnName("size_id");
+            builder.Property(e => e.Size).HasColumnName("size_id");
         }
     }
 
@@ -277,7 +276,7 @@ namespace Imms.Mes.Stitch
 
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.QytPlanned).HasColumnName("qyt_planned").HasColumnType("int(11)");
-            builder.Property(e => e.SizeId).HasColumnName("size_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.Size).HasColumnName("size_id").HasColumnType("bigint(20)");
 
             builder.HasOne(s => s.ProductionOrder).WithMany(p => p.Sizes).HasForeignKey(s => s.ProductionOrderId);
         }

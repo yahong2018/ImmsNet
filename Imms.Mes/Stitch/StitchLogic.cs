@@ -252,7 +252,7 @@ namespace Imms.Mes.Stitch
         {
             ProductionWorkOrder productionWorkOrder = new ProductionWorkOrder();
             productionWorkOrder.CuttingOrderId = cuttingOrder.RecordId;
-            productionWorkOrder.SizeId = orderSize.SizeId;
+            productionWorkOrder.Size = orderSize.Size;
             productionWorkOrder.OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE;
             productionWorkOrder.ProductionOrderId = productionOrder.RecordId;
             return productionWorkOrder;

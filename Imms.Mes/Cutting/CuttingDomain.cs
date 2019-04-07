@@ -46,7 +46,7 @@ namespace Imms.Mes.Cutting
     public partial class CuttingOrderSize : TrackableEntity<long>
     {
         public long CuttingOrderId { get; set; }
-        public long SizeId { get; set; }
+        public string Size { get; set; }
         public int QtyLayer { get; set; }
         public int QtyPlanned { get; set; }
         public int QtyFinished { get; set; }
@@ -121,7 +121,7 @@ namespace Imms.Mes.Cutting
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.QtyLayer).HasColumnName("layer_qty").HasColumnType("int(11)");
             builder.Property(e => e.QtyPlanned).HasColumnName("planned_qty").HasColumnType("int(11)");
-            builder.Property(e => e.SizeId).HasColumnName("size").HasMaxLength(10).IsUnicode(false);
+            builder.Property(e => e.Size).HasColumnName("size").HasMaxLength(10).IsUnicode(false);
             builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Sizes).HasForeignKey(e => e.CuttingOrderId);
         }
     }

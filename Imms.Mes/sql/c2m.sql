@@ -25,7 +25,7 @@ insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_len
 
 
 /*
-   平面编码：比如“单位”、“民族”       
+   平面编码：比如“单位”、“民族”,“设备类别”       
 */
 create table plan_code  (
   record_id                          bigint auto_increment          not null ,
@@ -49,16 +49,16 @@ create table plan_code  (
 
 /*
 tree_code：树形编码
-     “尺码”、“缺陷代码”、“设备类别”、“物料类别”、“颜色”  
+    “缺陷代码”、“物料类别”、“颜色”  
 */
 
 create table tree_code  (
   record_id                          bigint auto_increment          not null,
   code_type                          varchar(128)                   not null,        -- 编码类型
-  code_no                            varchar(10)                    not null,         -- 编码
+  code_no                            varchar(10)                    not null,        -- 编码
   code_name                          varchar(30)                    not null,         -- 名称
   description                        varchar(250)                   null,            -- 描述
-  parent_id                          bigint                         not null default 0,        -- 上级  
+  parent_id                          bigint                         not null default 0, -- 上级  
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -70,13 +70,8 @@ create table tree_code  (
   index idx_tree_code_01(code_no) ,
   index idx_tree_code_02(code_name) ,
   index idx_tree_code_03(parent_id),
-  index idx_tree_code_04(code_type)
+  index idx_tree_code_04(code_type)      
 );
-
-insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (0,'size','尺码', null, 0,1,sysdate());
-insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (1,'defect', '缺陷代码', null, 0,1,sysdate());
-insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (2,'equipment', '设备类别', null, 0,1,sysdate());
-insert into tree_code (code_type, code_no,code_name, description, parent_id, create_by,create_date ) values (3,'material', '物料类别', null, 0,1,sysdate());
 
 --
 -- 生产组织单元
@@ -84,14 +79,19 @@ insert into tree_code (code_type, code_no,code_name, description, parent_id, cre
 create table work_organization_unit  (
   record_id                bigint auto_increment           not null,
   organization_type        varchar(128)                    not null,  -- 生产组织单元类别：工厂,工作中心,生产线,工位
-  organization_code        varchar(10)                     not null,
+  organization_code        varchar(50)                     not null,
   organization_name        varchar(50)                     not null,
   sequence_no              int                             not null default 1, -- 顺序号
   description              varchar(250)                    null ,  
   parent_organization_id   bigint                          not null,  -- 上级生产单元，顶级为0
 
+  cost_price_ratio         double(8,4)                     not null default 1, -- 提成比例
+
   main_orbit_length        int                             not null default 0, -- 主轨长度(工作中心专用)：以工位间隔为单位  
+  rotate_direction         int                             not null default 0, -- 旋转方向:0.顺时针  1.逆时针
+  
   line_distance            int                             not null default 0, -- 相对前一产线的间隔(生产线专用)
+
   work_station_type        varchar(50)                     not null default '', -- 工作中心类型
   machine_type_id          bigint                          not null default 0,  -- 机器类型
   is_on_line               bit                             not null default 1,  -- 是否在线
@@ -100,6 +100,7 @@ create table work_organization_unit  (
   wip_max                  int                             not null default 0,  -- 最大WIP数
   wip_current              int                             not null default 0,  -- 当前WIP数
   wip_in_transit           int                             not null default 0,  -- 在途WIP数
+  direction                int                             not null default 0,  -- 方向:0.左边   1.右边
   
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -141,13 +142,12 @@ create table operator  (
 create table material
 (
   record_id            bigint     auto_increment     not null,
-  material_no          varchar(12)                   not null, -- 物料号
-  material_name        varchar(30)                   not null, -- 物料名称
+  material_no          varchar(20)                   not null, -- 物料号
+  material_name        varchar(50)                   not null, -- 物料名称
   material_type_id     bigint                        not null, -- 物料类型
-  unit_id              bigint                        not null, -- 单位
+  unit                 varchar(20)                   not null default '', -- 单位
   width                decimal(10, 4)                null,     -- 幅宽
   weight               decimal(10, 4)                null,     -- 纺织克重
-  size_id              bigint                        null,     -- 尺码
   price                decimal(10, 2)                null,     -- 价格
   color                varchar(20)                   null,     -- 颜色
   description          varchar(250)                  null,     -- 物料描述
@@ -161,8 +161,7 @@ create table material
   primary key (record_id),
   index idx_material_01 (material_no),
   index idx_material_02 (material_name),
-  index idx_material_03 (material_type_id),
-  index idx_material_04 (size_id)
+  index idx_material_03 (material_type_id)
 ) ;
 
 --
@@ -199,7 +198,7 @@ create table bom
   component_material_id            bigint                     not null, -- 子件物料id
   component_abstract_material_id   bigint                     null,     -- 子件抽象物料id
   qty_component                    float(8,2)                 not null, -- 子件用量
-  component_unit_id                int                        not null, -- 子件单位
+  component_unit                   varchar(20)                not null default '', -- 子件单位
   component_material_no_path       varchar(130)               not null,
   component_material_name_path     varchar(330)               not null,
   is_main_fabric                   bit                        not null, -- 是否主面料
@@ -218,7 +217,9 @@ create table bom
   index idx_bom_04 (bom_order_id)
 );
 
-
+--
+-- 工艺
+--
 create table operation  (
   record_id                        bigint auto_increment         not null,
  
@@ -250,7 +251,9 @@ create table operation  (
   index idx_operation_02(machine_type_id)
 ) ;
 
-
+--
+-- 工艺技能要求
+--
 create table operator_capability  (
   record_id                        bigint   auto_increment       not null,
   operator_id                      bigint                        not null,
