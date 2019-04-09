@@ -165,6 +165,7 @@ namespace Imms.Mes.Stitch
         public virtual OperationRoutingOrder RoutingOrder { get; set; }
         public virtual List<OperationRouting> PrevOpreatons { get; set; } = new List<OperationRouting>();
         public virtual OperationRouting NextRouting { get; set; }
+        public virtual Operation Operation { get; set; }
     }
 
     public partial class OperationRoutingOrder : OrderEntity<long>
@@ -235,11 +236,12 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.OperationId).HasColumnName("operation_id").HasColumnType("bigint(20)");
             builder.Property(e => e.OperationRoutingOrderId).HasColumnName("operation_routing_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.NextRoutingId).HasColumnName("next_routing_id").HasColumnType("int(11)");
-            builder.Property(e=>e.NextOperationId).HasColumnName("next_operation_id");
+            builder.Property(e => e.NextOperationId).HasColumnName("next_operation_id");
             builder.Property(e => e.NextOpertionNo).HasColumnName("next_operation_no").HasColumnType("varchar(20)");
 
             builder.HasOne(e => e.RoutingOrder).WithMany(e => e.Routings).HasForeignKey(e => e.OperationRoutingOrderId);
             builder.HasOne(e => e.NextRouting).WithMany(e => e.PrevOpreatons).HasForeignKey(e => e.NextRoutingId);
+            builder.HasOne(e=>e.Operation).WithMany().HasForeignKey(e=>e.OperationId);
         }
     }
 
@@ -310,7 +312,7 @@ namespace Imms.Mes.Stitch
 
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.QytPlanned).HasColumnName("qyt_planned").HasColumnType("int(11)");
-            builder.Property(e => e.Size).HasColumnName("size_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.Size).HasColumnName("size").HasColumnType("varchar(20)");
 
             builder.HasOne(s => s.ProductionOrder).WithMany(p => p.Sizes).HasForeignKey(s => s.ProductionOrderId);
         }
@@ -364,15 +366,15 @@ namespace Imms.Mes.Stitch
 
             builder.Property(e => e.WorkCenterId).HasColumnName("work_center_id").HasColumnType("bigint(20)");
 
-            builder.Property(e => e.QtyPlanned).HasColumnName("planned_qty").HasColumnType("int(11)");
-            builder.Property(e => e.QtyActual).HasColumnName("actual_qty").HasColumnType("int(11)");
-            builder.Property(e => e.QtyFinished).HasColumnName("finished_qty").HasColumnType("int(11)");
+            builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned").HasColumnType("int(11)");
+            builder.Property(e => e.QtyActual).HasColumnName("qty_actual").HasColumnType("int(11)");
+            builder.Property(e => e.QtyFinished).HasColumnName("qty_finished").HasColumnType("int(11)");
             builder.Property(e => e.QtySecondQuality).HasColumnName("qty_second_quality").HasColumnType("int(11)");
-            builder.Property(e => e.QtyDefect).HasColumnName("defect_qty").HasColumnType("int(11)");
+            builder.Property(e => e.QtyDefect).HasColumnName("qty_defect").HasColumnType("int(11)");
 
             builder.Property(e => e.TimeStartPlanned).HasColumnName("time_start_planned");
             builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
-            builder.Property(e => e.TimeStartActual).HasColumnName("tiem_start_actual");
+            builder.Property(e => e.TimeStartActual).HasColumnName("time_start_actual");
             builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");
 
             builder.HasOne(e => e.RoutingOrder).WithMany().HasForeignKey(e => e.RoutingOrderId);

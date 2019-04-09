@@ -104,5 +104,19 @@ namespace Imms.Test.Routing
 
             dbContext.SaveChanges();
         }
+
+        [Fact]
+        public void TestRoutingOrderWithItems(){
+            foreach(OperationRoutingOrder routingOrder in dbContext.Set<OperationRoutingOrder>()
+                    .Include(x=>x.Material)
+                    .Include(x=>x.Routings)
+                        .ThenInclude(x=>x.Operation)
+                    ){
+                System.Console.WriteLine($"MaterialNo: {routingOrder.Material.MaterialNo},RoutingOrderNo:{routingOrder.OrderNo},the routing is :");
+                foreach(var routing in routingOrder.Routings.OrderByDescending(x=>x.RecordId)){
+                    System.Console.WriteLine($"Current:{routing.OperationNo},Next:{routing.NextOpertionNo}");
+                }
+            }
+        }
     }
 }
