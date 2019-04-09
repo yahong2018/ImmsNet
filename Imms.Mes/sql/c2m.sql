@@ -15,7 +15,7 @@ create table code_seed(
   index idx_code_seed_0(seed_no)
 );
 
-insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('bom_order_no','bom单号',1,'','',10);
+insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('Imms.Mes.MasterData.BomOrder','bom单号',1,'BOM','',12);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('production_order_no','生产计划单号',1,'','',10);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('piking_schedule_no','领料计划单号',1,'','',10);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('piking_order_no','领料单号',1,'','',10);
@@ -198,11 +198,9 @@ create table bom
   component_material_id            bigint                     not null, -- 子件物料id
   component_abstract_material_id   bigint                     null,     -- 子件抽象物料id
   qty_component                    float(8,2)                 not null, -- 子件用量
-  component_unit                   varchar(20)                not null default '', -- 子件单位
-  component_material_no_path       varchar(130)               not null,
-  component_material_name_path     varchar(330)               not null,
+  component_unit                   varchar(20)                not null default '', -- 子件单位 
   is_main_fabric                   bit                        not null, -- 是否主面料
-  parent_bom_id                    bigint                     not null, -- 上级bom id
+  parent_bom_id                    bigint                     null,     -- 上级bom id
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,

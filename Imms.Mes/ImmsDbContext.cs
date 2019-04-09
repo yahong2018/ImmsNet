@@ -89,9 +89,8 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.EquipmentTypeCofigure());
             modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.MaterialTypeeCofigure());
             modelBuilder.ApplyConfiguration(new MaterialConfigure());
-
-            // modelBuilder.ApplyConfiguration(new BomConfigure());
-            // modelBuilder.ApplyConfiguration(new BomOrderConfigure());
+            modelBuilder.ApplyConfiguration(new BomConfigure());
+            modelBuilder.ApplyConfiguration(new BomOrderConfigure());
 
             // modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
             // modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());

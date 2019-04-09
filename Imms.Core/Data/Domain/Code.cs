@@ -11,7 +11,7 @@ namespace Imms.Data.Domain
         public string SeedName { get; set; }
         public int InitialValue { get; set; }
         public string Prefix { get; set; }
-        public string Postfix { get; set; }
+        public string Postfix { get; set; }        
         public int TotalLength { get; set; }
     }
 

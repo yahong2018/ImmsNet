@@ -23,45 +23,18 @@ namespace Imms.Data
         {
             ChangeTracker.DetectChanges();
 
-            var modifiedEntities = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added || x.State == EntityState.Deleted);
+            var modifiedEntities = this.ChangeTracker.Entries()
+                .Where(x => x.State == EntityState.Modified
+                     || x.State == EntityState.Added
+                     || x.State == EntityState.Deleted
+                ).ToList();
+
             List<DataChangedNotifyEvent> eventList = new List<DataChangedNotifyEvent>();
-            foreach (var e in modifiedEntities)
+            foreach (EntityEntry entry in modifiedEntities)
             {
-                IEntity entity = (e as IEntity);
-                if (entity == null)
-                {
-                    continue;
-                }
-
-                if (entity is ITrackableEntity)
-                {
-                    ITrackableEntity trackableEntity = entity as ITrackableEntity;
-                    if (e.State == EntityState.Added)
-                    {
-                        trackableEntity.CreateBy = GlobalConstants.GetCurrentUser().RecordId;
-                        trackableEntity.CreateDate = DateTime.Now;
-                    }
-                    else if (e.State == EntityState.Modified)
-                    {
-                        trackableEntity.UpdateBy = GlobalConstants.GetCurrentUser().RecordId;
-                        trackableEntity.UpdateDate = DateTime.Now;
-                    }
-                }
-
-                int dmlType = 0;
-                if (e.State == EntityState.Added)
-                {
-                    dmlType = GlobalConstants.DML_OPERATION_INSERT;
-                }
-                else if (e.State == EntityState.Deleted)
-                {
-                    dmlType = GlobalConstants.DML_OPERATION_DELETE;
-                }
-                else if (e.State == EntityState.Modified)
-                {
-                    dmlType = GlobalConstants.DML_OPERATION_UPDATE;
-                }
-                eventList.Add(new DataChangedNotifyEvent() { Entity = entity, DMLType = dmlType });
+                this.FillTracableData(entry);
+                this.FillOrderNo(entry);
+                eventList.Add(new DataChangedNotifyEvent() { Entity = entry.Entity as IEntity, DMLType = this.GetDmlType(entry) });
             }
             int result = base.SaveChanges();
             foreach (DataChangedNotifyEvent e in eventList)
@@ -69,6 +42,70 @@ namespace Imms.Data
                 DataChangedNotifier.Instance.Notify(e);
             }
             return result;
+        }
+
+        private void FillOrderNo(EntityEntry entry)
+        {
+            IOrderEntry order = entry.Entity as IOrderEntry;
+            if (order == null || entry.State != EntityState.Added || !string.IsNullOrEmpty(order.OrderNo))
+            {
+                return;
+            }
+
+            String key = order.GetType().FullName;
+            CodeSeed seed = this.Set<CodeSeed>().Where(x => x.SeedNo == key).FirstOrDefault();
+            if (seed == null)
+            {
+                throw new BusinessException(GlobalConstants.EXCEPTION_CODE_DATA_NOT_FOUND, $"没有为{key}配置CodeSeed!");
+            }
+
+            lock (typeof(ImmsDbContext))
+            {
+                int prefixLength = seed.Prefix.Length;
+                order.OrderNo = seed.Prefix + (seed.InitialValue.ToString() + seed.Postfix).PadLeft(seed.TotalLength - prefixLength, '0');
+
+                seed.InitialValue += 1;
+                this.Attach(seed).State = EntityState.Modified;
+            }
+        }
+
+        private int GetDmlType(EntityEntry e)
+        {
+            int dmlType = 0;
+            if (e.State == EntityState.Added)
+            {
+                dmlType = GlobalConstants.DML_OPERATION_INSERT;
+            }
+            else if (e.State == EntityState.Deleted)
+            {
+                dmlType = GlobalConstants.DML_OPERATION_DELETE;
+            }
+            else if (e.State == EntityState.Modified)
+            {
+                dmlType = GlobalConstants.DML_OPERATION_UPDATE;
+            }
+
+            return dmlType;
+        }
+
+
+
+        private void FillTracableData(EntityEntry entry)
+        {
+            if (!(entry.Entity is ITrackableEntity))
+                return;
+
+            ITrackableEntity trackableEntity = entry.Entity as ITrackableEntity;
+            if (entry.State == EntityState.Added)
+            {
+                trackableEntity.CreateBy = GlobalConstants.GetCurrentUser().RecordId;
+                trackableEntity.CreateDate = DateTime.Now;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                trackableEntity.UpdateBy = GlobalConstants.GetCurrentUser().RecordId;
+                trackableEntity.UpdateDate = DateTime.Now;
+            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -92,8 +129,8 @@ namespace Imms.Data
             modelBuilder.ApplyConfiguration(new MediaConfigure());
             modelBuilder.ApplyConfiguration(new Imms.Data.Domain.TreeCodeConfigure());
             modelBuilder.ApplyConfiguration(new PlanCodeConfigure());
-            modelBuilder.ApplyConfiguration(new CodeSeedConfigure());            
-            modelBuilder.ApplyConfiguration(new Imms.Data.Domain.WorkOrganizationUnitConfigure());            
+            modelBuilder.ApplyConfiguration(new CodeSeedConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Data.Domain.WorkOrganizationUnitConfigure());
 
             base.OnModelCreating(modelBuilder);
         }

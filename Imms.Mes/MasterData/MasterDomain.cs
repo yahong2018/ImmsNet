@@ -114,12 +114,14 @@ namespace Imms.Mes.MasterData
         public long? ComponentAbstractMaterialId { get; set; }
         public double QtyComponent { get; set; }
         public string ComponentUnit { get; set; }
-        public string ComponentMaterialNoPath { get; set; }
-        public string ComponentMaterialNamePath { get; set; }
         public bool IsMainFabric { get; set; }
-        public long ParentBomId { get; set; }
+        public long? ParentBomId { get; set; }
 
         public virtual BomOrder BomOrder { get; set; }
+        public virtual Material ComponentMaterial { get; set; }
+        public virtual Material AbstractComponentMaterial { get; set; }
+        public virtual Bom ParentBom { get; set; }
+        public virtual List<Bom> Children { get; set; } = new List<Bom>();
     }
 
     public class BomOrderConfigure : OrderEntityConfigure<BomOrder>
@@ -148,14 +150,15 @@ namespace Imms.Mes.MasterData
             builder.Property(e => e.BomOrderId).HasColumnName("bom_order_id");
             builder.Property(e => e.ComponentAbstractMaterialId).HasColumnName("component_abstract_material_id");
             builder.Property(e => e.ComponentMaterialId).IsRequired().HasColumnName("component_material_id");
-            builder.Property(e => e.ComponentMaterialNamePath).IsRequired().HasColumnName("component_material_name_path").HasMaxLength(330);
-            builder.Property(e => e.ComponentMaterialNoPath).IsRequired().HasColumnName("component_material_no_path").HasMaxLength(130);
             builder.Property(e => e.QtyComponent).HasColumnName("qty_component");
             builder.Property(e => e.ComponentUnit).HasColumnName("component_unit");
-            builder.Property(e => e.IsMainFabric).HasColumnName("is_main_fabric");
+            builder.Property(e => e.IsMainFabric).HasColumnName("is_main_fabric").HasColumnType("bit");
             builder.Property(e => e.ParentBomId).HasColumnName("parent_bom_id");
 
             builder.HasOne(e => e.BomOrder).WithMany(e => e.Boms).HasForeignKey(e => e.BomOrderId);
+            builder.HasOne(e => e.ComponentMaterial).WithMany().HasForeignKey(e => e.ComponentMaterialId);
+            builder.HasOne(e => e.AbstractComponentMaterial).WithMany().HasForeignKey(e => e.ComponentAbstractMaterialId);
+            builder.HasOne(e => e.ParentBom).WithMany(e => e.Children).HasForeignKey(e => e.ParentBomId).HasConstraintName("parent_bom_id");
         }
     }
 
