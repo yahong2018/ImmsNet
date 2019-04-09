@@ -36,7 +36,7 @@ namespace Imms.Test
             BomOrder bomOrder = new BomOrder();
             bomOrder.MaterialId = 16;
             bomOrder.BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER;
-            bomOrder.OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL;
+            bomOrder.OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL;
 
             dbContext.Set<BomOrder>().Add(bomOrder);
             dbContext.SaveChanges();

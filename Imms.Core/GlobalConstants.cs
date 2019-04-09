@@ -56,9 +56,9 @@ namespace Imms
         public const int TYPE_PRODUCTION_ORDER_STANDARD = 0;
         public const int TYPE_PRODUCTION_ORDER_CUSTOM = 1;
         //工艺单类型
-        public const int TYPE_OPERATION_ORDER_MATERIAL = 10;
-        public const int TYPE_OPERATION_ORDER_PRODUCTION = 11;
-        public const int TYPE_OPERATION_ORDER_WORKORDER = 12;
+        public const int TYPE_OPERATION_ROUTING_ORDER_MATERIAL = 10;
+        public const int TYPE_OPERATION_ROUTING_ORDER_PRODUCTION = 11;
+        public const int TYPE_OPERATION_ROUTING_ORDER_WORKORDER = 12;
         //领料单类型
         public const int TYPE_PICKING_ORDER_CUTTING = 30;
         public const int TYPE_PICKING_ORDER_STITCH = 31;
@@ -95,8 +95,8 @@ namespace Imms
         public const int TYPE_SIZE_TYPE_BOTTOM = 3;//下装
 
         //BOM状态
-        public const int STATUS_BOM_ORDER_NORMAL = 0;
-        public const int STATUS_BOM_ORDER_DEPRECATED = 1;
+        public const int STATUS_DOCUMENT_NORMAL = 0;
+        public const int STATUS_DOCUMENT_DEPRECATED = 1;
 
         //订单通用状态
         public const int STATUS_ORDER_INITIATE = 0;   //初始状态 *

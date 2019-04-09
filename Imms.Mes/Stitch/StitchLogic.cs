@@ -100,16 +100,16 @@ namespace Imms.Mes.Stitch
                              && w.MachineTypeId == operationRouting.MachineTypeId  //机器类型匹配
                              && (w.WipCurrent + w.WipInTransit) < w.WipMax         //WIP
                              && c.OperationId == operationRouting.OperationId      //工艺
-                             && c.SkillLevel >= operationRouting.RequiredLevel     //技能等级                        
+                            // && c.SkillLevel >= operationRouting.RequiredLevel     //技能等级                        
                         select new
                         {
                             WorkStation = w,
-                            SkillLevel = c.SkillLevel,
+                           // SkillLevel = c.SkillLevel,
                             Distance = this.ComputeWorkStationDispatchDistance(prevWorkStation, w)
                         }
                     ).OrderBy(x => x.Distance)    //距离最短
                     .OrderBy(x => x.WorkStation.WipInTransit + x.WorkStation.WipCurrent) //WIP最小
-                    .OrderByDescending(x => x.SkillLevel)   //技能最高
+                   // .OrderByDescending(x => x.SkillLevel)   //技能最高
                     .OrderBy(x => x.WorkStation.RecordId)   // 编号最小
                     .FirstOrDefault();
 
@@ -264,7 +264,7 @@ namespace Imms.Mes.Stitch
             {
                 BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER,
                 MaterialId = cuttingOrder.FgMaterialId,
-                OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL
+                OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL
             };
 
             foreach (Bom bom in boms)

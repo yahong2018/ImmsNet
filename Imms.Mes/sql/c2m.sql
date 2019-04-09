@@ -16,12 +16,13 @@ create table code_seed(
 );
 
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('Imms.Mes.MasterData.BomOrder','bom单号',1,'BOM','',12);
-insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('production_order_no','生产计划单号',1,'','',10);
+insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('Imms.Mes.Stitch.ProductionOrder','生产计划单号',1,'PO','',12);
+insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('Imms.Mes.Stich.OperationRoutingOrder','工艺路线单号',1,'ORO','',12);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('piking_schedule_no','领料计划单号',1,'','',10);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('piking_order_no','领料单号',1,'','',10);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('cutting_order_no','裁剪单号',1,'','',10);
 insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('work_order_no','作业单号',1,'','',10);
-insert into code_seed (seed_no,seed_name,initial_value,prefix,postfix ,total_length) values('operation_routing_order_no','工艺路线单号',1,'','',10);
+
 
 
 /*
@@ -135,7 +136,6 @@ create table operator  (
   index idx_operator_03(supervisor_id)
 );
 
-
 --
 -- 物料
 --
@@ -222,18 +222,16 @@ create table operation  (
   record_id                        bigint auto_increment         not null,
  
   operation_no                     varchar(20)                   not null,
-  operation_name                   varchar(120)                  not null ,
+  description                      varchar(3000)                  not null ,
   machine_type_id                  bigint                        not null ,
   standard_time                    double(8,4)                   null,     -- 标准工时
   standard_price                   double(8,4)                   null,     -- 标准单价
-  production_part_id               bigint                        null,      -- 生产部件
-  design_part_id                   bigint                        null,      -- 设计部件
   section_type                     varchar(12)                   null ,     -- 工段编号
   section_name                     varchar(30)                   null ,     -- 工段名称
   is_outsource                     bit                           not null , -- 是否外协
   qa_procedure                     varchar(1000)                 null ,   -- 品质说明
   requirement                      varchar(1000)                 null ,   -- 工艺要求
-  required_level                   tinyint                       null ,   -- 工艺等级
+  required_level                   varchar(10)                   null ,   -- 工艺等级
 
   -- sopfiles    sop文件
   -- videofiles  工艺视频文件
@@ -248,6 +246,26 @@ create table operation  (
   index idx_operation_01(operation_no) ,
   index idx_operation_02(machine_type_id)
 ) ;
+
+
+create table operation_media
+(
+  record_id           bigint     not null auto_increment,
+  media_id            bigint     not null,  
+  opertation_id       bigint     not null,
+  media_type          int        not null,   -- 0. soap文件  1.工艺视频文件
+
+  create_by                            bigint                       not null,
+  create_date                          datetime                     not null,
+  update_by                            bigint                       null,
+  update_date                          datetime                     null,
+  opt_flag                             int                          not null default 0,
+
+  primary key(record_id),
+  index idx_operation_media_0(media_id),
+  index idx_operation_media_1(opertation_id)
+);
+
 
 --
 -- 工艺技能要求
@@ -294,12 +312,26 @@ create table operation_routing_order  (
 --
 -- 工艺路线_单身
 --
+
 create table operation_routing  (
   record_id                       bigint  auto_increment            not null,
   operation_routing_order_id      bigint              not null,             -- 工艺路线单主键  
   operation_id                    bigint              not null,             -- 工艺  
-  sequence_no                     int                 not null ,            -- 工序顺序
-  pre_routing_id                  bigint              null,                 -- 依赖关系-上道工序
+	next_operation_id               bigint              null,
+  next_operation_no               varchar(20)         null ,                -- 下道工序
+  next_routing_id                 bigint              null,                 -- 
+
+  operation_no                     varchar(20)                   not null,
+  description                      varchar(3000)                 not null ,
+  machine_type_id                  bigint                        not null ,
+  standard_time                    double(8,4)                   null,     -- 标准工时
+  standard_price                   double(8,4)                   null,     -- 标准单价
+  section_type                     varchar(12)                   null ,     -- 工段编号
+  section_name                     varchar(30)                   null ,     -- 工段名称
+  is_outsource                     bit                           not null , -- 是否外协
+  qa_procedure                     varchar(1000)                 null ,   -- 品质说明
+  requirement                      varchar(1000)                 null ,   -- 工艺要求
+  required_level                   varchar(10)                   null ,   -- 工艺等级  
   
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -310,9 +342,8 @@ create table operation_routing  (
   primary key (record_id) ,
   index idx_operation_routing_01(operation_id) ,
   index idx_operation_routing_02(operation_routing_order_id) ,  
-  index idx_operation_routing_03(pre_routing_id)
+  index idx_operation_routing_03(next_routing_id)
 );
-
 
 -- --
 -- -- 需求订单

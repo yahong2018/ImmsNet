@@ -92,6 +92,11 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new BomConfigure());
             modelBuilder.ApplyConfiguration(new BomOrderConfigure());
 
+            modelBuilder.ApplyConfiguration(new OperationConfigure());
+            modelBuilder.ApplyConfiguration(new OpetaionMediaConfigure());
+            modelBuilder.ApplyConfiguration(new OperationRoutingConfigure());
+            modelBuilder.ApplyConfiguration(new OperationRoutingOrderConfigure());
+
             // modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
             // modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
             // modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
@@ -102,9 +107,6 @@ namespace Imms.Mes
             // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleConfigure());
             // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleBomConfigure());
 
-            // modelBuilder.ApplyConfiguration(new OperationConfigure());
-            // modelBuilder.ApplyConfiguration(new OperationRoutingConfigure());
-            // modelBuilder.ApplyConfiguration(new OperationRoutingOrderConfigure());
             // modelBuilder.ApplyConfiguration(new OperatorConfigure());
             // modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
 

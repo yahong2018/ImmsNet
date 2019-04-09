@@ -44,7 +44,7 @@ namespace Imms.Mes.Exchange
             BomOrder bomOrder = new BomOrder
             {
                 BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER,
-                OrderStatus = GlobalConstants.STATUS_BOM_ORDER_NORMAL,
+                OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL,
                 Material = productionOrder.FgMaterial
             };
             ProductionOrderSize[] sizes = ConvertSizes(scheduleOrder.OrderSizes);

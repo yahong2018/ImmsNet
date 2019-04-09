@@ -98,7 +98,7 @@ namespace Imms.Mes.Exchange
             return new OperationRoutingOrder()
             {
                 MaterialId = material.RecordId,
-                OrderType = GlobalConstants.TYPE_OPERATION_ORDER_PRODUCTION
+                OrderType = GlobalConstants.TYPE_OPERATION_ROUTING_ORDER_PRODUCTION
             };
         }
 
@@ -133,7 +133,7 @@ namespace Imms.Mes.Exchange
 
             routing.OperationId = operation.RecordId;
             routing.OperationNo = operation.OperationNo;
-            routing.OperationName = operation.OperationName;
+            routing.Description = operation.Description;
             routing.IsOutsource = dto.IsOutsource;
             routing.MachineTypeId = machineType.RecordId;
             routing.NextOpertionNo = dto.NextOperationNo;            
@@ -141,8 +141,7 @@ namespace Imms.Mes.Exchange
             routing.Requirement = dto.Requirement;
             routing.RequiredLevel = dto.RequiredLevel;
             routing.SectionType = dto.SectionType;
-            routing.SectionName = operation.SectionName;
-            routing.StandardOperationProcedure = operation.StandardOperationProcedure;
+            routing.SectionName = operation.SectionName;            
             routing.StandardPrice = dto.StandardPrice;
             routing.StandardTime = dto.StandardTime;
 
@@ -169,7 +168,7 @@ namespace Imms.Mes.Exchange
         public double StandardTime { get; set; }
         public double StandardPrice { get; set; }
         public string SectionType { get; set; }
-        public byte RequiredLevel { get; set; }
+        public string RequiredLevel { get; set; }
         public string[] PreOperations { get; set; }
     }
 }

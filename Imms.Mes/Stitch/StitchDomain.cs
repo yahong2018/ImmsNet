@@ -61,7 +61,7 @@ namespace Imms.Mes.Stitch
     public partial class ProductionOrderSize : TrackableEntity<long>
     {
         public long ProductionOrderId { get; set; }
-        public string Size { get; set; }        
+        public string Size { get; set; }
         public int QytPlanned { get; set; }
 
         public virtual ProductionOrder ProductionOrder { get; set; }
@@ -124,28 +124,41 @@ namespace Imms.Mes.Stitch
     public partial class BaseOperation : TrackableEntity<long>
     {
         public string OperationNo { get; set; }
-        public string OperationName { get; set; }
-        public string StandardOperationProcedure { get; set; }
+        public string Description { get; set; }
+
         public long MachineTypeId { get; set; }
         public double? StandardTime { get; set; }
         public double? StandardPrice { get; set; }
-        public string PartType { get; set; }
         public string SectionType { get; set; }
         public string SectionName { get; set; }
         public bool IsOutsource { get; set; }
         public string QaProcedure { get; set; }
         public string Requirement { get; set; }
-        public byte RequiredLevel { get; set; }
+        public string RequiredLevel { get; set; }
+
+        public virtual EquipmentType MachineType { get; set; }
     }
 
     public partial class Operation : BaseOperation
     {
+        public virtual List<OperationMedia> Medias { get; set; } = new List<OperationMedia>();
+    }
+
+    public class OperationMedia : TrackableEntity<long>
+    {
+        public long MediaId { get; set; }
+        public long OperationId { get; set; }
+        public int MediaType { get; set; }
+
+        public virtual Media Media { get; set; }
+        public virtual Operation Operation { get; set; }
     }
 
     public partial class OperationRouting : BaseOperation
     {
         public long OperationRoutingOrderId { get; set; }
         public long OperationId { get; set; }
+        public long NextOperationId { get; set; }
         public string NextOpertionNo { get; set; }
         public long? NextRoutingId { get; set; }
 
@@ -159,6 +172,7 @@ namespace Imms.Mes.Stitch
         public int OrderType { get; set; }
         public long MaterialId { get; set; }
 
+        public virtual Material Material { get; set; }
         public virtual List<OperationRouting> Routings { get; set; } = new List<OperationRouting>();
     }
 
@@ -168,19 +182,19 @@ namespace Imms.Mes.Stitch
         {
             base.InternalConfigure(builder);
 
-            builder.Property(e => e.IsOutsource).HasColumnName("is_outsource").HasColumnType("bit(1)");
-            builder.Property(e => e.MachineTypeId).HasColumnName("machine_type_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.OperationName).IsRequired().HasColumnName("operation_name").HasMaxLength(120).IsUnicode(false);
             builder.Property(e => e.OperationNo).IsRequired().HasColumnName("operation_no").HasMaxLength(20).IsUnicode(false);
-            builder.Property(e => e.PartType).HasColumnName("part_type").HasMaxLength(12).IsUnicode(false);
+            builder.Property(e => e.Description).IsRequired().HasColumnName("description").HasMaxLength(3000).IsUnicode(false);
+            builder.Property(e => e.MachineTypeId).HasColumnName("machine_type_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.IsOutsource).HasColumnName("is_outsource").HasColumnType("bit(1)");
             builder.Property(e => e.QaProcedure).HasColumnName("qa_procedure").HasMaxLength(1000).IsUnicode(false);
-            builder.Property(e => e.Requirement).HasColumnName("requirement").HasMaxLength(1000).IsUnicode(false);
             builder.Property(e => e.SectionName).HasColumnName("section_name").HasMaxLength(30).IsUnicode(false);
             builder.Property(e => e.SectionType).HasColumnName("section_type").HasMaxLength(12).IsUnicode(false);
-            builder.Property(e => e.RequiredLevel).HasColumnName("skill_level").HasColumnType("tinyint(4)");
-            builder.Property(e => e.StandardOperationProcedure).HasColumnName("standard_operation_procedure").HasMaxLength(200).IsUnicode(false);
+            builder.Property(e => e.Requirement).HasColumnName("requirement").HasMaxLength(1000).IsUnicode(false);
+            builder.Property(e => e.RequiredLevel).HasColumnName("required_level");
             builder.Property(e => e.StandardPrice).HasColumnName("standard_price").HasColumnType("double(8,4)");
             builder.Property(e => e.StandardTime).HasColumnName("standard_time").HasColumnType("double(8,4)");
+
+            builder.HasOne(e => e.MachineType).WithMany().HasForeignKey(e => e.MachineTypeId);
         }
     }
 
@@ -191,6 +205,23 @@ namespace Imms.Mes.Stitch
             base.InternalConfigure(builder);
 
             builder.ToTable("operation");
+            builder.HasMany(e => e.Medias).WithOne(e => e.Operation).HasForeignKey(e => e.OperationId);
+        }
+    }
+
+    public class OpetaionMediaConfigure : TrackableEntityConfigure<OperationMedia>
+    {
+        protected override void InternalConfigure(EntityTypeBuilder<OperationMedia> builder)
+        {
+            base.InternalConfigure(builder);
+
+            builder.ToTable("operation_media");
+
+            builder.Property(e => e.MediaId).HasColumnName("media_id");
+            builder.Property(e => e.OperationId).HasColumnName("operation_id");
+            builder.Property(e => e.MediaType).HasColumnName("media_type");
+
+            builder.HasOne(e => e.Media).WithMany().HasForeignKey(e => e.MediaId);
         }
     }
 
@@ -204,6 +235,8 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.OperationId).HasColumnName("operation_id").HasColumnType("bigint(20)");
             builder.Property(e => e.OperationRoutingOrderId).HasColumnName("operation_routing_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.NextRoutingId).HasColumnName("next_routing_id").HasColumnType("int(11)");
+            builder.Property(e=>e.NextOperationId).HasColumnName("next_operation_id");
+            builder.Property(e => e.NextOpertionNo).HasColumnName("next_operation_no").HasColumnType("varchar(20)");
 
             builder.HasOne(e => e.RoutingOrder).WithMany(e => e.Routings).HasForeignKey(e => e.OperationRoutingOrderId);
             builder.HasOne(e => e.NextRouting).WithMany(e => e.PrevOpreatons).HasForeignKey(e => e.NextRoutingId);
@@ -220,6 +253,7 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.MaterialId).HasColumnName("material_id").HasColumnType("bigint(20)");
             builder.Property(e => e.OrderType).HasColumnName("order_type").HasColumnType("int(11)");
 
+            builder.HasOne(e => e.Material).WithMany().HasForeignKey(e => e.MaterialId);
             builder.HasMany(e => e.Routings).WithOne(e => e.RoutingOrder).HasForeignKey(e => e.OperationRoutingOrderId);
         }
     }
@@ -339,7 +373,7 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.TimeStartPlanned).HasColumnName("time_start_planned");
             builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
             builder.Property(e => e.TimeStartActual).HasColumnName("tiem_start_actual");
-            builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");            
+            builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");
 
             builder.HasOne(e => e.RoutingOrder).WithMany().HasForeignKey(e => e.RoutingOrderId);
             builder.HasOne(e => e.FgMaterial).WithMany().HasForeignKey(e => e.FgMaterialId);
