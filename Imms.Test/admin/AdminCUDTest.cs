@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Imms.Test
 {
@@ -18,8 +17,7 @@ namespace Imms.Test
         public void TestSystemUserInsertAndSelect(DbContext dbContext)
         {
             SystemUser theNewUser = CreateNewUser();
-            dbContext.Set<SystemUser>().Add(theNewUser);
-            Assert.True(dbContext.SaveChanges() == 1);
+            dbContext.Set<SystemUser>().Add(theNewUser);            
             foreach (SystemUser user in dbContext.Set<SystemUser>())
             {
                 Console.WriteLine(user.ToString());

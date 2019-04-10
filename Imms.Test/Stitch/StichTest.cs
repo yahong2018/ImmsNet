@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-
 using Imms.Data.Domain;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Imms.Test
 {
@@ -22,7 +20,7 @@ namespace Imms.Test
         }
         protected static DbContext dbContext = null;
 
-        [Fact]
+      
         public void TestProductionOrder()
         {
             ProductionOrder productionOrder = new ProductionOrder();

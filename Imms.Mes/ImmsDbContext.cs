@@ -69,7 +69,7 @@ namespace Imms.Mes
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL("server=localhost;user=root;database=Imms_Net;port=3306;password=root;Character Set=utf8;");
+               optionsBuilder.UseMySQL("server=localhost;user=root;database=imms_net;port=3306;password=root;Character Set=utf8;");                
             }
 
             base.OnConfiguring(optionsBuilder);

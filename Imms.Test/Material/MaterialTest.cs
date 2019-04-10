@@ -2,7 +2,6 @@ using System.Linq;
 using Imms.Data.Domain;
 using Imms.Mes.MasterData;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Imms.Test
 {
@@ -21,8 +20,7 @@ namespace Imms.Test
         protected static DbContext dbContext = null;
 
 
-        [Fact]
-        public void TestMaterial()
+       public void TestMaterial()
         {
             foreach (var material in dbContext.Set<Material>().Where(x => x.RecordId == 16))
             {
@@ -30,7 +28,7 @@ namespace Imms.Test
             }
         }
 
-        [Fact]
+
         public void BomOrderInsert()
         {
             BomOrder bomOrder = new BomOrder();
@@ -44,7 +42,7 @@ namespace Imms.Test
             System.Console.WriteLine(bomOrder);
         }
 
-        [Fact]
+
         public void TestBomOrderSelect()
         {
             foreach (var bomOrder in dbContext.Set<BomOrder>().Include(x => x.Boms).ThenInclude(x => x.ComponentMaterial))

@@ -3,7 +3,7 @@ using Imms.Data.Domain;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Imms.Mes.Stitch;
-using Xunit;
+
 
 namespace Imms.Test.Routing
 {
@@ -22,7 +22,6 @@ namespace Imms.Test.Routing
         protected static DbContext dbContext = null;
 
 
-        [Fact]
         public void TestOperation()
         {
             foreach (var operation in dbContext.Set<Operation>().Include(x => x.MachineType).Take(10))
@@ -31,7 +30,7 @@ namespace Imms.Test.Routing
             }
         }
 
-        [Fact]
+
         public void OperationRoutingOrderInsertTest()
         {
             OperationRoutingOrder operationRoutingOrder = new OperationRoutingOrder();
@@ -43,7 +42,7 @@ namespace Imms.Test.Routing
             dbContext.SaveChanges();
         }
 
-        [Fact]
+   
         public void OperationRoutingOrderItemsInsertTest()
         {
             string[] operations = new string[]{
@@ -105,7 +104,7 @@ namespace Imms.Test.Routing
             dbContext.SaveChanges();
         }
 
-        [Fact]
+  
         public void TestRoutingOrderWithItems(){
             foreach(OperationRoutingOrder routingOrder in dbContext.Set<OperationRoutingOrder>()
                     .Include(x=>x.Material)

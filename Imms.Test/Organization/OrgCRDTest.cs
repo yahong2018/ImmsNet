@@ -1,7 +1,7 @@
 using System;
 using Imms.Mes.MasterData;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+
 
 namespace Imms.Test
 {
@@ -13,7 +13,7 @@ namespace Imms.Test
         }
         protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
 
-        [Fact]
+
         public void CreatePlantTest()
         {
             dbContext.Set<Plant>().Add(this.CreatePlant());

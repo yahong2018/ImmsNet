@@ -2,7 +2,6 @@
 using System.Linq;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Imms.Test
 {
@@ -14,7 +13,6 @@ namespace Imms.Test
         }
         protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();        
 
-        [Fact]
         public void TestGetRoleUser()
         {
             var users = this.dbContext.Set<SystemUser>().Include(x => x.Roles).ThenInclude(x => x.Role);
@@ -28,8 +26,7 @@ namespace Imms.Test
                 }
             }
         }
-
-        [Fact]
+        
         public void TestGetSystemProgram()
         {
             var programs = this.dbContext.Set<SystemProgram>().Where(x => x.Children.Count > 0).Include(x => x.Children).Include(x => x.Parent);
@@ -47,8 +44,7 @@ namespace Imms.Test
                 Console.WriteLine();
             }
         }
-
-        [Fact]
+        
         public void TestGetPrivilege()
         {
             var rolePrivileges = this.dbContext.Set<RolePrivilege>().Include(x => x.Role).Include(x => x.PorgramPrivielge).ThenInclude(x => x.Program).ToList();

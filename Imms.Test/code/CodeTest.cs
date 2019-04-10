@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Imms.Data.Domain;
-using Xunit;
 using Imms.Mes.MasterData;
 
 namespace Imms.Test
@@ -16,7 +15,7 @@ namespace Imms.Test
         }
         protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
 
-        [Fact]
+        
         public void TestCodeSeed()
         {
             foreach (CodeSeed codeSeed in dbContext.Set<CodeSeed>())
@@ -26,7 +25,6 @@ namespace Imms.Test
         }
    
 
-        [Fact]
         public void TestPlanCode()
         {
             Console.WriteLine("Equipment Type...");
