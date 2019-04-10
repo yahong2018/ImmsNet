@@ -112,8 +112,23 @@ namespace Imms.Mes.Exchange
         private BomOrder[] CreatePickingBomOrders(ProductionOrder productionOrder, List<Bom>[] pickingBoms)
         {
             BomOrder[] result = new BomOrder[2];
-            result[0] = PickingLogic.CreatePickingBomOrder(productionOrder, pickingBoms[0]);
-            result[1] = PickingLogic.CreatePickingBomOrder(productionOrder, pickingBoms[1]);
+            Bom[] cuttingBoms = new Bom[pickingBoms[0].Count];
+            for(int i=0;i<cuttingBoms.Length;i++)
+            {
+                Bom newBom = new Bom();
+                newBom.Clone(pickingBoms[0][i]);
+                cuttingBoms[i]=newBom;
+            }
+            result[0] = PickingLogic.CreatePickingBomOrder(productionOrder, cuttingBoms);
+
+            Bom[] stichBoms = new Bom[pickingBoms[1].Count];
+            for (int i = 0; i < stichBoms.Length; i++)
+            {
+                Bom newBom = new Bom();
+                newBom.Clone(pickingBoms[1][i]);
+                stichBoms[i] = newBom;
+            }
+            result[1] = PickingLogic.CreatePickingBomOrder(productionOrder, stichBoms);
 
             return result;
         }
@@ -379,9 +394,10 @@ namespace Imms.Mes.Exchange
                 int cuttingQty = productionOrder.QtyPlanned;
                 string mainFabricCode = dbContext.Set<Material>()
                               .Where(m => m.RecordId == mainFabricId)
-                               .Select(m => m.MaterialNo)
-                               .First();
-                if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD && mainFabricCode != GlobalConstants.TYPE_MATERIAL_KT)
+                              .Select(m => m.MaterialNo)
+                              .First();
+                              
+                if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD /* && mainFabricCode != GlobalConstants.TYPE_MATERIAL_KT*/)
                 {
                     cuttingQty = dto.MaterialMarkers.Where(x => x.MaterialNo == mainFabricCode)
                          .Select(x => x.CuttingTables)

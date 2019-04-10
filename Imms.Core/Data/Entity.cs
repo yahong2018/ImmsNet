@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +11,51 @@ namespace Imms.Data
     public interface IEntity : IComparable
     {
         IComparable RecordId { get; set; }
+        void Clone(IEntity other,params string[] excludes);
     }
 
     public class Entity<T> : IEntity where T : IComparable
     {
         public T RecordId { get; set; }
         IComparable IEntity.RecordId { get => this.RecordId; set => this.RecordId = (T)value; }
+
+        public void Clone(IEntity other, params string[] excludes)
+        {
+            if (other == null)
+            {
+                return;
+            }
+
+            PropertyInfo[] otherProperties = GetProperties(other.GetType());
+            PropertyInfo[] thisProperties = GetProperties(this.GetType());
+            foreach(PropertyInfo property in thisProperties)
+            {
+                if (excludes.Contains(property.Name) || property.Name=="RecordId")
+                {
+                    continue;
+                }
+
+                PropertyInfo otherProperty = otherProperties.Where(x => x.Name == property.Name).FirstOrDefault();
+                Type propertyType = property.PropertyType;
+                if (otherProperty == null || (!propertyType.IsPrimitive && propertyType!=typeof(string)))
+                {
+                    continue;
+                }                
+                property.SetValue(this, otherProperty.GetValue(other));
+
+                //object otherValue = otherProperty.GetValue(other);
+                //if(otherValue is IEntity)
+                //{
+                //    object thisValue = Activator.CreateInstance(propertyType);
+                //    property.SetValue(this, thisValue);
+                //    (thisValue as IEntity).Clone(otherValue as IEntity);
+                //}
+                //else
+                //{
+                //    property.SetValue(this, otherValue);
+                //}
+            }
+        }
 
         int IComparable.CompareTo(object obj)
         {
@@ -43,16 +83,8 @@ namespace Imms.Data
         }
 
         public override string ToString()
-        {
-            Guid key = this.GetType().GUID;
-            lock (_Properties)
-            {
-                if (!_Properties.ContainsKey(key))
-                {
-                    _Properties.Add(key, this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
-                }
-            }
-            PropertyInfo[] properties = _Properties[key];
+        {            
+            PropertyInfo[] properties = GetProperties(this.GetType());
             StringBuilder stringBuilder = new StringBuilder();
             foreach (PropertyInfo property in properties)
             {
@@ -68,7 +100,20 @@ namespace Imms.Data
             return stringBuilder.ToString();
         }
 
-        private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();
+        private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();      
+        
+        private static PropertyInfo[] GetProperties(Type type)
+        {
+            Guid key = type.GUID;
+            lock (_Properties)
+            {
+                if (!_Properties.ContainsKey(key))
+                {
+                    _Properties.Add(key, type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+                }
+            }
+            return _Properties[key];
+        }
     }
 
     public interface ITrackableEntity

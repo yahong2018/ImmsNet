@@ -12,7 +12,12 @@ namespace Imms.Mes.Picking
     [Route("Imms/Mes/Picking")]
     public class PickingApi : Controller
     {
-        public PickingLogic PickingLogic { get; set; }
+        public PickingOrder Create(PickingOrder pickingOrder)
+        {
+
+
+            return pickingOrder;
+        }
 
         [HttpGet("MaterialToPreparePicking")]
         public PickingOrder[] GetMaterialToPreparePicking()
@@ -24,7 +29,7 @@ namespace Imms.Mes.Picking
         public void MaterialPrepared(string pickingOrderNo)
         {
             PickingOrder pickingOrder = CommonDAO.GetOneByFilter<PickingOrder>(x => x.OrderNo == pickingOrderNo);
-            PickingLogic.PrepareMaterial(pickingOrder);
+            PickingLogic.Instance.PrepareMaterial(pickingOrder);
         }
 
         [HttpGet("MaterialToPicking")]
@@ -37,7 +42,7 @@ namespace Imms.Mes.Picking
         public void ReportMaterialPicked(PickingReportDTO pickingReport)
         {
             PickingOrder pickingOrder = pickingReport.ToPickingOrder();
-            PickingLogic.MaterialPicked(pickingOrder);
+            PickingLogic.Instance.MaterialPicked(pickingOrder);
         }
     }
 
@@ -52,7 +57,7 @@ namespace Imms.Mes.Picking
         public string PickingOrderNo { get; set; }
 
         public string ContainerNo { get; set; }
-        public string OperatorCode { get; set; }        
+        public string OperatorCode { get; set; }
         public PickedItemDTO[] PickedDetails { get; set; }
 
         public PickingOrder ToPickingOrder()
@@ -64,7 +69,7 @@ namespace Imms.Mes.Picking
                 result.ContainerNo = this.ContainerNo;
                 SystemUser operatorUser = dbContext.Set<SystemUser>().Where(x => x.UserCode == this.OperatorCode).Single();
                 result.OperatorId = operatorUser.RecordId;
-                
+
                 foreach (PickedItemDTO detail in this.PickedDetails)
                 {
                     PickingOrderItem item = new PickingOrderItem();

@@ -27,10 +27,10 @@ namespace Imms.Mes.WorkFlow
         public MainFlow()
         {
             Handlers.Add(this.SynchronizeProductionOrderToGstAndCad);
-            Handlers.Add(this.ReporOrderStatusToAps);            
+            Handlers.Add(this.ReporOrderStatusToAps);
             Handlers.Add(this.CreateProductionWorkOrder);
             Handlers.Add(this.DispatchWorkOrderRouting);
-            Handlers.Add(this.OnProductionWorkOrderFinished);            
+            Handlers.Add(this.OnProductionWorkOrderFinished);
         }
 
         public Type[] ListenTypes
@@ -74,7 +74,7 @@ namespace Imms.Mes.WorkFlow
             {
                 return;
             }
-        }       
+        }
 
         private void CreateProductionWorkOrder(DataChangedNotifyEvent e)
         {
@@ -114,7 +114,11 @@ namespace Imms.Mes.WorkFlow
             {
                 productionOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
             }
-            CommonDAO.Update(productionOrder);
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                dbContext.Attach<ProductionOrder>(productionOrder).State = EntityState.Modified;
+                dbContext.SaveChanges();
+            });
         }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();

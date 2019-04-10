@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -17,6 +19,8 @@ namespace Imms
         public const int EXCEPTION_CODE_DATA_NOT_FOUND = 2;//数据没有找到
         public const int EXCEPTION_CODE_NOT_EXCEPTED_DATA = 3;//非预期数据
         public const int EXCEPTION_CODE_DATA_REPEATED = 4;  //数据重复
+        public const int EXCEPTION_CODE_PARAMETER_INVALID = 5;  //参数错误
+        public const int EXCEPTION_CODE_EXISTS_RELATED_ITEMS=6; //存在有相关项，不能删除
         public const int EXCEPTION_CODE_CUSTOM = int.MaxValue; //业务逻辑自定义的异常
 
         //数据交换:规则
@@ -94,6 +98,17 @@ namespace Imms
         public const int TYPE_SIZE_TYPE_TOP = 2;//上装
         public const int TYPE_SIZE_TYPE_BOTTOM = 3;//下装
 
+        //物料类型
+        public const string TYPE_MATERIAL_TYPE_STANDARD="Z001";  //基准款
+        public const string TYPE_MATERIAL_TYPE_PART="Z002";//部件
+        public const string TYPE_MATERIAL_TYPE_ABSTRACT_MATERIAL="Z003"; //抽象材料
+        public const string TYPE_MATERIAL_GARMENT="Z004";//成品-大货
+        public const string TYPE_MATERIAL_FABRIC="Z005"; //面料
+        public const string TYPE_MATERIAL_TYPE_ACCESSORY="Z006"; //辅料
+        public const string TYPE_MATERIAL_PACKING="Z007"; //包装材料
+        public const string TYPE_MATERIAL_LINING="Z008";//里布
+        public const string TYPE_MATERIAL_INTER_LINING="Z009";//衬布
+
         //BOM状态
         public const int STATUS_DOCUMENT_NORMAL = 0;
         public const int STATUS_DOCUMENT_DEPRECATED = 1;
@@ -157,6 +172,8 @@ namespace Imms
             EntityEntry<T> entry = dbContext.Attach<T>(item);
             entry.State = EntityState.Modified;
         }
+
+
     }
 
     public delegate Imms.Data.Domain.SystemUser CurrentUserGetHandler();

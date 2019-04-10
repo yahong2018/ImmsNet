@@ -69,7 +69,7 @@ namespace Imms.Mes
         {
             if (!optionsBuilder.IsConfigured)
             {
-               optionsBuilder.UseMySQL("server=localhost;user=root;database=imms_net;port=3306;password=root;Character Set=utf8;");                
+                optionsBuilder.UseMySQL("server=localhost;user=root;database=imms_net;port=3306;password=root;Character Set=utf8;");
             }
 
             base.OnConfiguring(optionsBuilder);
@@ -104,19 +104,16 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new QualityCheckConfigure());
             modelBuilder.ApplyConfiguration(new QualityCheckDetailConfigure());
 
+            modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
+            modelBuilder.ApplyConfiguration(new PickingOrderItemConfigure());
+
             // modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
             // modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
             // modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
 
-
-            // modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
-            // // modelBuilder.ApplyConfiguration(new MaterialPickingOrderDetailConfigure());
-            // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleConfigure());
-            // // modelBuilder.ApplyConfiguration(new MaterialPickingScheduleBomConfigure());
-
             // modelBuilder.ApplyConfiguration(new OperatorConfigure());
             // modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
-            
+
             // modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
             // modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
 

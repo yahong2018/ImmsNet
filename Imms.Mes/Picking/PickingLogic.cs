@@ -15,11 +15,10 @@ using Imms.Mes.Cutting;
 
 namespace Imms.Mes.Picking
 {
-    public class PickingLogic
+    public class PickingLogic : IVerifier
     {
         private PickingLogic() { }
         public static readonly PickingLogic Instance = new PickingLogic();
-
         //
         //生成领料BOM
         //
@@ -33,8 +32,7 @@ namespace Imms.Mes.Picking
 
             pickingBomOrder.Boms.AddRange(pickingBoms);
             foreach (Bom bom in pickingBomOrder.Boms)
-            {
-                bom.RecordId = 0;
+            {                
                 bom.BomOrder = pickingBomOrder;
             }
 
@@ -137,6 +135,32 @@ namespace Imms.Mes.Picking
             }
 
             return cuttingOrders;
+        }
+
+        public void VerifyData(DbContext dbContext, IEntity entity, int dmlType)
+        {
+            PickingOrder pickingOrder = (PickingOrder)entity;
+            if (dmlType == GlobalConstants.DML_OPERATION_DELETE)
+            {
+                VerifyDelete(dbContext, dmlType, pickingOrder);
+            }
+            else
+            {
+                                
+            }
+        }
+
+        private static void VerifyDelete(DbContext dbContext, int dmlType, PickingOrder pickingOrder)
+        {
+            int pickedCount = pickingOrder.PickedItems.Count;
+            if (pickedCount == 0)
+            {
+                pickedCount = dbContext.Set<PickingOrderItem>().Where(x => x.PickingOrderId == pickingOrder.RecordId).Count();
+            }
+            if (pickedCount > 0)
+            {
+                throw new BusinessException(GlobalConstants.EXCEPTION_CODE_EXISTS_RELATED_ITEMS, $"该领料单已有{pickedCount}项物料被领取，不可以删除！");
+            }
         }
     }
 }

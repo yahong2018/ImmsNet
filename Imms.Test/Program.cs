@@ -16,7 +16,9 @@ namespace Imms.Test
     {
         static void Main(string[] args)
         {
-            new OrgQueryTest().TestOrganization();
+            //new OrgQueryTest().TestOrganization();
+              new MaterialTest().CreatePickingOrderTest();
+            //new MaterialTest().BomInsertTest();
 
             Console.Read();
         }       

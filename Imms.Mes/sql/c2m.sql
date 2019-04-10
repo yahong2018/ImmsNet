@@ -516,17 +516,23 @@ create table production_order_pattern_relation(
 --
 -- 领料单
 --
-create table material_picking_order  (
+create table picking_order  (
   record_id                            bigint                       not null auto_increment,
   order_no                             varchar(12)                  not null,
   order_status                         int                          not null,
-  order_type                           int                          not null,
-  picking_bom_order_id                 bigint                       not null,
-  time_picking_planned                 datetime                     not null,
-  time_picking_actual                  datetime                     not null,
-  
+
+  production_order_id                  long                         not null,
+  order_type                           int                          not null, -- 单据类型： 裁剪领料单/缝制领料单
+  priority                             int                          not null,
+  picking_bom_order_id                 bigint                       not null,    
   container_no                         varchar(64)                  not null,
   operator_id                          bigint                       not null,
+
+  time_start_planned                   datetime                     not null,
+  time_end_planned                     datetime                     not null,
+
+  time_start_actual                    datetime                     null,
+  time_end_actual                      datetime                     null,
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -535,20 +541,20 @@ create table material_picking_order  (
   opt_flag                             int                          not null default 0,
 
   primary key (record_id) ,
-  index idx_material_picking_order_01(order_no) ,
-  index idx_material_picking_order_02(container_no) ,
-  index idx_material_picking_order_03(operator_id) ,
-  index idx_material_picking_order_04(picking_schedule_id)
+  index idx_picking_order_01(order_no) ,
+  index idx_picking_order_02(container_no) ,
+  index idx_picking_order_03(operator_id),
+  index idx_picking_order_04(picking_bom_order_id)
 ) ;
 
 --
 -- 领料明细
 --
-create table material_picking_order_detail  (
+create table picking_order_item  (
   record_id                            bigint                       not null  auto_increment,
-  material_picking_order_id            bigint                       not null       ,-- 领料单明细主键
-  material_id                          bigint                       null           ,-- 物料号
-  picked_qty                           double(10,4)                 null           ,-- 领用量
+  picking_order_id                     bigint                       not null, -- 领料单主键
+  bom_id                               bigint                       null, -- Bom的Id
+  picked_qty                           double(10,4)                 null, -- 领用量
 
   create_by                            bigint                       not null,
   create_date                          datetime                     not null,
@@ -557,8 +563,8 @@ create table material_picking_order_detail  (
   opt_flag                              int                          not null default 0,
 
   primary key (record_id) ,
-  index idx_material_picking_order_detail_01(material_picking_order_id) ,
-  index idx_material_picking_order_detail_02(material_id)
+  index idx_picking_order_item_01(picking_order_id) ,
+  index idx_picking_order_item_02(bom_id)
 );
 
 --

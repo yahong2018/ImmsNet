@@ -34,7 +34,10 @@ namespace Imms.Data
             {
                 this.FillTracableData(entry);
                 this.FillOrderNo(entry);
-                eventList.Add(new DataChangedNotifyEvent() { Entity = entry.Entity as IEntity, DMLType = this.GetDmlType(entry) });
+
+                int dmlType = this.GetDmlType(entry);
+                IEntity entity = entry.Entity as IEntity;            
+                eventList.Add(new DataChangedNotifyEvent() { Entity = entity, DMLType = dmlType });
             }
             int result = base.SaveChanges();
             foreach (DataChangedNotifyEvent e in eventList)
@@ -52,7 +55,7 @@ namespace Imms.Data
                 return;
             }
 
-            String key = order.GetType().FullName;
+            string key = order.GetType().FullName;
             CodeSeed seed = this.Set<CodeSeed>().Where(x => x.SeedNo == key).FirstOrDefault();
             if (seed == null)
             {

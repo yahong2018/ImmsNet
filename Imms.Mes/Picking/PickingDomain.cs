@@ -68,6 +68,11 @@ namespace Imms.Mes.Picking
             builder.Property(e => e.Priority).HasColumnName("priority");
             builder.Property(e => e.ContainerNo).IsRequired().HasColumnName("container_no").HasMaxLength(64).IsUnicode(false);
             builder.Property(e => e.OperatorId).HasColumnName("operator_id");
+            builder.Property(e => e.OrderType).HasColumnName("order_type");
+            builder.Property(e=>e.TimeStartActual).HasColumnName("time_start_actual");
+            builder.Property(e=>e.TimeStartPlanned).HasColumnName("time_start_planned");
+            builder.Property(e=>e.TimeEndActual).HasColumnName("time_end_actual");
+            builder.Property(e=>e.TimeEndPlanned).HasColumnName("time_end_planned");        
 
             builder.HasOne(e => e.PickingBomOrder).WithMany().HasForeignKey(e => e.PickingBomOrderId);
             builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
