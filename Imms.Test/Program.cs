@@ -17,8 +17,9 @@ namespace Imms.Test
         static void Main(string[] args)
         {
             //new OrgQueryTest().TestOrganization();
-              new MaterialTest().CreatePickingOrderTest();
+            //new MaterialTest().CreatePickingOrderForCadTest();
             //new MaterialTest().BomInsertTest();
+            new MaterialTest().CreatePickingOrderForStichTest();
 
             Console.Read();
         }       

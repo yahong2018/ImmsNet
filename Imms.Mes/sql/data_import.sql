@@ -83,4 +83,28 @@ select o.operation_no,
 			 SYSDATE()
 from c2m.operation o join c2m.machine_type mt1 on o.machine_type_id = mt1.id join plan_code mt on mt1.machine_type_no = mt.code_no
 ;
-
+/*
+ select * from material
+ where record_id = 16;
+   
+ select * from c2m.material
+ where material_no='SMCS001001';
+   
+ select * from c2m.production_order 
+ where fg_material_id = 1405;
+   
+ select co.cutting_order_no,
+        co.cutting_table_no,
+ 			 co.fabric_material_id,			 
+ 		   co.fabric_material_type,
+ 			 m.name as material_name,
+ 			 m.material_type_id,
+ 			 t.material_type_no,			 
+ 			 t.name as material_type_name			 
+ from  c2m.cutting_order co  join c2m.material_type t on co.fabric_material_type = t.id
+ 													 join c2m.material m on co.fabric_material_id = m.id
+ where production_order_id = 5683
+ ;
+   
+ select * from c2m.bom where bom_order_id =106712;
+ */

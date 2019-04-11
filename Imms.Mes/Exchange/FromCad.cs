@@ -113,11 +113,11 @@ namespace Imms.Mes.Exchange
         {
             BomOrder[] result = new BomOrder[2];
             Bom[] cuttingBoms = new Bom[pickingBoms[0].Count];
-            for(int i=0;i<cuttingBoms.Length;i++)
+            for (int i = 0; i < cuttingBoms.Length; i++)
             {
                 Bom newBom = new Bom();
                 newBom.Clone(pickingBoms[0][i]);
-                cuttingBoms[i]=newBom;
+                cuttingBoms[i] = newBom;
             }
             result[0] = PickingLogic.CreatePickingBomOrder(productionOrder, cuttingBoms);
 
@@ -240,7 +240,7 @@ namespace Imms.Mes.Exchange
                 {
                     CuttingOrderSize cuttingOrderSize = new CuttingOrderSize();
                     cuttingOrderSize.CuttingOrder = cuttingOrder;
-                    cuttingOrderSize.QtyPlanned = size.Qty;                    
+                    cuttingOrderSize.QtyPlanned = size.Qty;
                     cuttingOrderSize.Size = size.Size;
                     cuttingOrderSize.QtyLayer = 1;
                     cuttingOrderSize.QtyFinished = 0;
@@ -341,7 +341,7 @@ namespace Imms.Mes.Exchange
                 var cuttings = (from b in allBoms where (dto.ComponentUsages.Select(c => c.ComponentNo).Contains(b.MaterialNo)) select b).ToList();
 
                 //
-                //主料：返回的物料编码如果在生产BOM里面有的话就直接更新，如果没有的话就根据返回的物料找它的子件，用量更新在子件上（抽象BOM）。
+                //裁剪料：返回的物料编码如果在生产BOM里面有的话就直接更新，如果没有的话就根据返回的物料找它的子件，用量更新在子件上（抽象BOM）。
                 //
                 foreach (ComponentUsageDTO usage in dto.ComponentUsages)
                 {
@@ -386,7 +386,7 @@ namespace Imms.Mes.Exchange
                 cuttingBomList = cuttings.Select(x => x.InnerBom).ToList();
 
                 //
-                //更新辅料：根据主料每个尺码的总计划裁剪数量
+                //非裁剪料：根据主料每个尺码的总计划裁剪数量
                 //
                 long mainFabricId = cuttings.Where(b => b.InnerBom.IsMainFabric) //是主面料
                                    .Select(b => b.InnerBom.ComponentMaterialId)
@@ -396,7 +396,7 @@ namespace Imms.Mes.Exchange
                               .Where(m => m.RecordId == mainFabricId)
                               .Select(m => m.MaterialNo)
                               .First();
-                              
+
                 if (productionOrder.OrderType == GlobalConstants.TYPE_PRODUCTION_ORDER_STANDARD /* && mainFabricCode != GlobalConstants.TYPE_MATERIAL_KT*/)
                 {
                     cuttingQty = dto.MaterialMarkers.Where(x => x.MaterialNo == mainFabricCode)

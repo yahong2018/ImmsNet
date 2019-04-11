@@ -44,17 +44,17 @@ namespace Imms.Mes.Picking
         //
         public PickingOrder CreatePickingOrder(ProductionOrder productionOrder, BomOrder pickingBomOrder, int bomOrderType)
         {
-            PickingOrder pickingOrder = new PickingOrder();
-            pickingOrder.ProductionOrder = productionOrder;
-            pickingOrder.Priority = productionOrder.Priority;
-            pickingOrder.PickingBomOrder = pickingBomOrder;
-            pickingOrder.OrderType = bomOrderType;
+            return new PickingOrder
+            {
+                ProductionOrder = productionOrder,
+                Priority = productionOrder.Priority,
+                PickingBomOrder = pickingBomOrder,
+                OrderType = bomOrderType,
 
-            pickingOrder.TimeStartPlanned = DateTime.Now;
-            pickingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认为30分钟内领料完成，以后要根据工序来配置
-            pickingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
-
-            return pickingOrder;
+                TimeStartPlanned = DateTime.Now,
+                TimeEndPlanned = DateTime.Now.AddMinutes(30),   //默认为30分钟内领料完成，以后要根据工序来配置
+                OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED
+            };
         }
 
         //
