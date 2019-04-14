@@ -111,8 +111,9 @@ namespace Imms.Mes.Stitch
         public long OperationRoutingId { get; set; }
         public long? OperatorId { get; set; }
         public long? WorkStationId { get; set; }
-        public int QtyScrap { get; set; }
-        public int QtyFinished { get; set; }
+        public int QtyScrap { get; set; }  //
+        public int QtyPlanned { get; set; }   //计划数量，针对单件流，则固定为1
+        public int QtyFinished { get; set; }  //单件流，数量则为1
         public DateTime? TimeScheduled { get; set; }
         public DateTime? TimeStarted { get; set; }
         public DateTime? TimeFinished { get; set; }
@@ -241,7 +242,7 @@ namespace Imms.Mes.Stitch
 
             builder.HasOne(e => e.RoutingOrder).WithMany(e => e.Routings).HasForeignKey(e => e.OperationRoutingOrderId);
             builder.HasOne(e => e.NextRouting).WithMany(e => e.PrevOpreatons).HasForeignKey(e => e.NextRoutingId);
-            builder.HasOne(e=>e.Operation).WithMany().HasForeignKey(e=>e.OperationId);
+            builder.HasOne(e => e.Operation).WithMany().HasForeignKey(e => e.OperationId);
         }
     }
 

@@ -11,7 +11,7 @@ namespace Imms.Data
     public interface IEntity : IComparable
     {
         IComparable RecordId { get; set; }
-        void Clone(IEntity other,params string[] excludes);
+        void Clone(IEntity other, params string[] excludes);
     }
 
     public class Entity<T> : IEntity where T : IComparable
@@ -28,19 +28,19 @@ namespace Imms.Data
 
             PropertyInfo[] otherProperties = GetProperties(other.GetType());
             PropertyInfo[] thisProperties = GetProperties(this.GetType());
-            foreach(PropertyInfo property in thisProperties)
+            foreach (PropertyInfo property in thisProperties)
             {
-                if (excludes.Contains(property.Name) || property.Name=="RecordId")
+                if (excludes.Contains(property.Name) || property.Name == "RecordId")
                 {
                     continue;
                 }
 
                 PropertyInfo otherProperty = otherProperties.Where(x => x.Name == property.Name).FirstOrDefault();
                 Type propertyType = property.PropertyType;
-                if (otherProperty == null || (!propertyType.IsPrimitive && propertyType!=typeof(string)))
+                if (otherProperty == null || (!propertyType.IsPrimitive && propertyType != typeof(string)))
                 {
                     continue;
-                }                
+                }
                 property.SetValue(this, otherProperty.GetValue(other));
 
                 //object otherValue = otherProperty.GetValue(other);
@@ -83,7 +83,7 @@ namespace Imms.Data
         }
 
         public override string ToString()
-        {            
+        {
             PropertyInfo[] properties = GetProperties(this.GetType());
             StringBuilder stringBuilder = new StringBuilder();
             foreach (PropertyInfo property in properties)
@@ -100,8 +100,8 @@ namespace Imms.Data
             return stringBuilder.ToString();
         }
 
-        private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();      
-        
+        private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();
+
         private static PropertyInfo[] GetProperties(Type type)
         {
             Guid key = type.GUID;

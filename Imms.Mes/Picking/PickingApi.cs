@@ -29,7 +29,7 @@ namespace Imms.Mes.Picking
         public void MaterialPrepared(string pickingOrderNo)
         {
             PickingOrder pickingOrder = CommonDAO.GetOneByFilter<PickingOrder>(x => x.OrderNo == pickingOrderNo);
-            PickingLogic.Instance.PrepareMaterial(pickingOrder);
+            PickingLogic.Instance.MaterialPrepared(pickingOrder);
         }
 
         [HttpGet("MaterialToPicking")]

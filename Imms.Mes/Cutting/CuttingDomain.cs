@@ -23,7 +23,7 @@ namespace Imms.Mes.Cutting
         public double Length { get; set; }
         public double CuttingEfficiency { get; set; }
 
-        public long WorkStationId { get; set; }
+        public long? WorkStationId { get; set; }
 
         public int QtyPlanned { get; set; }
         public DateTime? TimetartPlanned { get; set; }

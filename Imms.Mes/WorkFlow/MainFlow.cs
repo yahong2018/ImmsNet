@@ -22,15 +22,12 @@ namespace Imms.Mes.WorkFlow
     public class MainFlow : IDataChangeNotifyEventListener
     {
         public CuttingLogic CuttingLogic { get; set; }
-        public StitchLogic ProductionLogic { get; set; }
 
         public MainFlow()
         {
             Handlers.Add(this.SynchronizeProductionOrderToGstAndCad);
             Handlers.Add(this.ReporOrderStatusToAps);
-            Handlers.Add(this.CreateProductionWorkOrder);
             Handlers.Add(this.DispatchWorkOrderRouting);
-            Handlers.Add(this.OnProductionWorkOrderFinished);
         }
 
         public Type[] ListenTypes
@@ -45,12 +42,7 @@ namespace Imms.Mes.WorkFlow
             //ProductionOrder:
             //   1.如果是ProductionOrder新增，则向GST、CAD同步数据
             //   2.如果是ProductionOrder更新，则向APS同步数据
-            //
-            //PickingOrder:如果领料完成，则安排裁剪单
-            //CuttingOrder:如果裁剪完成，则生成缝制作业单
-            //
-            //ProductionWorkOrder:如果缝制作业单已全部完成，则PO状态为已完成，否则修改PO的完成数量
-            //
+
             foreach (ProcessHandler handler in this.Handlers)
             {
                 handler(e);
@@ -76,16 +68,6 @@ namespace Imms.Mes.WorkFlow
             }
         }
 
-        private void CreateProductionWorkOrder(DataChangedNotifyEvent e)
-        {
-            //裁剪完成以后，生成缝制作业单
-            if (!(e.Entity is CuttingOrder cuttingOrder) || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
-            {
-                return;
-            }
-
-            this.ProductionLogic.CreateStitchWorkOrder(cuttingOrder);
-        }
 
         private void DispatchWorkOrderRouting(DataChangedNotifyEvent e)
         {
@@ -99,27 +81,7 @@ namespace Imms.Mes.WorkFlow
             //
         }
 
-        private void OnProductionWorkOrderFinished(DataChangedNotifyEvent e)
-        {
-            //缝制作业单完成以后，更新生产订单的状态
-            if (!(e.Entity is ProductionWorkOrder workOrder)
-                || workOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED)
-            {
-                return;
-            }
 
-            ProductionOrder productionOrder = CommonDAO.GetOneByFilter<ProductionOrder>(x => x.RecordId == workOrder.ProductionOrderId);
-            productionOrder.QtyFinished += 1;
-            if (productionOrder.QtyFinished == productionOrder.QtyActual)
-            {
-                productionOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
-            }
-            CommonDAO.UseDbContext(dbContext =>
-            {
-                dbContext.Attach<ProductionOrder>(productionOrder).State = EntityState.Modified;
-                dbContext.SaveChanges();
-            });
-        }
 
         private readonly List<ProcessHandler> Handlers = new List<ProcessHandler>();
         private delegate void ProcessHandler(DataChangedNotifyEvent e);

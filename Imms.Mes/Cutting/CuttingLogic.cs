@@ -64,7 +64,7 @@ namespace Imms.Mes.Cutting
                 cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
                 cuttingOrder.TimeEndActual = DateTime.Now;
                 int qtyActual = cuttingOrder.Sizes.Sum(x => x.QtyFinished);
-                cuttingOrder.QtyActual = qtyActual;                
+                cuttingOrder.QtyActual = qtyActual;
 
                 ProductionOrder productionOrder = cuttingOrder.ProductionOrder;
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED;
@@ -82,6 +82,16 @@ namespace Imms.Mes.Cutting
                     productionOrder.QtyActual += cuttingOrder.QtyActual;   //实际生产量为实际的裁剪量                    
                 }
 
+                //生成缝制作业单
+                if (cuttingOrder.CuttingTableNo != GlobalConstants.TYPE_MATERIAL_KT //非捆条  
+                    && cuttingOrder.QtyActual > 0
+                    && cuttingOrder.FabricMaterialId != cuttingOrder.FgMaterialId  //必须是主面料所在的床次
+                  )
+                {
+                    StitchLogic.Instance.CreateProducitonWorkOrders(cuttingOrder, dbContext);
+                }
+
+                //保存数据
                 GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
                 GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
                 dbContext.SaveChanges();
