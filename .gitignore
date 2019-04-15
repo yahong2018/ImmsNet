@@ -19,6 +19,8 @@
 /Imms.App/Imms.App.iOS/obj/
 /Imms.App/Imms.App.iOS/bin/
 
+/Imms.WebFront/obj/
+/Imms.WebFront/bin/
 
 *.user
 
