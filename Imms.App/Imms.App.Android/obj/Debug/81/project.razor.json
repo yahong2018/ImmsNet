@@ -1,0 +1,14 @@
+{
+  "ProjectFilePath": "d:\\projects\\zhxh\\ImmsNet\\Imms.App\\Imms.App.Android\\Imms.App.Android.csproj",
+  "TargetFramework": "v8.1",
+  "TagHelpers": [],
+  "Configuration": {
+    "ConfigurationName": "UnsupportedRazor",
+    "LanguageVersion": "1.0",
+    "Extensions": [
+      {
+        "ExtensionName": "UnsupportedRazorExtension"
+      }
+    ]
+  }
+}

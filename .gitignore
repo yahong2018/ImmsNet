@@ -10,6 +10,17 @@
 /Imms.Test/bin/
 /Imms.Test/obj/
 
+/Imms.App.Android/obj/
+/Imms.App.Android/bin/
+
+/Imms.App/obj/
+/Imms.App/bin/
+
+/Imms.App.iOS/obj/
+/Imms.App.iOS/bin/
+
+*.user
+
 *.cache
 *.props
 
