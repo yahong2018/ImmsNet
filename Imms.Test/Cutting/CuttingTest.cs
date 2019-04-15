@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Imms.Test.Cutting
 {
@@ -10,12 +9,6 @@ namespace Imms.Test.Cutting
         {
             GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
         }
-        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
-
-        [Fact]
-        public void CreateCuttingOrderTest()
-        {
-
-        }
+        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();        
     }
 }

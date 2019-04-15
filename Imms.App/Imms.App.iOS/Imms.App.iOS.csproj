@@ -137,10 +137,4 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Imms.App\Imms.App.csproj">
-      <Project>{F97AABDD-3C80-4D45-8C27-121364D7568F}</Project>
-      <Name>Imms.App</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

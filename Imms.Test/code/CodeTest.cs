@@ -5,28 +5,26 @@ using System.Collections.Generic;
 using Imms.Data.Domain;
 using Imms.Mes.MasterData;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Imms.Test
 {
-    public class CodeTest
-    {
-        static CodeTest()
+    public class CodeTest: BaseTestClass
+    {   
+        public CodeTest(ITestOutputHelper output)
         {
-            GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
+            this.Output = output;
         }
-        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
-
 
         [Fact]
         public void TestCodeSeed()
         {
             foreach (CodeSeed codeSeed in dbContext.Set<CodeSeed>())
             {
-                Console.WriteLine(codeSeed);
+               System.Console.WriteLine(codeSeed.ToString());              
             }
         }
 
-        [Fact]
         public void TestPlanCode()
         {
             Console.WriteLine("Equipment Type...");

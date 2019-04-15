@@ -6,7 +6,6 @@ using Imms.Mes.MasterData;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Imms.Test
 {
@@ -24,7 +23,6 @@ namespace Imms.Test
         }
         protected static DbContext dbContext = null;
 
-        [Fact]
         public void TestMaterial()
         {
             foreach (var material in dbContext.Set<Material>().Where(x => x.RecordId == 16))
@@ -34,7 +32,6 @@ namespace Imms.Test
         }
 
 
-        [Fact]
         public void BomOrderInsert()
         {
             BomOrder bomOrder = new BomOrder();
@@ -48,7 +45,6 @@ namespace Imms.Test
             System.Console.WriteLine(bomOrder);
         }
 
-        [Fact]
         public void BomInsertTest()
         {
             Bom[] testBoms = new Bom[]
@@ -63,7 +59,7 @@ namespace Imms.Test
         }
 
 
-        [Fact]
+
         public void TestBomOrderSelect()
         {
             foreach (var bomOrder in dbContext.Set<BomOrder>().Include(x => x.Boms).ThenInclude(x => x.ComponentMaterial))
@@ -78,7 +74,7 @@ namespace Imms.Test
             }
         }
 
-        [Fact]
+        
         public void CreatePickingOrderForCadTest()
         {
             CommonDAO.UseDbContext(dbContext =>
@@ -113,7 +109,7 @@ namespace Imms.Test
             });
         }
 
-        [Fact]
+        
         public void CreatePickingOrderForStichTest()
         {
             CommonDAO.UseDbContext(dbContext =>
@@ -149,7 +145,7 @@ namespace Imms.Test
         }
 
 
-        [Fact]
+        
         public void PickingOrderPrepareTest()
         {
             PickingOrder pickingOrder = dbContext.Set<PickingOrder>()
@@ -158,8 +154,8 @@ namespace Imms.Test
                 .Single();
             PickingLogic.Instance.MaterialPrepared(pickingOrder);
 
-            Assert.True(pickingOrder.ReachStatus(GlobalConstants.STATUS_PICKING_ORDER_PREPARED));
-            Assert.True(pickingOrder.ProductionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING));
+            //Assert.IsTrue(pickingOrder.ReachStatus(GlobalConstants.STATUS_PICKING_ORDER_PREPARED));
+            //Assert.IsTrue(pickingOrder.ProductionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING));
         }
 
 
@@ -170,7 +166,7 @@ namespace Imms.Test
                 .Include(x => x.ProductionOrder)
                 .Single();
 
-            Assert.NotNull(pickingOrder);
+            //Assert.IsNotNull(pickingOrder);
 
             PickingLogic.Instance.MaterialPicked(pickingOrder);
         }

@@ -97,11 +97,5 @@
     <Folder Include="Resources\drawable-xxhdpi\" />
     <Folder Include="Resources\drawable-xxxhdpi\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Imms.App\Imms.App.csproj">
-      <Project>{F97AABDD-3C80-4D45-8C27-121364D7568F}</Project>
-      <Name>Imms.App</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
