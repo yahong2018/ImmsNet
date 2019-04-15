@@ -50,14 +50,11 @@ namespace Imms.Mes.Exchange
                     routingOrder.Routings.AddRange(operationRoutings);
                     dbContext.Set<OperationRoutingOrder>().Add(routingOrder);
 
-                    productionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY); //生产工艺已准备
+                    productionOrder.PlusOrderStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY); //生产工艺已准备
                     productionOrder.RoutingOrder = routingOrder;
                     
-                    EntityEntry<ProductionOrder> entry = dbContext.Attach<ProductionOrder>(productionOrder);
-                    entry.State = EntityState.Modified;
-
-                    dbContext.SaveChanges();
-                    // this.SetNextAndPrevRoutingId(routingOrder.RecordId, dbContext);
+                    GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder,dbContext);
+                    dbContext.SaveChanges();                    
                 });
 
                 scope.Complete();

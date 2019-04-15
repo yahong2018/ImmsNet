@@ -64,11 +64,11 @@ namespace Imms.Mes.Exchange
         }
 
         private void UpdateProducitonData(ProductionOrder productionOrder, DbContext dbContext)
-        {
-            EntityEntry<ProductionOrder> entry = dbContext.Attach<ProductionOrder>(productionOrder);
-            productionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY);  //BOM已准备
-            productionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY);//裁剪技术文件已准备
-            entry.State = EntityState.Modified;
+        {            
+            productionOrder.PlusOrderStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_BOM_READY);  //BOM已准备
+            productionOrder.PlusOrderStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY);//裁剪技术文件已准备
+         
+            GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder,dbContext);            
         }
 
         private void AddPatternRelations(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)

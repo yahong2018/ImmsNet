@@ -96,7 +96,7 @@ namespace Imms.Data
                 stringBuilder.Append($"{property.Name}={value.ToString()};");
             }
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            string result = stringBuilder.ToString();           
+            string result = stringBuilder.ToString();
 
             if (string.IsNullOrEmpty(GlobalConstants.DEFAULT_CHARSET) || GlobalConstants.DEFAULT_CHARSET == Encoding.UTF8.BodyName)
             {
@@ -106,7 +106,7 @@ namespace Imms.Data
         }
 
         private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();
-        
+
 
         private static PropertyInfo[] GetProperties(Type type)
         {
@@ -148,34 +148,11 @@ namespace Imms.Data
     public class OrderEntity<T> : TrackableEntity<T>, IOrderEntry where T : IComparable
     {
         public string OrderNo { get; set; }
+        public int OrderStatus { get; set; }
 
-        private int _OrderStatus;
-        public int OrderStatus
+        public void PlusOrderStatus(int status)
         {
-            get { return _OrderStatus; }
-            set
-            {
-                this.SetOrderStatus(value);
-            }
-        }
-
-        protected virtual void SetOrderStatus(int status)
-        {
-            if (status == GlobalConstants.STATUS_ORDER_FINISHED
-              || status == GlobalConstants.STATUS_ORDER_PLANNED
-            )
-            {
-                this.DirectSetStatus(status);
-            }
-            else
-            {
-                this._OrderStatus |= status;
-            }
-        }
-
-        protected void DirectSetStatus(int status)
-        {
-            this._OrderStatus = status;
+            this.OrderStatus |= status;
         }
 
         public bool ReachStatus(int status)

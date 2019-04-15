@@ -36,26 +36,6 @@ namespace Imms.Mes.Stitch
         public virtual List<ProductionOrderMeasure> Measures { get; set; } = new List<ProductionOrderMeasure>();
         public virtual List<ProductionOrderPatternRelation> PatternImages { get; set; } = new List<ProductionOrderPatternRelation>();
         public virtual List<QualityCheck> QualityChecks { get; set; } = new List<QualityCheck>();
-
-        protected override void SetOrderStatus(int status)
-        {
-            if (status == GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTING
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_CUTTED
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_HANGING
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_HANGED
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_SEWING
-               || status == GlobalConstants.STATUS_PRODUCTION_ORDER_SEWED
-               )
-            {
-                base.DirectSetStatus(status);
-            }
-            else
-            {
-                base.SetOrderStatus(status);
-            }
-        }
     }
 
     public partial class ProductionOrderSize : TrackableEntity<long>

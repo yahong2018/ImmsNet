@@ -143,8 +143,6 @@ namespace Imms.Test
                 dbContext.SaveChanges();
             });
         }
-
-
         
         public void PickingOrderPrepareTest()
         {
@@ -162,7 +160,7 @@ namespace Imms.Test
         public void PickingOrderReportTest()
         {
             PickingOrder pickingOrder = dbContext.Set<PickingOrder>()
-                .Where(x => x.ReachStatus(GlobalConstants.STATUS_PICKING_ORDER_PREPARED))
+                .Where(x => x.OrderStatus==GlobalConstants.STATUS_PICKING_ORDER_PREPARED)
                 .Include(x => x.ProductionOrder)
                 .Single();
 
