@@ -31,7 +31,6 @@ namespace Imms.Test
             }
         }
 
-
         public void BomOrderInsert()
         {
             BomOrder bomOrder = new BomOrder();
@@ -43,22 +42,7 @@ namespace Imms.Test
             dbContext.SaveChanges();
 
             System.Console.WriteLine(bomOrder);
-        }
-
-        public void BomInsertTest()
-        {
-            Bom[] testBoms = new Bom[]
-            {
-                new Bom(),
-                new Bom(),
-                new Bom()
-            };
-
-            dbContext.Set<Bom>().AddRange(testBoms);
-            dbContext.SaveChanges();
-        }
-
-
+        }      
 
         public void TestBomOrderSelect()
         {
@@ -73,7 +57,6 @@ namespace Imms.Test
                 }
             }
         }
-
         
         public void CreatePickingOrderForCadTest()
         {
