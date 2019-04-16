@@ -1,14 +1,19 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace Imms.Test.Cutting
 {
-    public class CuttingTest
+    public class CuttingTest:BaseTestClass
     {
-        static CuttingTest()
+        public CuttingTest(ITestOutputHelper output)
         {
-            GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
+            this.Output = output;
         }
-        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();        
+
+        public void CadDeserializeTest()
+        {
+            string fileName = "";
+        }
     }
 }

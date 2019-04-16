@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Imms
 {
@@ -188,6 +190,75 @@ namespace Imms
             {
                 DEFAULT_ENCODING = System.Text.Encoding.GetEncoding(DEFAULT_CHARSET);
             }
+        }
+
+        //
+        //序列化
+        //
+        public static string ToJson(this object obj)
+        {
+            string result = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
+
+            return result;
+        }
+
+        //
+        //反序列化
+        //
+        public static T ToObject<T>(this string jsonStr)
+        {
+            T result = JsonConvert.DeserializeObject<T>(jsonStr, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
+
+            return result;
+        }
+
+        //
+        //反序列化
+        //
+        public static object ToObject(this string jsonStr,Type type)
+        {
+            object result = JsonConvert.DeserializeObject(jsonStr,type, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
+
+            return result;
+        }
+
+        //
+        //从文件反序列化
+        //
+        public static T LoadBeanFromFile<T>(this string fileName)
+        {
+            string gstJson = System.IO.File.ReadAllText(fileName);
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+            T result = JsonConvert.DeserializeObject<T>(gstJson, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            });
+            return result;
         }
     }
 

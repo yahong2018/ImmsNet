@@ -3,7 +3,7 @@ using Imms.Data.Domain;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Imms.Mes.Stitch;
-
+using Xunit;
 
 namespace Imms.Test.Routing
 {
@@ -12,16 +12,10 @@ namespace Imms.Test.Routing
         static RoutingTest()
         {
             GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
-            dbContext = GlobalConstants.DbContextFactory.GetContext();
-            GlobalConstants.CurrentUserGetFunction = () =>
-            {
-                return dbContext.Set<SystemUser>().First();
-            };
-            Data.DataChangedNotifier.Instance.Dispatcher = new Data.DataChangeNotifyEventDispatcher();
+            dbContext = GlobalConstants.DbContextFactory.GetContext();           
         }
         protected static DbContext dbContext = null;
-
-
+      
         public void TestOperation()
         {
             foreach (var operation in dbContext.Set<Operation>().Include(x => x.MachineType).Take(10))
@@ -30,11 +24,12 @@ namespace Imms.Test.Routing
             }
         }
 
-
+        [Fact]
         public void OperationRoutingOrderInsertTest()
         {
             OperationRoutingOrder operationRoutingOrder = new OperationRoutingOrder();
-            operationRoutingOrder.MaterialId = 16;
+            //operationRoutingOrder.MaterialId = 16;
+            operationRoutingOrder.MaterialId = 275;
             operationRoutingOrder.OrderType = GlobalConstants.TYPE_OPERATION_ROUTING_ORDER_PRODUCTION;
             operationRoutingOrder.OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL;
 
@@ -42,23 +37,39 @@ namespace Imms.Test.Routing
             dbContext.SaveChanges();
         }
 
-   
+        [Fact]
         public void OperationRoutingOrderItemsInsertTest()
         {
+            // string[] operations = new string[]{
+            //     "OP0001","T0001","SMCSOH001","SMCSCL021","SMCSCL022","SMCSCL025",
+            //     "SMCSCL026","SMCSSL015","SMCSSL008","SMCSFR018","SMCSBK009","SMCSCL028",
+            //     "SWCSAS039","SMCSAS046","SMCSAS047","SMCSAS008","SMCSAS009","SMCSAS001",
+            //     "SMCSAS012","SMCSAS048","SMCSAS049","ZMCSAS007","SMCSAS044","SMCSAS033",
+            //     "SMCSAS027","SMCSAS028","SMCSAS029","SMCSAS030","SMCSAS031"
+            // };
+
+            // string[] next_operations = new string[]{
+            //     "T0001","SMCSOH001","SMCSCL021","SMCSCL022","SMCSCL025","SMCSCL026",
+            //     "SMCSSL015","SMCSSL008","SMCSFR018","SMCSBK009","SMCSCL028","SWCSAS039",
+            //     "SMCSAS046","SMCSAS047","SMCSAS008","SMCSAS009","SMCSAS001","SMCSAS012",
+            //     "SMCSAS048","SMCSAS049","ZMCSAS007","SMCSAS044","SMCSAS033","SMCSAS027",
+            //     "SMCSAS028","SMCSAS029","SMCSAS030","SMCSAS031",""
+            // };
+
             string[] operations = new string[]{
-                "OP0001","T0001","SMCSOH001","SMCSCL021","SMCSCL022","SMCSCL025",
-                "SMCSCL026","SMCSSL015","SMCSSL008","SMCSFR018","SMCSBK009","SMCSCL028",
-                "SWCSAS039","SMCSAS046","SMCSAS047","SMCSAS008","SMCSAS009","SMCSAS001",
-                "SMCSAS012","SMCSAS048","SMCSAS049","ZMCSAS007","SMCSAS044","SMCSAS033",
-                "SMCSAS027","SMCSAS028","SMCSAS029","SMCSAS030","SMCSAS031"
+               "OP0001", "T0001", "SWLYCU004", "SWLYCU005", "SWLYOH001","SWLYOH002","SWLYOH003",
+               "SWLYLN004", "SWYFAS004", "SWYFAS005", "SWLYAS026","SWLYAS027",
+               "SWLYAS028", "SWLYAS029", "SWLYAS030", "SWLYAS031","SWLYAS032",
+               "SWLYAS033", "SMCSAS044", "SMCSAS033", "SWLYAS034","SWLYAS035",
+               "SWLYAS036", "SWLYAS037"
             };
 
             string[] next_operations = new string[]{
-                "T0001","SMCSOH001","SMCSCL021","SMCSCL022","SMCSCL025","SMCSCL026",
-                "SMCSSL015","SMCSSL008","SMCSFR018","SMCSBK009","SMCSCL028","SWCSAS039",
-                "SMCSAS046","SMCSAS047","SMCSAS008","SMCSAS009","SMCSAS001","SMCSAS012",
-                "SMCSAS048","SMCSAS049","ZMCSAS007","SMCSAS044","SMCSAS033","SMCSAS027",
-                "SMCSAS028","SMCSAS029","SMCSAS030","SMCSAS031",""
+               "T0001", "SWLYCU004", "SWLYCU005", "SWLYOH001","SWLYOH002","SWLYOH003",
+               "SWLYLN004", "SWYFAS004", "SWYFAS005", "SWLYAS026","SWLYAS027",
+               "SWLYAS028", "SWLYAS029", "SWLYAS030", "SWLYAS031","SWLYAS032",
+               "SWLYAS033", "SMCSAS044", "SMCSAS033", "SWLYAS034","SWLYAS035",
+               "SWLYAS036", "SWLYAS037",""
             };
 
             List<OperationRouting> operationRoutings = new List<OperationRouting>();
@@ -70,10 +81,11 @@ namespace Imms.Test.Routing
                 operationRouting.OperationId = operation.RecordId;
                 operationRouting.NextOpertionNo = next_operations[i];
                 Operation nextOperation = dbContext.Set<Operation>().Where(x => x.OperationNo == next_operations[i]).FirstOrDefault();
-                if(nextOperation!=null){
+                if (nextOperation != null)
+                {
                     operationRouting.NextOperationId = nextOperation.RecordId;
                 }
-                operationRouting.OperationRoutingOrderId = 1;
+                operationRouting.OperationRoutingOrderId = 2;
 
                 operationRouting.OperationNo = operations[i];
                 operationRouting.Description = operation.Description;
@@ -104,15 +116,18 @@ namespace Imms.Test.Routing
             dbContext.SaveChanges();
         }
 
-  
-        public void TestRoutingOrderWithItems(){
-            foreach(OperationRoutingOrder routingOrder in dbContext.Set<OperationRoutingOrder>()
-                    .Include(x=>x.Material)
-                    .Include(x=>x.Routings)
-                        .ThenInclude(x=>x.Operation)
-                    ){
+
+        public void TestRoutingOrderWithItems()
+        {
+            foreach (OperationRoutingOrder routingOrder in dbContext.Set<OperationRoutingOrder>()
+                    .Include(x => x.Material)
+                    .Include(x => x.Routings)
+                        .ThenInclude(x => x.Operation)
+                    )
+            {
                 System.Console.WriteLine($"MaterialNo: {routingOrder.Material.MaterialNo},RoutingOrderNo:{routingOrder.OrderNo},the routing is :");
-                foreach(var routing in routingOrder.Routings.OrderByDescending(x=>x.RecordId)){
+                foreach (var routing in routingOrder.Routings.OrderByDescending(x => x.RecordId))
+                {
                     System.Console.WriteLine($"Current:{routing.OperationNo},Next:{routing.NextOpertionNo}");
                 }
             }

@@ -96,13 +96,14 @@ namespace Imms.Data
                 stringBuilder.Append($"{property.Name}={value.ToString()};");
             }
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            string result = stringBuilder.ToString();
+            return stringBuilder.ToString();
+            //string result = stringBuilder.ToString();
 
-            if (string.IsNullOrEmpty(GlobalConstants.DEFAULT_CHARSET) || GlobalConstants.DEFAULT_CHARSET == Encoding.UTF8.BodyName)
-            {
-                return result;
-            }
-            return GlobalConstants.DEFAULT_ENCODING.GetString(Encoding.UTF8.GetBytes(result));
+            //if (string.IsNullOrEmpty(GlobalConstants.DEFAULT_CHARSET) || GlobalConstants.DEFAULT_CHARSET == Encoding.UTF8.BodyName)
+            //{
+            //    return result;
+            //}
+            //return GlobalConstants.DEFAULT_ENCODING.GetString(Encoding.UTF8.GetBytes(result));
         }
 
         private static readonly SortedList<Guid, PropertyInfo[]> _Properties = new SortedList<Guid, PropertyInfo[]>();

@@ -51,6 +51,35 @@ namespace Imms.Mes.Stitch
             });
         }
 
+        public void SetProductionOrderRouting(ProductionOrder productionOrder, OperationRoutingOrder routingOrder, OperationRouting[] operationRoutings)
+        {
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                routingOrder.Routings.AddRange(operationRoutings);
+                dbContext.Set<OperationRoutingOrder>().Add(routingOrder);
+
+                productionOrder.PlusOrderStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_ROUTING_READY); //生产工艺已准备
+                productionOrder.RoutingOrder = routingOrder;
+
+                GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
+                dbContext.SaveChanges();
+            });
+        }
+
+
+        //
+        //缝制作业单报工
+        //
+        public void ProductionWorkOrderReport(ProductionWorkOrder workOrder)
+        {
+            CommonDAO.UseDbContext(dbContext =>
+            {
+                this.WorkOrderReport(workOrder, dbContext);
+                dbContext.SaveChanges();
+            });
+        }
+
+
         private void ProductionOrderReport(ProductionOrder productionOrder, DbContext dbContext)
         {
             if (productionOrder.QtyFinished == productionOrder.QtyActual)
@@ -58,18 +87,6 @@ namespace Imms.Mes.Stitch
                 productionOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
             }
             GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
-        }
-
-        //
-        //缝制作业单报工
-        //
-        public void ProductionOrderReport(ProductionWorkOrder workOrder)
-        {
-            CommonDAO.UseDbContext(dbContext =>
-            {
-                this.WorkOrderReport(workOrder, dbContext);
-                dbContext.SaveChanges();
-            });
         }
 
         private void WorkOrderReport(ProductionWorkOrder workOrder, DbContext dbContext)

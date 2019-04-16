@@ -1,0 +1,332 @@
+{
+	"version": "1.0",
+	"messageId": "20190411091034",
+	"synTime": "20190411091049",
+	"items": [{
+		"productionOrderNo": "3000005795",
+		"materialNo": "19EB8626",
+		"operationRoutings": [{
+			"operationNo": "T0001",
+			"nextOperationNo": "SWLYCU004",
+			"machineType": "MT002",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "10.0060",
+			"standardPrice": "0.0567",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D"
+		}, {
+			"operationNo": "SWLYCU004",
+			"nextOperationNo": "SWLYCU005",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "204.4520",
+			"standardPrice": "1.6356",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "T0001"
+			}]
+		}, {
+			"operationNo": "SWLYCU005",
+			"nextOperationNo": "SWLYOH001",
+			"machineType": "S0303",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "128.1520",
+			"standardPrice": "0.8693",
+			"sectionType": "STITCHING",
+			"requiredLevel": "C",
+			"preOperations": [{
+				"operationNo": "SWLYCU004"
+			}]
+		}, {
+			"operationNo": "SWLYOH001",
+			"nextOperationNo": "SWLYOH002",
+			"machineType": "F0201",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "126.7400",
+			"standardPrice": "0.7182",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D",
+			"preOperations": [{
+				"operationNo": "SWLYCU005"
+			}]
+		}, {
+			"operationNo": "SWLYOH002",
+			"nextOperationNo": "SWLYOH003",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "144.1480",
+			"standardPrice": "1.1532",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "SWLYOH001"
+			}]
+		}, {
+			"operationNo": "SWLYOH003",
+			"nextOperationNo": "SWLYLN004",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "179.2690",
+			"standardPrice": "1.4342",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "SWLYOH002"
+			}]
+		}, {
+			"operationNo": "SWLYLN004",
+			"nextOperationNo": "SWYFAS004",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "270.7770",
+			"standardPrice": "2.1662",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "SWLYOH003"
+			}]
+		}, {
+			"operationNo": "SWYFAS004",
+			"nextOperationNo": "SWYFAS005",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "259.4920",
+			"standardPrice": "2.0759",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "SWLYLN004"
+			}]
+		}, {
+			"operationNo": "SWYFAS005",
+			"nextOperationNo": "SWLYAS026",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "124.1030",
+			"standardPrice": "1.1293",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWYFAS004"
+			}]
+		}, {
+			"operationNo": "SWLYAS026",
+			"nextOperationNo": "SWLYAS027",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "228.1610",
+			"standardPrice": "2.0763",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWYFAS005"
+			}]
+		}, {
+			"operationNo": "SWLYAS027",
+			"nextOperationNo": "SWLYAS028",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "198.6820",
+			"standardPrice": "1.8080",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWLYAS026"
+			}]
+		}, {
+			"operationNo": "SWLYAS028",
+			"nextOperationNo": "SWLYAS029",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "191.8180",
+			"standardPrice": "1.7455",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWLYAS027"
+			}]
+		}, {
+			"operationNo": "SWLYAS029",
+			"nextOperationNo": "SWLYAS030",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "225.6340",
+			"standardPrice": "1.8051",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "SWLYAS028"
+			}]
+		}, {
+			"operationNo": "SWLYAS030",
+			"nextOperationNo": "SWLYAS031",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "300.8450",
+			"standardPrice": "2.4068",
+			"sectionType": "STITCHING",
+			"requiredLevel": "B",
+			"preOperations": [{
+				"operationNo": "SWLYAS029"
+			}]
+		}, {
+			"operationNo": "SWLYAS031",
+			"nextOperationNo": "SWLYAS032",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "165.4560",
+			"standardPrice": "1.5056",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWLYAS030"
+			}]
+		}, {
+			"operationNo": "SWLYAS032",
+			"nextOperationNo": "SWLYAS033",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "202.3880",
+			"standardPrice": "1.8417",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWLYAS031"
+			}]
+		}, {
+			"operationNo": "SWLYAS033",
+			"nextOperationNo": "SMCSAS044",
+			"machineType": "S0102",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "151.6860",
+			"standardPrice": "1.3803",
+			"sectionType": "STITCHING",
+			"requiredLevel": "A",
+			"preOperations": [{
+				"operationNo": "SWLYAS032"
+			}]
+		}, {
+			"operationNo": "SMCSAS044",
+			"nextOperationNo": "SMCSAS033",
+			"machineType": "F0201",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "33.7700",
+			"standardPrice": "0.1914",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D",
+			"preOperations": [{
+				"operationNo": "SWLYAS033"
+			}]
+		}, {
+			"operationNo": "SMCSAS033",
+			"nextOperationNo": "SWLYAS034",
+			"machineType": "F0301",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "11.0570",
+			"standardPrice": "0.0627",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D(Á·",
+			"preOperations": [{
+				"operationNo": "SMCSAS044"
+			}]
+		}, {
+			"operationNo": "SWLYAS034",
+			"nextOperationNo": "SWLYAS035",
+			"machineType": "M110",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "41.3540",
+			"standardPrice": "0.2343",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D",
+			"preOperations": [{
+				"operationNo": "SMCSAS033"
+			}]
+		}, {
+			"operationNo": "SWLYAS035",
+			"nextOperationNo": "SWLYAS036",
+			"machineType": "M106",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "14.4020",
+			"standardPrice": "0.0816",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D",
+			"preOperations": [{
+				"operationNo": "SWLYAS034"
+			}]
+		}, {
+			"operationNo": "SWLYAS036",
+			"nextOperationNo": "SWLYAS037",
+			"machineType": "M139",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "27.5830",
+			"standardPrice": "0.1563",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D",
+			"preOperations": [{
+				"operationNo": "SWLYAS035"
+			}]
+		}, {
+			"operationNo": "SWLYAS037",
+			"nextOperationNo": " ",
+			"machineType": "F0202",
+			"isOutsource": false,
+			"qaProcedure": " ",
+			"requirement": " ",
+			"standardTime": "202.5000",
+			"standardPrice": "1.1475",
+			"sectionType": "STITCHING",
+			"requiredLevel": "D",
+			"preOperations": [{
+				"operationNo": "SWLYAS036"
+			}]
+		}],
+		"version": "2.0.0",
+		"messageId": "e6a1d12370374a63ba412eb33a0036e1",
+		"synTime": "20190411091049"
+	}]
+}

@@ -20,6 +20,7 @@ insert into plan_code(code_type,code_no,code_name,description,create_by,create_d
 --
 -- 导入物料
 --
+
 insert into material(material_no,      
   material_name,    
   material_type_id, 
@@ -31,7 +32,7 @@ insert into material(material_no,
   description,
   create_by,
   create_date
-) 	
+) 
  select m.material_no,SUBSTR(m.name,1,50) as name,p.record_id as material_type_id,
        ifnull(m.unit,'') as unit,
        ROUND(m.width,4) as width,
@@ -43,8 +44,11 @@ insert into material(material_no,
 			 sysdate()
  from c2m.material m  
        join c2m.material_type t  on m.material_type_id = t.id 
-			 join plan_code p on p.code_no = t.material_type_no
- where m.material_no is not null;
+		 	 join plan_code p on p.code_no = t.material_type_no
+ where m.material_no is not null 
+   and m.material_no not in(
+	    select material_no from material
+)
 
  --
  -- 导入bom
@@ -82,7 +86,10 @@ select o.operation_no,
 			 1,
 			 SYSDATE()
 from c2m.operation o join c2m.machine_type mt1 on o.machine_type_id = mt1.id join plan_code mt on mt1.machine_type_no = mt.code_no
-;
+where o.operation_no not in(
+   select operation_no from operation
+);
+
 /*
  select * from material
  where record_id = 16;
@@ -108,3 +115,12 @@ from c2m.operation o join c2m.machine_type mt1 on o.machine_type_id = mt1.id joi
    
  select * from c2m.bom where bom_order_id =106712;
  */
+
+
+SELECT * from operation
+where operation_no in('T0001',
+'SWLYCU004','SWLYCU005','SWLYOH001','SWLYOH002','SWLYOH003','SWLYLN004',
+'SWYFAS005','SWLYAS026','SWLYAS027','SWLYAS028','SWLYAS029','SWLYAS030',
+'SWLYAS031','SWLYAS032','SWLYAS033','SMCSAS044','SMCSAS033','SWLYAS034',
+'SWLYAS035','SWLYAS036','SWLYAS037',''
+)

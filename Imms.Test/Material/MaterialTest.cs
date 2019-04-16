@@ -6,8 +6,9 @@ using Imms.Mes.MasterData;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 
-namespace Imms.Test
+namespace Imms.Test.Material
 {
     public class MaterialTest
     {
@@ -25,16 +26,18 @@ namespace Imms.Test
 
         public void TestMaterial()
         {
-            foreach (var material in dbContext.Set<Material>().Where(x => x.RecordId == 16))
+            foreach (var material in dbContext.Set<Imms.Mes.MasterData.Material>().Where(x => x.RecordId == 16))
             {
                 System.Console.WriteLine(material);
             }
         }
 
+        [Fact]
         public void BomOrderInsert()
         {
             BomOrder bomOrder = new BomOrder();
-            bomOrder.MaterialId = 16;
+            // bomOrder.MaterialId = 16;
+            bomOrder.MaterialId = 275;
             bomOrder.BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER;
             bomOrder.OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL;
 
@@ -70,7 +73,7 @@ namespace Imms.Test
 
                 ProductionOrder productionOrder = (ProductionOrder)dbContext.Find(typeof(ProductionOrder), 1L);
                 var boms = dbContext.Set<Bom>()
-                    .Join(dbContext.Set<Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
+                    .Join(dbContext.Set<Imms.Mes.MasterData.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
                     .Join(dbContext.Set<MaterialType>(), m => m.material.MaterialTypeId, t => t.RecordId, (bm, t) => new { bm.bom, bm.material, material_type = t })
                     .Where(x => x.bom.BomOrderId == productionOrder.BomOrderId
                            && cuttingMaterialTypes.Contains(x.material_type.CodeNo)
@@ -105,7 +108,7 @@ namespace Imms.Test
 
                 ProductionOrder productionOrder = (ProductionOrder)dbContext.Find(typeof(ProductionOrder), 1L);
                 var boms = dbContext.Set<Bom>()
-                    .Join(dbContext.Set<Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
+                    .Join(dbContext.Set<Imms.Mes.MasterData.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
                     .Join(dbContext.Set<MaterialType>(), m => m.material.MaterialTypeId, t => t.RecordId, (bm, t) => new { bm.bom, bm.material, material_type = t })
                     .Where(x => x.bom.BomOrderId == productionOrder.BomOrderId
                            && !cuttingMaterialTypes.Contains(x.material_type.CodeNo)

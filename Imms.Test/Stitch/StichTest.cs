@@ -3,6 +3,7 @@ using System.Linq;
 using Imms.Data.Domain;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace Imms.Test
 {
@@ -20,8 +21,36 @@ namespace Imms.Test
         }
         protected static DbContext dbContext = null;
 
-      
+        [Fact]
         public void TestProductionOrder()
+        {
+            ProductionOrder productionOrder = new ProductionOrder();
+            productionOrder.BomOrderId = 23;
+            productionOrder.RoutingOrderId = 2;
+            productionOrder.FgMaterialId = 275;
+            productionOrder.QtyPlanned = 1;
+            productionOrder.Priority = 3;
+            productionOrder.TimeStartPlanned = DateTime.Parse("2019/04/28 18:35");
+            productionOrder.TimeEndPlanned = DateTime.Parse("2019/04/29 10:30");
+            productionOrder.WorkCenterId = 3;
+
+            productionOrder.Sizes.AddRange(this.CreateSizes());
+
+            dbContext.Set<ProductionOrder>().Add(productionOrder);
+            dbContext.SaveChanges();
+        }
+
+        private ProductionOrderSize[] CreateSizes()
+        {
+            ProductionOrderSize[] sizes = new ProductionOrderSize[1];
+            sizes[0] = new ProductionOrderSize();
+            sizes[0].Size = "S160/84A";
+            sizes[0].QytPlanned = 1;
+
+            return sizes;
+        }
+
+        public void TestProductionOrderOne()
         {
             ProductionOrder productionOrder = new ProductionOrder();
             productionOrder.BomOrderId = 2;
@@ -33,13 +62,13 @@ namespace Imms.Test
             productionOrder.TimeEndPlanned = DateTime.Parse("2019/04/10 10:30");
             productionOrder.WorkCenterId = 3;
 
-            productionOrder.Sizes.AddRange(this.CreateSizes());
+            productionOrder.Sizes.AddRange(this.CreateSizesOne());
 
             dbContext.Set<ProductionOrder>().Add(productionOrder);
             dbContext.SaveChanges();
         }
 
-        private ProductionOrderSize[] CreateSizes()
+        private ProductionOrderSize[] CreateSizesOne()
         {
             ProductionOrderSize[] sizes = new ProductionOrderSize[4];
             sizes[0] = new ProductionOrderSize();

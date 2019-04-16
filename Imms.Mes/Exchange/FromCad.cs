@@ -14,6 +14,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Transactions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Imms.Mes.Exchange
 {
@@ -28,17 +30,17 @@ namespace Imms.Mes.Exchange
         }
 
         public SortedDictionary<string, Type> DTOTypes => new SortedDictionary<string, Type>(){
-                    {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES,typeof(ProductionOrderTailerDTO)}
+                    {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES,typeof(ProductionOrderCuttingTechFileDTO)}
             };
 
         public SortedDictionary<string, ThirdPartDataPullProcessHandler> Handlers => new SortedDictionary<string, ThirdPartDataPullProcessHandler>()
             {
-                {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES,this.ImportOrderTailer}
+                {GlobalConstants.DATA_EXCHANGE_RULE__PRODUCITON_ORDER__CAD_2_MES,this.ImportCuttingTechFile}
             };
 
-        public void ImportOrderTailer(object objDTO)
+        public void ImportCuttingTechFile(object objDTO)
         {
-            ProductionOrderTailerDTO dto = (ProductionOrderTailerDTO)objDTO;
+            ProductionOrderCuttingTechFileDTO dto = (ProductionOrderCuttingTechFileDTO)objDTO;
 
             ProductionOrder productionOrder = CommonDAO.AssureExistsByFilter<ProductionOrder>(x => x.OrderNo == dto.ProductionOrderNo);
             if (dto.MaterialMarkers != null)
@@ -71,13 +73,13 @@ namespace Imms.Mes.Exchange
             GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder,dbContext);            
         }
 
-        private void AddPatternRelations(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private void AddPatternRelations(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder)
         {
             List<ProductionOrderPatternRelation> patternRelations = this.ImportPartterImage(dto);
             productionOrder.PatternImages.AddRange(patternRelations);
         }
 
-        private void AddQualityChecks(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private void AddQualityChecks(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder)
         {
             List<QualityCheck> qualityChecks = this.CreateQualityChecks(dto, productionOrder);
             foreach (QualityCheck check in qualityChecks)
@@ -86,7 +88,7 @@ namespace Imms.Mes.Exchange
             }
         }
 
-        private List<CuttingOrder> AddCuttingOrders(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
+        private List<CuttingOrder> AddCuttingOrders(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder, DbContext dbContext)
         {
             List<CuttingOrder> cuttingOrders = this.CreateCuttingOrders(dto, productionOrder);
             foreach (CuttingOrder cuttingOrder in cuttingOrders)
@@ -96,7 +98,7 @@ namespace Imms.Mes.Exchange
             return cuttingOrders;
         }
 
-        private PickingOrder[] CreatePickingOrder(ProductionOrderTailerDTO dto, ProductionOrder productionOrder, DbContext dbContext)
+        private PickingOrder[] CreatePickingOrder(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder, DbContext dbContext)
         {
             PickingOrder[] result = new PickingOrder[2];
             List<Bom>[] boms = this.GetMaterialPickingBoms(dto, productionOrder);
@@ -142,7 +144,7 @@ namespace Imms.Mes.Exchange
             return result;
         }
 
-        private List<ProductionOrderPatternRelation> ImportPartterImage(ProductionOrderTailerDTO dto)
+        private List<ProductionOrderPatternRelation> ImportPartterImage(ProductionOrderCuttingTechFileDTO dto)
         {
             List<ProductionOrderPatternRelation> result = new List<ProductionOrderPatternRelation>();
             foreach (PatternImageDTO partternImage in dto.PatternImages)
@@ -165,7 +167,7 @@ namespace Imms.Mes.Exchange
             return result;
         }
 
-        private List<QualityCheck> CreateQualityChecks(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private List<QualityCheck> CreateQualityChecks(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder)
         {
             List<QualityCheck> result = new List<QualityCheck>();
             foreach (ProductionOrderSizeDTO orderSize in dto.Sizes)
@@ -191,7 +193,7 @@ namespace Imms.Mes.Exchange
             return result;
         }
 
-        private List<CuttingOrder> CreateCuttingOrders(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private List<CuttingOrder> CreateCuttingOrders(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder)
         {
             List<CuttingOrder> result = new List<CuttingOrder>();
 
@@ -314,7 +316,7 @@ namespace Imms.Mes.Exchange
             return cuttingOrder;
         }
 
-        private List<Bom>[] GetMaterialPickingBoms(ProductionOrderTailerDTO dto, ProductionOrder productionOrder)
+        private List<Bom>[] GetMaterialPickingBoms(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder)
         {
             List<Bom>[] result = new List<Bom>[2];
             List<Bom> cuttingBomList = new List<Bom>();
@@ -462,7 +464,7 @@ namespace Imms.Mes.Exchange
         }
     }
 
-    public class ProductionOrderTailerDTO
+    public class ProductionOrderCuttingTechFileDTO
     {
         public string ProductionOrderNo { get; set; }
         public string MaterialNo { get; set; }
