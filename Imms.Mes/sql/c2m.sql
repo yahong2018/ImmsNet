@@ -575,11 +575,11 @@ create table cutting_order  (
   order_no                    varchar(12)         not null             ,-- 裁剪单号  
   order_status                int                 not null             ,-- 状态
 
+  picking_order_id            bigint              not null,             -- 对应的领料单号
   production_order_id         bigint              not null             ,-- 生产订单主键
   cutting_table_no            varchar(64)         null                 ,-- 床次  
   container_no                varchar(64)         null                 ,-- 裁剪单容器  
-  fg_material_id              varchar(64)         not null                 ,-- 成品物料号
-  fabric_material_type        varchar(64)         not null                 ,-- 面料类型
+  fg_material_id              varchar(64)         not null                 ,-- 成品物料号  
   fabric_material_id          bigint              not null                 ,-- 面料物料主键
   plies                       int                 not null                 ,-- 层数
   width                       double(8,4)         not null                 ,-- 幅宽
@@ -589,8 +589,8 @@ create table cutting_order  (
   work_station_id             bigint              null                     ,-- 裁剪工位
   
   qty_planned                 int                 not null   default 0     ,-- 计划数量  
-  time_start_planned          datetime            not null                 ,-- 计划开工时间  
-  time_end_planned            datetime            not null                 ,-- 计划完成时间
+  time_start_planned          datetime            null                 ,-- 计划开工时间  
+  time_end_planned            datetime            null                 ,-- 计划完成时间
 
   time_start_actual           datetime            null                   ,-- 实际开工时间
   time_end_actual             datetime            null                   ,-- 实际完成时间
@@ -608,7 +608,8 @@ create table cutting_order  (
   index idx_cutting_order_01(order_no),
   index idx_cutting_order_02(production_order_id),
   index idx_cutting_order_03(work_station_id),
-  index idx_cutting_order_04(container_no)  
+  index idx_cutting_order_04(container_no),
+  index idx_cutting_order_05(picking_order_id)  
 ) ;
 
 --
@@ -617,7 +618,7 @@ create table cutting_order  (
 create table cutting_order_size  (
   record_id                   bigint              not null        auto_increment,
   cutting_order_id            bigint              not null ,   -- 裁剪单主键  
-  size_id                     varchar(10)         null,        -- 尺码
+  size                        varchar(10)         null,        -- 尺码
   qty_layer                   int                 null,        -- 单层配比数量
   qty_planned                 int                 null,        -- 计划数量
   qty_finished                int                 null,        -- 完工数量
@@ -677,9 +678,9 @@ create table cutting_order_spread_ply
 create table quality_check
 (
   record_id              bigint                 not null auto_increment,
-	production_order_id    bigint                 not null,
-	size_no                varchar(50)            not null,
-	size_name              varchar(50)            not null,
+  production_order_id    bigint                 not null,
+  size_no                varchar(50)            not null,
+  size_name              varchar(50)            not null,
 
   create_by              bigint                       not null,
   create_date            datetime                     not null,
@@ -694,10 +695,10 @@ create table quality_check
 create table quality_check_detail
 (
     record_id              bigint                 not null auto_increment,
-	  quality_check_id       bigint                 not null,
-	  component_no           varchar(50)            not null,
-	  component_name         varchar(50)            not null,
-	  standard_value         varchar(50)            not null,
+	quality_check_id       bigint                 not null,
+	component_no           varchar(50)            not null,
+	component_name         varchar(50)            not null,
+	standard_value         varchar(50)            not null,
 
     create_by              bigint                       not null,
     create_date            datetime                     not null,
@@ -793,7 +794,7 @@ create table workstation_check_in  (
 
 create table media  (
   record_id                      bigint  auto_increment            not null,
-  media_format                   int                 not null,   
+  media_format                   varchar(50)        not null,   
   media_url                      varchar(255)        not null,
   media_name                     varchar(100)        not null,
   media_size                     int                 not null,
@@ -814,7 +815,7 @@ create table media_belong(
   media_id                       bigint                            not null,   
   belong_to_id                   bigint                            not null,
   belong_to_record_type          int                               not null,
-  media_type                     int                               not null,
+  media_type                     varchar(50)                       not null,
 
   create_by                       bigint              not null,
   create_date                     datetime            not null,

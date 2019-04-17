@@ -14,8 +14,7 @@ namespace Imms.Mes.Cutting
         public long ProductionOrderId { get; set; }
         public long PickingOrderId { get; set; }
         public string CuttingTableNo { get; set; }
-        public long FgMaterialId { get; set; }//成品料号
-        public string FabricMaterialType { get; set; }  //面料类型
+        public long FgMaterialId { get; set; }//成品料号        
         public long FabricMaterialId { get; set; }//面料物料主键
 
         public int Plies { get; set; }
@@ -26,7 +25,7 @@ namespace Imms.Mes.Cutting
         public long? WorkStationId { get; set; }
 
         public int QtyPlanned { get; set; }
-        public DateTime? TimetartPlanned { get; set; }
+        public DateTime? TimeStartPlanned { get; set; }
         public DateTime? TimeEndPlanned { get; set; }
 
         public string ContainerNo { get; set; }
@@ -82,12 +81,12 @@ namespace Imms.Mes.Cutting
         {
             base.InternalConfigure(builder);
 
-            builder.ToTable("cutting_marker");
+            builder.ToTable("cutting_order_spread_ply");
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id");
             builder.Property(e => e.Length).HasColumnName("length");
             builder.Property(e => e.Plies).HasColumnName("plies");
 
-            builder.HasOne(e => e.CuttingOrder).WithMany(e => e.SpreadPlies).HasForeignKey(e => e.CuttingOrderId);
+          //  builder.HasOne(e => e.CuttingOrder).WithMany(e => e.SpreadPlies).HasForeignKey(e => e.CuttingOrderId);
         }
     }
 
@@ -103,10 +102,9 @@ namespace Imms.Mes.Cutting
             builder.Property(e => e.MarkerFileId).HasColumnName("marker_file_id");
             builder.Property(e => e.MediaId).HasColumnName("media_id");
             builder.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
-
-            builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Markers).HasForeignKey(e => e.CuttingOrderId);
-            builder.HasOne(e => e.Media).WithMany().HasForeignKey(e => e.MediaId);
-            builder.HasOne(e => e.MarkFile).WithMany().HasForeignKey(e => e.MarkerFileId);
+           
+            builder.HasOne(e => e.Media).WithMany().HasForeignKey(e => e.MediaId).HasConstraintName("media_id");
+            builder.HasOne(e => e.MarkFile).WithMany().HasForeignKey(e => e.MarkerFileId).HasConstraintName("marker_file_id");
         }
     }
 
@@ -117,12 +115,11 @@ namespace Imms.Mes.Cutting
             base.InternalConfigure(builder);
             builder.ToTable("cutting_order_size");
 
-            builder.Property(e => e.QtyFinished).HasColumnName("actual_qty").HasColumnType("int(11)");
+            builder.Property(e => e.QtyFinished).HasColumnName("qty_finished").HasColumnType("int(11)");
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.QtyLayer).HasColumnName("layer_qty").HasColumnType("int(11)");
-            builder.Property(e => e.QtyPlanned).HasColumnName("planned_qty").HasColumnType("int(11)");
+            builder.Property(e => e.QtyLayer).HasColumnName("qty_layer").HasColumnType("int(11)");
+            builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned").HasColumnType("int(11)");
             builder.Property(e => e.Size).HasColumnName("size").HasMaxLength(10).IsUnicode(false);
-            builder.HasOne(e => e.CuttingOrder).WithMany(e => e.Sizes).HasForeignKey(e => e.CuttingOrderId);
         }
     }
 
@@ -140,14 +137,13 @@ namespace Imms.Mes.Cutting
             builder.Property(e => e.Plies).HasColumnName("plies").HasColumnType("int(11)");
             builder.Property(e => e.Width).HasColumnName("width").HasColumnType("double(8,4)");
 
-            builder.Property(e => e.FabricMaterialId).HasColumnName("fabric_material_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.FabricMaterialType).IsRequired().HasColumnName("fabric_material_type").HasMaxLength(64).IsUnicode(false);
+            builder.Property(e => e.FabricMaterialId).HasColumnName("fabric_material_id").HasColumnType("bigint(20)");           
             builder.Property(e => e.FgMaterialId).IsRequired().HasColumnName("fg_material_id").HasMaxLength(64).IsUnicode(false);
             builder.Property(e => e.Length).HasColumnName("length").HasColumnType("double(8,4)");
             builder.Property(e => e.CuttingEfficiency).HasColumnName("cutting_efficiency").HasColumnType("double(7,4)");
 
             builder.Property(e => e.WorkStationId).HasColumnName("work_station_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.TimetartPlanned).HasColumnName("time_start_planned");
+            builder.Property(e => e.TimeStartPlanned).HasColumnName("time_start_planned");
             builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
             builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned").HasColumnType("int(11)").HasDefaultValueSql("0");
 
@@ -158,11 +154,11 @@ namespace Imms.Mes.Cutting
 
             builder.Property(e => e.OperatorId).HasColumnName("operator_id").HasColumnType("bigint(20)");
 
-            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
-            builder.HasOne(e => e.PickingOrder).WithMany().HasForeignKey(e => e.PickingOrderId);
-            builder.HasMany(e => e.Sizes).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
-            builder.HasMany(e => e.Markers).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
-            builder.HasMany(e => e.SpreadPlies).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId);
+            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId).HasConstraintName("production_order_id");
+            builder.HasOne(e => e.PickingOrder).WithMany().HasForeignKey(e => e.PickingOrderId).HasConstraintName("picking_order_id");
+            builder.HasMany(e => e.Sizes).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId).HasConstraintName("cutting_order_id");
+            builder.HasMany(e => e.Markers).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId).HasConstraintName("cutting_order_id"); ;
+            builder.HasMany(e => e.SpreadPlies).WithOne(e => e.CuttingOrder).HasForeignKey(e => e.CuttingOrderId).HasConstraintName("cutting_order_id"); ;
         }
     }
 }

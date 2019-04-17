@@ -19,7 +19,7 @@ namespace Imms.Data
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {            
-            if (categoryName == "Microsoft.EntityFrameworkCore.Database.Command" && logLevel == LogLevel.Information)
+            if (categoryName == "Microsoft.EntityFrameworkCore.Database.Command"/* && logLevel == LogLevel.Information*/)
             {
                 var logContent = formatter(state, exception);                
                 Console.WriteLine();

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>  
@@ -8,13 +8,15 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.3" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.15" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.11" />
     <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EntityFrameworkCore-2.2.4\src\EFCore.Design\EFCore.Design.csproj" />
+    <ProjectReference Include="..\..\EntityFrameworkCore-2.2.4\src\EFCore\EFCore.csproj" />
+    <ProjectReference Include="..\..\mysql\EFCore\src\MySql.Data.EFCore\MySql.Data.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Imms.Core\Imms.Core.csproj" />
   </ItemGroup>
 </Project>

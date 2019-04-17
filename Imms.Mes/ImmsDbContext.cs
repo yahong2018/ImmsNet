@@ -107,9 +107,10 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
             modelBuilder.ApplyConfiguration(new PickingOrderItemConfigure());
 
-            // modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
-            // modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
-            // modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
+            modelBuilder.ApplyConfiguration(new CuttingMarkerConfigure());
+            modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
+            modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
+            modelBuilder.ApplyConfiguration(new CuttingOrderSpreadPlyConfigure());
 
             // modelBuilder.ApplyConfiguration(new OperatorConfigure());
             // modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());

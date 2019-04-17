@@ -22,11 +22,11 @@ namespace Imms.Test
         protected static DbContext dbContext = null;
 
         [Fact]
-        public void TestProductionOrder()
+        public void ProductionOrderInsertTest()
         {
             ProductionOrder productionOrder = new ProductionOrder();
-            productionOrder.BomOrderId = 23;
-            productionOrder.RoutingOrderId = 2;
+            productionOrder.BomOrderId = 1;
+           // productionOrder.RoutingOrderId = 2;
             productionOrder.FgMaterialId = 275;
             productionOrder.QtyPlanned = 1;
             productionOrder.Priority = 3;

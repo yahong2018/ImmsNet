@@ -45,7 +45,38 @@ namespace Imms.Test.Material
             dbContext.SaveChanges();
 
             System.Console.WriteLine(bomOrder);
-        }      
+        }
+
+
+
+        [Fact]
+        public void BomOrderInsert_16001_Test()
+        {
+            BomOrder bomOrder = new BomOrder();            
+            bomOrder.MaterialId = 72;
+            bomOrder.BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER;
+            bomOrder.OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL;
+
+            dbContext.Set<BomOrder>().Add(bomOrder);
+            dbContext.SaveChanges();
+
+            System.Console.WriteLine(bomOrder);
+        }
+
+
+        [Fact]
+        public void BomOrderInsert_12001_Test()
+        {
+            BomOrder bomOrder = new BomOrder();
+            bomOrder.MaterialId = 271;
+            bomOrder.BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER;
+            bomOrder.OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL;
+
+            dbContext.Set<BomOrder>().Add(bomOrder);
+            dbContext.SaveChanges();
+
+            System.Console.WriteLine(bomOrder);
+        }
 
         public void TestBomOrderSelect()
         {

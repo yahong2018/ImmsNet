@@ -34,7 +34,7 @@ namespace Imms.Mes.Cutting
 
         internal void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation)
         {
-            cuttingOrder.TimetartPlanned = DateTime.Now;
+            cuttingOrder.TimeStartPlanned = DateTime.Now;
             cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成
             cuttingOrder.WorkStationId = cuttingWorkStation.RecordId;
             cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;

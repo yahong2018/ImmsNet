@@ -51,8 +51,8 @@ namespace Imms.Mes.Picking
             builder.Property(e => e.PickingOrderId).HasColumnName("picking_order_id");
             builder.Property(e => e.PickedQty).HasColumnName("picked_qty").HasColumnType("double(10,4)");
 
-            builder.HasOne(e => e.Bom).WithMany().HasForeignKey(e => e.BomId).IsRequired();
-            builder.HasOne(e => e.PickingOrder).WithMany(e => e.PickedItems).HasForeignKey(e => e.PickingOrderId);
+            builder.HasOne(e => e.Bom).WithMany().HasForeignKey(e => e.BomId).IsRequired().HasConstraintName("bom_id");
+            builder.HasOne(e => e.PickingOrder).WithMany(e => e.PickedItems).HasForeignKey(e => e.PickingOrderId).HasConstraintName("picking_order_id");
         }
     }
 
@@ -74,8 +74,8 @@ namespace Imms.Mes.Picking
             builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");
             builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
 
-            builder.HasOne(e => e.PickingBomOrder).WithMany().HasForeignKey(e => e.PickingBomOrderId);
-            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId);
+            builder.HasOne(e => e.PickingBomOrder).WithMany().HasForeignKey(e => e.PickingBomOrderId).HasConstraintName("picking_bom_order_id");
+            builder.HasOne(e => e.ProductionOrder).WithMany().HasForeignKey(e => e.ProductionOrderId).HasConstraintName("production_order_id");
         }
     }
 }

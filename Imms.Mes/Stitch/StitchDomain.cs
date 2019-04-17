@@ -320,6 +320,7 @@ namespace Imms.Mes.Stitch
         protected override void InternalConfigure(EntityTypeBuilder<ProductionOrderPatternRelation> builder)
         {
             base.InternalConfigure(builder);
+            builder.ToTable("production_order_pattern_relation");
 
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id");
             builder.Property(e => e.MaterialId).HasColumnName("material_id");
