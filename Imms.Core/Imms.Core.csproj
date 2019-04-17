@@ -5,11 +5,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.15" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.11" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\mysql\EFCore\src\MySql.Data.EFCore\MySql.Data.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>
