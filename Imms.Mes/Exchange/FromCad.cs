@@ -2,7 +2,7 @@ using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Cutting;
 using Imms.Mes.Domain;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
 using Imms.Mes.Quality;
@@ -16,6 +16,7 @@ using System.Threading;
 using System.Transactions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Imms.Mes.Material;
 
 namespace Imms.Mes.Exchange
 {
@@ -98,8 +99,7 @@ namespace Imms.Mes.Exchange
         }
 
         private PickingOrder[] CreatePickingOrder(ProductionOrderCuttingTechFileDTO dto, ProductionOrder productionOrder, DbContext dbContext)
-        {
-            PickingOrder[] result = new PickingOrder[2];
+        {            
             List<Bom>[] boms = this.GetMaterialPickingBoms(dto, productionOrder,dbContext);
             BomOrder[] pickingBomOrders = this.CreatePickingBomOrders(productionOrder, boms);
             dbContext.Set<BomOrder>().AddRange(pickingBomOrders);
@@ -107,7 +107,7 @@ namespace Imms.Mes.Exchange
             PickingOrder[] pickingOrders = this.CreatePickingOrders(productionOrder, pickingBomOrders);
             dbContext.Set<PickingOrder>().AddRange(pickingOrders);
 
-            return result;
+            return pickingOrders;
         }
 
         private BomOrder[] CreatePickingBomOrders(ProductionOrder productionOrder, List<Bom>[] pickingBoms)
@@ -156,7 +156,7 @@ namespace Imms.Mes.Exchange
                 media.Description = "物料纸样多媒体";
 
                 ProductionOrderPatternRelation patternRelation = new ProductionOrderPatternRelation();
-                Material material = dbContext.Set<Material>().Single(x => x.MaterialNo == partternImage.MaterialNo);
+                Material.Material material = dbContext.Set<Material.Material>().Single(x => x.MaterialNo == partternImage.MaterialNo);
                 patternRelation.MaterialId = material.RecordId;
                 patternRelation.Media = media;
 
@@ -311,7 +311,7 @@ namespace Imms.Mes.Exchange
             {
                 cuttingOrder.QtyPlanned = cuttingTable.Packages;
             }
-            Material material = dbContext.Set<Material>().Single(x => x.MaterialNo == materialMarker.MaterialNo);
+            Material.Material material = dbContext.Set<Material.Material>().Single(x => x.MaterialNo == materialMarker.MaterialNo);
             cuttingOrder.FabricMaterialId = material.RecordId;
             cuttingOrder.CuttingEfficiency = 0.99;
 
@@ -329,7 +329,7 @@ namespace Imms.Mes.Exchange
             //2.更新辅料
             //
             var allBoms = (from b in dbContext.Set<Bom>()
-                           join m in dbContext.Set<Material>() on b.ComponentMaterialId equals m.RecordId
+                           join m in dbContext.Set<Material.Material>() on b.ComponentMaterialId equals m.RecordId
                            where b.BomOrderId == productionOrder.BomOrderId
                            select new
                            {
@@ -355,7 +355,7 @@ namespace Imms.Mes.Exchange
                     var boms_1 = (
                         from bm in dbContext.Set<Bom>()
                         join bo in dbContext.Set<BomOrder>() on bm.BomOrderId equals bo.RecordId
-                        join mp in dbContext.Set<Material>() on bo.MaterialId equals mp.RecordId
+                        join mp in dbContext.Set<Material.Material>() on bo.MaterialId equals mp.RecordId
                         where mp.MaterialNo == usage.ComponentNo
                         select new
                         {
@@ -406,7 +406,7 @@ namespace Imms.Mes.Exchange
                                .Select(b => b.InnerBom.ComponentMaterialId)
                                .First();
             int cuttingQty = productionOrder.QtyPlanned;
-            string mainFabricCode = dbContext.Set<Material>()
+            string mainFabricCode = dbContext.Set<Material.Material>()
                           .Where(m => m.RecordId == mainFabricId)
                           .Select(m => m.MaterialNo)
                           .First();

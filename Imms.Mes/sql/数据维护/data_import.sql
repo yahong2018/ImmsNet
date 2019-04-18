@@ -68,6 +68,24 @@ from c2m.bom b1 left join c2m.material mc1 on b1.component_material_id = mc1.id 
 where b1.bom_order_id = 109542
 ;
 
+-- 
+--  如果是生产BOM，则还需要更新用量到最原始的状态
+--
+update bom b0 join (
+	select mc.record_id as component_material_id,			
+				 ma.record_id as component_abstract_material_id,
+				 qty,
+				 component_material_uom,
+				 parent_id,
+				 if_main_fabric
+	from c2m.bom b1 left join c2m.material mc1 on b1.component_material_id = mc1.id  join material mc on mc1.material_no = mc.material_no 
+									left join c2m.material ma1 on b1.component_abstract_material_id = ma1.id  left join material ma on ma1.material_no = ma.material_no
+	where b1.bom_order_id = 109329
+) b1 on b0.component_material_id = b1.component_material_id
+set b0.qty_component = b1.qty
+where b0.bom_order_id = 1
+;
+
 --
 -- 导入工艺
 --
@@ -123,20 +141,15 @@ where operation_no in('T0001',
 'SWYFAS005','SWLYAS026','SWLYAS027','SWLYAS028','SWLYAS029','SWLYAS030',
 'SWLYAS031','SWLYAS032','SWLYAS033','SMCSAS044','SMCSAS033','SWLYAS034',
 'SWLYAS035','SWLYAS036','SWLYAS037',''
-)
+);
 
-
-update bom b0 join (
-	select mc.record_id as component_material_id,			
-				 ma.record_id as component_abstract_material_id,
-				 qty,
-				 component_material_uom,
-				 parent_id,
-				 if_main_fabric
-	from c2m.bom b1 left join c2m.material mc1 on b1.component_material_id = mc1.id  join material mc on mc1.material_no = mc.material_no 
-									left join c2m.material ma1 on b1.component_abstract_material_id = ma1.id  left join material ma on ma1.material_no = ma.material_no
-	where b1.bom_order_id = 109329
-) b1 on b0.component_material_id = b1.component_material_id
-set b0.qty_component = b1.qty
-where b0.bom_order_id = 1
+--
+-- 导入设备
+--
+insert into equipment(equipment_no,equipment_name,description,status,equipment_type_id,work_station_id)
+select m.machine_no,m.name,m.description,0 as status,t1.record_id as equipment_type_id,0 as work_station_id
+from c2m.machine m  join c2m.machine_type t on m.machine_type_id = t.id join plan_code t1 on t.machine_type_no = t1.code_no
 ;
+
+
+

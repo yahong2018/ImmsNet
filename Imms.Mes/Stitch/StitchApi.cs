@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Imms.Data;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Imms.Mes.Stitch

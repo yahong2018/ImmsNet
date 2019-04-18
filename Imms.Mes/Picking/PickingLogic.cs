@@ -8,10 +8,11 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Threading;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Imms.Mes.Stitch;
 using Imms.Mes.Picking;
 using Imms.Mes.Cutting;
+using Imms.Mes.Material;
 
 namespace Imms.Mes.Picking
 {
@@ -100,38 +101,32 @@ namespace Imms.Mes.Picking
                 productionOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;
 
                 //计划裁剪订单
-                IQueryable<CuttingOrder> cuttingOrders = this.PlanCuttingOrder(pickingOrder, productionOrder.WorkCenterId, dbContext);
+                if (pickingOrder.OrderType == GlobalConstants.TYPE_PICKING_ORDER_CUTTING)
+                {
+                    this.UpdateCuttingOrder(pickingOrder, dbContext);
+                }
 
                 //数据保存                
                 GlobalConstants.ModifyEntityStatus<PickingOrder>(pickingOrder, dbContext);
                 GlobalConstants.ModifyEntityStatus<ProductionOrder>(productionOrder, dbContext);
-                foreach (CuttingOrder cuttingOrder in cuttingOrders)
-                {
-                    GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
-                }
                 dbContext.SaveChanges();
             });
         }
 
-        private IQueryable<CuttingOrder> PlanCuttingOrder(PickingOrder pickingOrder, long workCenterId, DbContext dbContext)
-        {
-            if (pickingOrder.OrderType != GlobalConstants.TYPE_PICKING_ORDER_CUTTING)
-            {
-                return null;
-            }
-
+        private void UpdateCuttingOrder(PickingOrder pickingOrder, DbContext dbContext)
+        { 
             var cuttingOrders = dbContext.Set<CuttingOrder>().Where(x =>
                 x.PickingOrderId == pickingOrder.RecordId
                 && x.OrderStatus == GlobalConstants.STATUS_ORDER_INITIATE
-            );
-            WorkStation cuttingWorkStation = this.CuttingWorkStationFinder.FindWorkStation(pickingOrder);
-
+            );           
             foreach (CuttingOrder cuttingOrder in cuttingOrders)
             {
-                CuttingLogic.Instance.PlanCuttingOrder(cuttingOrder, cuttingWorkStation);
-            }
+                cuttingOrder.TimeStartPlanned = DateTime.Now;
+                cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成           
+                cuttingOrder.OrderStatus = GlobalConstants.STATUS_PRODUCTION_ORDER_PICKED;  //物料已领取
 
-            return cuttingOrders;
+                GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
+            }         
         }
 
         public void VerifyData(DbContext dbContext, IEntity entity, int dmlType)

@@ -7,7 +7,7 @@ using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Imms.Mes.Stitch;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -39,7 +39,7 @@ namespace Imms.Mes.Exchange
             {
                 ProductionOrderRoutingDTO dto = (ProductionOrderRoutingDTO)dtoObj;
                 productionOrder = dbContext.Set<ProductionOrder>().Single(x => x.OrderNo == dto.ProductionOrderNo);
-                Material material = dbContext.Set<Material>().Single(x => x.MaterialNo == dto.MaterialNo);
+                Material.Material material = dbContext.Set<Material.Material>().Single(x => x.MaterialNo == dto.MaterialNo);
                 if (material.RecordId != productionOrder.FgMaterialId)
                 {
                     throw new BusinessException(GlobalConstants.EXCEPTION_CODE_NOT_EXCEPTED_DATA, $"Gst返回工艺的物料Id{material.RecordId}与Id为{productionOrder.RecordId}的生产订单的物料编号{productionOrder.FgMaterialId}不一致!");
@@ -51,7 +51,7 @@ namespace Imms.Mes.Exchange
             StitchLogic.Instance.SetProductionOrderRouting(productionOrder, routingOrder, operationRoutings);
         }
 
-        private OperationRoutingOrder CreateProductionRoutingOrder(Material material)
+        private OperationRoutingOrder CreateProductionRoutingOrder(Material.Material material)
         {
             return new OperationRoutingOrder()
             {

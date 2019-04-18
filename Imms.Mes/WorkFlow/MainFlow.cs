@@ -5,7 +5,7 @@ using Imms.Data;
 using Imms.Mes.Cutting;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

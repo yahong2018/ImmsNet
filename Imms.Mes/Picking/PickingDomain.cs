@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
 using System.ComponentModel.DataAnnotations;
 using Imms.Mes.Stitch;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
+using Imms.Mes.Material;
 
 namespace Imms.Mes.Picking
 {

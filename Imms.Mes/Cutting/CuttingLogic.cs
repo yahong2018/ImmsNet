@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Imms.Data;
 using System;
 using Imms.Mes.Stitch;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Imms.Mes.Picking;
+using Imms.Mes.Material;
 
 namespace Imms.Mes.Cutting
 {
@@ -13,37 +14,12 @@ namespace Imms.Mes.Cutting
     {
         private CuttingLogic() { }
         public static readonly CuttingLogic Instance = new CuttingLogic();
-
-        public void PlanCuttingOrders(WorkStation cuttingWorkStation, params CuttingOrder[] cuttingOrders)
-        {
-            if (cuttingOrders == null || cuttingOrders.Length == 0)
-            {
-                return;
-            }
-
-            CommonDAO.UseDbContext(dbContext =>
-            {
-                foreach (CuttingOrder cuttingOrder in cuttingOrders)
-                {
-                    this.PlanCuttingOrder(cuttingOrder, cuttingWorkStation);
-                    GlobalConstants.ModifyEntityStatus<CuttingOrder>(cuttingOrder, dbContext);
-                }
-                dbContext.SaveChanges();
-            });
-        }
-
-        internal void PlanCuttingOrder(CuttingOrder cuttingOrder, WorkStation cuttingWorkStation)
-        {
-            cuttingOrder.TimeStartPlanned = DateTime.Now;
-            cuttingOrder.TimeEndPlanned = DateTime.Now.AddMinutes(30);   //默认30分钟内裁剪完成
-            cuttingOrder.WorkStationId = cuttingWorkStation.RecordId;
-            cuttingOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
-        }
-
-        public void StartCuttingOrder(CuttingOrder cuttingOrder)
+     
+        public void StartCuttingOrder(CuttingOrder cuttingOrder,WorkStation cuttingStation)
         {
             CommonDAO.UseDbContext((dbContext) =>
             {
+                cuttingOrder.WorkStationId = cuttingStation.RecordId;
                 cuttingOrder.OrderStatus = GlobalConstants.STATUS_CUTTING_ORDER_CUTTING;
                 cuttingOrder.TimeStartActual = DateTime.Now;
 

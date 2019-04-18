@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Quality;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
+using Imms.Mes.Material;
 
 namespace Imms.Mes.Stitch
 {
@@ -30,7 +31,7 @@ namespace Imms.Mes.Stitch
         public DateTime? TimeEndActual { get; set; }
 
         public virtual OperationRoutingOrder RoutingOrder { get; set; }
-        public virtual Material FgMaterial { get; set; }
+        public virtual Material.Material FgMaterial { get; set; }
         public virtual BomOrder BomOrder { get; set; }
         public virtual List<ProductionOrderSize> Sizes { get; set; } = new List<ProductionOrderSize>();
         public virtual List<ProductionOrderMeasure> Measures { get; set; } = new List<ProductionOrderMeasure>();
@@ -154,7 +155,7 @@ namespace Imms.Mes.Stitch
         public int OrderType { get; set; }
         public long MaterialId { get; set; }
 
-        public virtual Material Material { get; set; }
+        public virtual Material.Material Material { get; set; }
         public virtual List<OperationRouting> Routings { get; set; } = new List<OperationRouting>();
     }
 

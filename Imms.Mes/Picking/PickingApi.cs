@@ -4,7 +4,7 @@ using Imms.Mes.Domain;
 using System.Linq;
 using Imms.Data.Domain;
 using Microsoft.EntityFrameworkCore;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Imms.Mes.Picking
@@ -14,8 +14,6 @@ namespace Imms.Mes.Picking
     {
         public PickingOrder Create(PickingOrder pickingOrder)
         {
-
-
             return pickingOrder;
         }
 
@@ -74,7 +72,7 @@ namespace Imms.Mes.Picking
                 {
                     PickingOrderItem item = new PickingOrderItem();
                     item.PickingOrder = result;
-                    long materialId = dbContext.Set<Material>().Where(x => x.MaterialNo == detail.MaterialNo).Select(x => x.RecordId).Single();
+                    long materialId = dbContext.Set<Material.Material>().Where(x => x.MaterialNo == detail.MaterialNo).Select(x => x.RecordId).Single();
                     item.Bom = result.PickingBomOrder.Boms.Where(x => x.ComponentMaterialId == materialId).Single();
                     item.PickedQty = detail.QtyPicked;
 

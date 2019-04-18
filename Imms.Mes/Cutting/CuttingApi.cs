@@ -4,13 +4,13 @@ using Imms.Data.Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Imms.Mes.Organization;
 
 namespace Imms.Mes.Cutting
 {
     [Route("/Imms/Mes/Cutting")]
     public class CuttingApi : Controller
-    {
-        public CuttingLogic CuttingLogic { get; set; }
+    {  
 
         [HttpGet("GetToStart")]
         public CuttingOrder[] GetCuttingOrderToStart()
@@ -24,21 +24,22 @@ namespace Imms.Mes.Cutting
             return result;
         }
 
-        [HttpPost("StartCutting/{cutingOrderNo}&{operatorCode}")]
-        public void StartCutting(string cuttingOrderNo, string operatorCode)
+        [HttpPost("StartCutting/{cutingOrderNo}&{operatorCode}&{workStationCode}")]
+        public void StartCutting(string cuttingOrderNo, string operatorCode,string workStationCode)
         {
             CuttingOrder cuttingOrder = CommonDAO.AssureExistsByFilter<CuttingOrder>(x => x.OrderNo == cuttingOrderNo);
             SystemUser user = CommonDAO.AssureExistsByFilter<SystemUser>(x => x.UserCode == operatorCode);
             cuttingOrder.OperatorId = user.RecordId;
+            WorkStation workStation = CommonDAO.AssureExistsByFilter<WorkStation>(x => x.OrganizationCode == workStationCode);            
 
-            CuttingLogic.StartCuttingOrder(cuttingOrder);
+            CuttingLogic.Instance.StartCuttingOrder(cuttingOrder,workStation);
         }
 
         [HttpPost("CuttingFinished")]
         public void CuttingFinished(CutingReportDTO report)
         {
             CuttingOrder cuttingOrder = report.ToCuttingOrder();
-            this.CuttingLogic.CuttinngOrderFinished(cuttingOrder);
+            CuttingLogic.Instance.CuttinngOrderFinished(cuttingOrder);
         }
     }
 

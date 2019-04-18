@@ -126,7 +126,7 @@ namespace Imms
         public const int STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY = 4; //裁剪技术文件已准备
         public const int STATUS_PRODUCTION_ORDER_ROUTING_READY = 8; //生产工艺已准备
         public const int STATUS_PRODUCTION_ORDER_TECH_ALL_READY   //生产技术已全部准备   二进制的1111，十进制15   *
-            = STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;
+            = STATUS_ORDER_PLANNED | STATUS_PRODUCTION_ORDER_BOM_READY | STATUS_PRODUCTION_ORDER_CUTTING_TECH_READY | STATUS_PRODUCTION_ORDER_ROUTING_READY;
         public const int STATUS_PRODUCTION_ORDER_PICKING = 16;    //已开始领料 *
         public const int STATUS_PRODUCTION_ORDER_PICKED = 32;    //已完成领料  *
         public const int STATUS_PRODUCTION_ORDER_CUTTING = 64;    //已开始裁剪  *
@@ -229,9 +229,9 @@ namespace Imms
         //
         //反序列化
         //
-        public static object ToObject(this string jsonStr,Type type)
+        public static object ToObject(this string jsonStr, Type type)
         {
-            object result = JsonConvert.DeserializeObject(jsonStr,type, new JsonSerializerSettings
+            object result = JsonConvert.DeserializeObject(jsonStr, type, new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver
                 {

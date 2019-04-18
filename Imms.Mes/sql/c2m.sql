@@ -137,6 +137,28 @@ create table operator  (
 );
 
 --
+-- 设备
+--
+create table equipment
+(
+    record_id                bigint   auto_increment        not null,
+    equipment_no             varchar(20)                    not null,
+    equipment_name           varchar(50)                    not null,
+    description              varchar(500)                   not null,
+    status                   int                            not null,
+    equipment_type_id        bigint                         not null,
+    work_station_id          bigint                         not null,
+
+    primary key(record_id),
+    index idx_equipment_01(record_id),
+    index idx_equipment_02(equipment_no),
+    index idx_equipment_03(equipment_type_id),
+    index idx_equipment_04(work_station_id),
+    index idx_equipment_05(status)
+);
+
+
+--
 -- 物料
 --
 create table material

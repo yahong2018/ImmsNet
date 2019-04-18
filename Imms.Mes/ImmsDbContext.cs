@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using Imms.Data;
 using Imms.Mes.Domain;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Imms.Mes.Cutting;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
@@ -79,18 +79,18 @@ namespace Imms.Mes
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
 
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkOrganizationUnitConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.PlantConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkCenterConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkLineConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.WorkStationConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkOrganizationUnitConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.PlantConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkCenterConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkLineConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkStationConfigure());
 
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.PlanCodeConfigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.EquipmentTypeCofigure());
-            modelBuilder.ApplyConfiguration(new Imms.Mes.MasterData.MaterialTypeeCofigure());
-            modelBuilder.ApplyConfiguration(new MaterialConfigure());
-            modelBuilder.ApplyConfiguration(new BomConfigure());
-            modelBuilder.ApplyConfiguration(new BomOrderConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.PlanCodeConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.EquipmentTypeCofigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.MaterialTypeeCofigure());
+            modelBuilder.ApplyConfiguration(new Material.MaterialConfigure());
+            modelBuilder.ApplyConfiguration(new Material.BomConfigure());
+            modelBuilder.ApplyConfiguration(new Material.BomOrderConfigure());
 
             modelBuilder.ApplyConfiguration(new OperationConfigure());
             modelBuilder.ApplyConfiguration(new OpetaionMediaConfigure());

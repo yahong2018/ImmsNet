@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Imms.Mes

@@ -1,6 +1,6 @@
 ﻿using System;
 using Imms.Data;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 
 namespace Imms.Mes
 {

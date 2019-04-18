@@ -1,19 +1,18 @@
 using System;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
-
-namespace Imms.Test
+namespace Imms.Test.Organization
 {
-    public class OrgCRDTest
+    public class OrgCRDTest:BaseTestClass
     {
-        static OrgCRDTest()
+        public OrgCRDTest(ITestOutputHelper output)
         {
-            GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
+            this.Output = output;
         }
-        protected DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
-
-
+        
         public void CreatePlantTest()
         {
             dbContext.Set<Plant>().Add(this.CreatePlant());
@@ -138,9 +137,7 @@ namespace Imms.Test
             result.Children.Add(this.CreateWorkStation(40, "A.04.05.040", "凤"));
 
             return result;
-        }
-
-
+        }        
 
         private WorkStation CreateWorkStation(int seq, string no, string name, string description = "", int wipMax = 3, bool isAvailable = true)
         {
@@ -204,6 +201,19 @@ namespace Imms.Test
             plant.Children.Add(this.CreateCuttingWorkCenter());
 
             return plant;
+        }
+
+        [Fact]
+        public void CreateCuttingWorkStationTest()
+        {
+            WorkStation cuttingStation = new WorkStation();
+            cuttingStation.WorkStationType = GlobalConstants.TYPE_WORK_STATION_CUTTING;
+            cuttingStation.WorkStationName = "1#裁床机";
+            cuttingStation.WorkStationCode = "A.03.01";
+            cuttingStation.ParentOrganizationId = 3;
+
+            this.dbContext.Add(cuttingStation);
+            this.dbContext.SaveChanges();
         }
     }
 }

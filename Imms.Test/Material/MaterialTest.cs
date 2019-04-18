@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Imms.Data;
 using Imms.Data.Domain;
-using Imms.Mes.MasterData;
+using Imms.Mes.Material;
+using Imms.Mes.Organization;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ namespace Imms.Test.Material
 
         public void TestMaterial()
         {
-            foreach (var material in dbContext.Set<Imms.Mes.MasterData.Material>().Where(x => x.RecordId == 16))
+            foreach (var material in dbContext.Set<Imms.Mes.Material.Material>().Where(x => x.RecordId == 16))
             {
                 System.Console.WriteLine(material);
             }
@@ -92,99 +93,7 @@ namespace Imms.Test.Material
             }
         }
         
-        public void CreatePickingOrderForCadTest()
-        {
-            CommonDAO.UseDbContext(dbContext =>
-            {
-                string[] cuttingMaterialTypes = new string[]{
-                    GlobalConstants.TYPE_MATERIAL_FABRIC,  //面料
-                    GlobalConstants.TYPE_MATERIAL_LINING,  //里料
-                    GlobalConstants.TYPE_MATERIAL_INTER_LINING//衬布
-                };
-
-                ProductionOrder productionOrder = (ProductionOrder)dbContext.Find(typeof(ProductionOrder), 1L);
-                var boms = dbContext.Set<Bom>()
-                    .Join(dbContext.Set<Imms.Mes.MasterData.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
-                    .Join(dbContext.Set<MaterialType>(), m => m.material.MaterialTypeId, t => t.RecordId, (bm, t) => new { bm.bom, bm.material, material_type = t })
-                    .Where(x => x.bom.BomOrderId == productionOrder.BomOrderId
-                           && cuttingMaterialTypes.Contains(x.material_type.CodeNo)
-                    ).Select(x => x.bom)
-                    .ToList();
-
-                List<Bom> theNewBoms = new List<Bom>();
-                foreach (Bom bom in boms)
-                {
-                    Bom newBom = new Bom();
-                    newBom.Clone(bom);
-                    theNewBoms.Add(newBom);
-                }
-                BomOrder pickingBomOrder = PickingLogic.Instance.CreatePickingBomOrder(productionOrder, theNewBoms);
-                PickingOrder pickingOrder = PickingLogic.Instance.CreatePickingOrder(productionOrder, pickingBomOrder, GlobalConstants.TYPE_PICKING_ORDER_CUTTING);
-
-                dbContext.Set<PickingOrder>().Add(pickingOrder);
-                dbContext.SaveChanges();
-            });
-        }
-
         
-        public void CreatePickingOrderForStichTest()
-        {
-            CommonDAO.UseDbContext(dbContext =>
-            {
-                string[] cuttingMaterialTypes = new string[]{
-                    GlobalConstants.TYPE_MATERIAL_FABRIC,  //面料
-                    GlobalConstants.TYPE_MATERIAL_LINING,  //里料
-                    GlobalConstants.TYPE_MATERIAL_INTER_LINING//衬布
-                };
-
-                ProductionOrder productionOrder = (ProductionOrder)dbContext.Find(typeof(ProductionOrder), 1L);
-                var boms = dbContext.Set<Bom>()
-                    .Join(dbContext.Set<Imms.Mes.MasterData.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
-                    .Join(dbContext.Set<MaterialType>(), m => m.material.MaterialTypeId, t => t.RecordId, (bm, t) => new { bm.bom, bm.material, material_type = t })
-                    .Where(x => x.bom.BomOrderId == productionOrder.BomOrderId
-                           && !cuttingMaterialTypes.Contains(x.material_type.CodeNo)
-                    ).Select(x => x.bom)
-                    .ToList();
-
-                List<Bom> theNewBoms = new List<Bom>();
-                foreach (Bom bom in boms)
-                {
-                    Bom newBom = new Bom();
-                    newBom.Clone(bom);
-                    theNewBoms.Add(newBom);
-                }
-                BomOrder pickingBomOrder = PickingLogic.Instance.CreatePickingBomOrder(productionOrder, theNewBoms);
-                PickingOrder pickingOrder = PickingLogic.Instance.CreatePickingOrder(productionOrder, pickingBomOrder, GlobalConstants.TYPE_PICKING_ORDER_STITCH);
-
-                dbContext.Set<PickingOrder>().Add(pickingOrder);
-                dbContext.SaveChanges();
-            });
-        }
-        
-        public void PickingOrderPrepareTest()
-        {
-            PickingOrder pickingOrder = dbContext.Set<PickingOrder>()
-                .Where(x => x.OrderType == GlobalConstants.TYPE_PICKING_ORDER_CUTTING)
-                .Include(x => x.ProductionOrder)
-                .Single();
-            PickingLogic.Instance.MaterialPrepared(pickingOrder);
-
-            //Assert.IsTrue(pickingOrder.ReachStatus(GlobalConstants.STATUS_PICKING_ORDER_PREPARED));
-            //Assert.IsTrue(pickingOrder.ProductionOrder.ReachStatus(GlobalConstants.STATUS_PRODUCTION_ORDER_PICKING));
-        }
-
-
-        public void PickingOrderReportTest()
-        {
-            PickingOrder pickingOrder = dbContext.Set<PickingOrder>()
-                .Where(x => x.OrderStatus==GlobalConstants.STATUS_PICKING_ORDER_PREPARED)
-                .Include(x => x.ProductionOrder)
-                .Single();
-
-            //Assert.IsNotNull(pickingOrder);
-
-            PickingLogic.Instance.MaterialPicked(pickingOrder);
-        }
 
     }
 }

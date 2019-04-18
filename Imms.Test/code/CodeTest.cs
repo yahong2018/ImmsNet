@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Imms.Data.Domain;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -15,8 +15,6 @@ namespace Imms.Test.Cutting
             this.Output = output;
         }
 
-        
-
         [Fact]
         public void CuttingOrderFirstTest()
         {

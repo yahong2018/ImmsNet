@@ -9,7 +9,8 @@ using Imms.Mes.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using Imms.Mes.Stitch;
-using Imms.Mes.MasterData;
+using Imms.Mes.Organization;
+using Imms.Mes.Material;
 
 namespace Imms.Mes.Exchange
 {
@@ -119,7 +120,7 @@ namespace Imms.Mes.Exchange
 
         private ProductionOrder ConvertProductionOrder(ScheduleOrderDTO scheduleOrder)
         {
-            Material fgMaterial = CommonDAO.AssureExistsByFilter<Material>(x=>x.MaterialNo == scheduleOrder.MaterialCode);
+            Material.Material fgMaterial = CommonDAO.AssureExistsByFilter<Material.Material>(x=>x.MaterialNo == scheduleOrder.MaterialCode);
             Plant plant = CommonDAO.AssureExistsByFilter<Plant>(x=>x.OrganizationCode == scheduleOrder.Plant);
             WorkCenter workCenter = CommonDAO.AssureExistsByFilter<WorkCenter>(x=>x.OrganizationCode == scheduleOrder.WorkCenter);
 
@@ -157,8 +158,8 @@ namespace Imms.Mes.Exchange
 
         private Bom ConvertBom(BomDTO dto)
         {
-            Material abstractMaterial = CommonDAO.AssureExistsByFilter<Material>(x=>x.MaterialNo == dto.ComponentAbstractMaterial);
-            Material componentMaterial = CommonDAO.AssureExistsByFilter<Material>(x=>x.MaterialNo == dto.MaterialCode);
+            Material.Material abstractMaterial = CommonDAO.AssureExistsByFilter<Material.Material>(x=>x.MaterialNo == dto.ComponentAbstractMaterial);
+            Material.Material componentMaterial = CommonDAO.AssureExistsByFilter<Material.Material>(x=>x.MaterialNo == dto.MaterialCode);
 
             Bom bom = new Bom()
             {

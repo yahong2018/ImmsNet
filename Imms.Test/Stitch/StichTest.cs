@@ -30,6 +30,7 @@ namespace Imms.Test
             productionOrder.FgMaterialId = 275;
             productionOrder.QtyPlanned = 1;
             productionOrder.Priority = 3;
+            productionOrder.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED; //注意是已计划
             productionOrder.TimeStartPlanned = DateTime.Parse("2019/04/28 18:35");
             productionOrder.TimeEndPlanned = DateTime.Parse("2019/04/29 10:30");
             productionOrder.WorkCenterId = 3;
