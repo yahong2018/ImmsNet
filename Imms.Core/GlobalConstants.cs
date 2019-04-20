@@ -43,9 +43,9 @@ namespace Imms
         public const string TYPE_ORG_WORK_STATETION = "ORG_WORK_STATION";
 
         //组织架构参数
-        public const string TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE = "WORK_STATION_TYPE";  //工位类型
-        public const string TYPE_ORG_PARAMETER_TYPE_STATUS_IS_ON_LINE = "STATUS_IS_ON_LINE";  //离线|在线
-        public const string TYPE_ORG_PARAMETER_TYPE_WORK_STATION_DEVICE_TYPE = "WORK_STATION_DEVICE_TYPE"; //工位的机器类型
+        //public const string TYPE_ORG_PARAMETER_TYPE_WORK_STATION_TYPE = "WORK_STATION_TYPE";  //工位类型
+        //public const string TYPE_ORG_PARAMETER_TYPE_STATUS_IS_ON_LINE = "STATUS_IS_ON_LINE";  //离线|在线
+        //public const string TYPE_ORG_PARAMETER_TYPE_WORK_STATION_DEVICE_TYPE = "WORK_STATION_DEVICE_TYPE"; //工位的机器类型
 
         //组织架构参数的值
         public const string VALUE_ORG_PARAMETER_STATUS_ON_LINE = "OFF_LINE"; //离线

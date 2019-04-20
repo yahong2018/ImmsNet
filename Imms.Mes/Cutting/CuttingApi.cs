@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Imms.Mes.Organization;
+using Newtonsoft.Json;
 
 namespace Imms.Mes.Cutting
 {
@@ -45,28 +46,35 @@ namespace Imms.Mes.Cutting
 
     public class CutingReportDTO
     {
-        public string CuttingOrdreNo;
+        public string CuttingOrderNo;
         public string ContainerNo;
         public string OperatorCode;
-        public SortedDictionary<string, int> Sizes { get; set; } = new SortedDictionary<string, int>();
+
+        public SortedDictionary<string, int> Sizes { get; set; } = new SortedDictionary<string, int>();        
 
         public CuttingOrder ToCuttingOrder()
         {
             CuttingOrder result = null;
             CommonDAO.UseDbContext(dbContext =>
             {
-                result = dbContext.Set<CuttingOrder>().Where(x => x.OrderNo == this.CuttingOrdreNo).Include(x => x.Sizes).Single();
+                result = dbContext.Set<CuttingOrder>().Where(x => x.OrderNo == this.CuttingOrderNo).Include(x => x.Sizes).Single();
                 result.ContainerNo = this.ContainerNo;
                 SystemUser user = dbContext.Set<SystemUser>().Where(x => x.UserCode == this.OperatorCode).Single();
                 result.OperatorId = user.RecordId;
                 foreach (KeyValuePair<string, int> item in this.Sizes)
                 {
-                    CuttingOrderSize size =  result.Sizes.Where(x=>x.Size==item.Key).Single();
-                    size.QtyFinished = item.Value;                    
+                    CuttingOrderSize size = result.Sizes.Where(x => x.Size == item.Key).Single();
+                    size.QtyFinished = item.Value;
                 }
             });
 
             return result;
         }
     }
+
+    //public class CuttingOrderSizeReport
+    //{
+    //    public string Size { get; set; }
+    //    public int Qty { get; set; }
+    //}
 }

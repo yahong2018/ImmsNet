@@ -1,5 +1,6 @@
 ﻿using Imms.Data;
 using Imms.Mes.Cutting;
+using Imms.Mes.Material;
 using Imms.Mes.Organization;
 using Imms.Mes.Picking;
 using Imms.Mes.Stitch;
@@ -32,7 +33,7 @@ namespace Imms.Test.Material
 
                 ProductionOrder productionOrder = (ProductionOrder)dbContext.Find(typeof(ProductionOrder), 1L);
                 var boms = dbContext.Set<Bom>()
-                    .Join(dbContext.Set<Imms.Mes.Organization.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
+                    .Join(dbContext.Set<Imms.Mes.Material.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
                     .Join(dbContext.Set<MaterialType>(), m => m.material.MaterialTypeId, t => t.RecordId, (bm, t) => new { bm.bom, bm.material, material_type = t })
                     .Where(x => x.bom.BomOrderId == productionOrder.BomOrderId
                            && cuttingMaterialTypes.Contains(x.material_type.CodeNo)
@@ -67,7 +68,7 @@ namespace Imms.Test.Material
 
                 ProductionOrder productionOrder = (ProductionOrder)dbContext.Find(typeof(ProductionOrder), 1L);
                 var boms = dbContext.Set<Bom>()
-                    .Join(dbContext.Set<Imms.Mes.Organization.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
+                    .Join(dbContext.Set<Imms.Mes.Material.Material>(), b => b.ComponentMaterialId, m => m.RecordId, (b, m) => new { bom = b, material = m })
                     .Join(dbContext.Set<MaterialType>(), m => m.material.MaterialTypeId, t => t.RecordId, (bm, t) => new { bm.bom, bm.material, material_type = t })
                     .Where(x => x.bom.BomOrderId == productionOrder.BomOrderId
                            && !cuttingMaterialTypes.Contains(x.material_type.CodeNo)

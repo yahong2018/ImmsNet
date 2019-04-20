@@ -84,9 +84,12 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkCenterConfigure());
             modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkLineConfigure());
             modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.WorkStationConfigure());
-
-            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.PlanCodeConfigure());
             modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.EquipmentTypeCofigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.EquipmentConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.OperatorConfigure());
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.OperatorCapabilityConfigure());
+
+            modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.PlanCodeConfigure());            
             modelBuilder.ApplyConfiguration(new Imms.Mes.Organization.MaterialTypeeCofigure());
             modelBuilder.ApplyConfiguration(new Material.MaterialConfigure());
             modelBuilder.ApplyConfiguration(new Material.BomConfigure());
@@ -97,12 +100,16 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new OperationRoutingConfigure());
             modelBuilder.ApplyConfiguration(new OperationRoutingOrderConfigure());
 
-            modelBuilder.ApplyConfiguration(new ProductionOrderMeasureConfigure());
-            modelBuilder.ApplyConfiguration(new ProductionOrderSizeConfigure());
             modelBuilder.ApplyConfiguration(new ProductionOrderConfigure());
+            modelBuilder.ApplyConfiguration(new ProductionOrderSizeConfigure());
+            modelBuilder.ApplyConfiguration(new ProductionOrderMeasureConfigure());
             modelBuilder.ApplyConfiguration(new ProductionOrderPatternRelationConfigure());
             modelBuilder.ApplyConfiguration(new QualityCheckConfigure());
             modelBuilder.ApplyConfiguration(new QualityCheckDetailConfigure());
+            modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
+            modelBuilder.ApplyConfiguration(new OperatorConfigure());
+            modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
+            modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
 
             modelBuilder.ApplyConfiguration(new MaterialPickingOrderConfigure());
             modelBuilder.ApplyConfiguration(new PickingOrderItemConfigure());
@@ -111,13 +118,7 @@ namespace Imms.Mes
             modelBuilder.ApplyConfiguration(new CuttingOrderConfigure());
             modelBuilder.ApplyConfiguration(new CuttingOrderSizeConfigure());
             modelBuilder.ApplyConfiguration(new CuttingOrderSpreadPlyConfigure());
-
-            // modelBuilder.ApplyConfiguration(new OperatorConfigure());
-            // modelBuilder.ApplyConfiguration(new OperatorCapabilityConfigure());
-
-            // modelBuilder.ApplyConfiguration(new ProductionWorkOrderConfigure());
-            // modelBuilder.ApplyConfiguration(new ProductionWorkOrderRoutingConfigure());
-
+            
             // // modelBuilder.ApplyConfiguration(new RequirementOrderConfigure());
             // // modelBuilder.ApplyConfiguration(new ScheduleOrderConfigure());    
 

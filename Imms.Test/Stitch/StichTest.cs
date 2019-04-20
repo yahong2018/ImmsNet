@@ -1,25 +1,37 @@
 using System;
 using System.Linq;
+using Imms.Data;
 using Imms.Data.Domain;
+using Imms.Mes.Cutting;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Imms.Test
+namespace Imms.Test.Stitch
 {
-    public class StichTest
+    public class StichTest:BaseTestClass
     {
         static StichTest()
-        {
-            GlobalConstants.DbContextFactory = new Imms.Mes.ImmsDbContextFactory();
-            dbContext = GlobalConstants.DbContextFactory.GetContext();
-            GlobalConstants.CurrentUserGetFunction = () =>
-            {
-                return dbContext.Set<SystemUser>().First();
-            };
+        {        
             Data.DataChangedNotifier.Instance.Dispatcher = new Data.DataChangeNotifyEventDispatcher();
         }
-        protected static DbContext dbContext = null;
+
+        public StichTest(ITestOutputHelper output)
+        {
+            this.Output = output;
+        }
+
+        [Fact]
+        public void CreateStitchWorkOrderTest()
+        {
+            CuttingOrder cuttingOrder = dbContext.Set<CuttingOrder>().Include(x => x.Sizes).Single(x => x.RecordId == 152);                
+            ProductionWorkOrder[] productionWorkOrders=StitchLogic.Instance.CreateStitchWorkOrder(cuttingOrder);
+            foreach(ProductionWorkOrder workOrder in productionWorkOrders)
+            {
+                this.Output.WriteLine(workOrder.ToJson());
+            }
+        }
 
         [Fact]
         public void ProductionOrderInsertTest()

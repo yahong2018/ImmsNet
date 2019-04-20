@@ -36,7 +36,7 @@ namespace Imms.Mes.Stitch
         {
             return CommonDAO.GetAllByFilter<ProductionWorkOrderRouting>(x =>
                   x.WorkStationId == WorkStation.RecordId
-                  && x.OrderStatus == GlobalConstants.STATUS_ORDER_PLANNED
+                  && x.TimeFinished != null
             ).ToArray();
         }
 
@@ -93,7 +93,7 @@ namespace Imms.Mes.Stitch
         private void WorkOrderReport(ProductionWorkOrder workOrder, DbContext dbContext)
         {
             workOrder.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
-            workOrder.TimeActualEnd = DateTime.Now;
+            workOrder.TimeEndActual = DateTime.Now;
             GlobalConstants.ModifyEntityStatus<ProductionWorkOrder>(workOrder, dbContext);
         }
 
@@ -104,7 +104,6 @@ namespace Imms.Mes.Stitch
         {
             CommonDAO.UseDbContext(dbContext =>
             {
-                workOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_FINISHED;
                 workOrderRouting.TimeFinished = DateTime.Now;
 
                 //如果是最后一道工序则该作业单完成，否则派工到下一道工序
@@ -166,8 +165,7 @@ namespace Imms.Mes.Stitch
                         return;
                     }
 
-                    //派工
-                    currentWorkOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_PLANNED;
+                    //派工                    
                     currentWorkOrderRouting.QtyPlanned = prevWorkOrderRouting.QtyFinished;  //本工位的计划数量，为前工序的完工数量
                     currentWorkOrderRouting.TimeScheduled = DateTime.Now;
                     currentWorkOrderRouting.WorkStationId = currentWorkStation.RecordId;
@@ -188,20 +186,28 @@ namespace Imms.Mes.Stitch
         //
         public ProductionWorkOrder[] CreateStitchWorkOrder(CuttingOrder cuttingOrder)
         {
-            //裁剪完成，安排缝制作业单
-            if (cuttingOrder == null
-                || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED
-                || cuttingOrder.CuttingTableNo == GlobalConstants.TYPE_MATERIAL_KT //KT床次   
-                || cuttingOrder.QtyActual <= 0
-                || cuttingOrder.FabricMaterialId != cuttingOrder.FgMaterialId  //非主面料
-            )
-            {
-                return null;
-            }
-
             ProductionWorkOrder[] result = null;
             CommonDAO.UseDbContext(dbContext =>
             {
+                //获取主面料
+                long materialId = dbContext.Set<Bom>().Where(x =>
+                   x.IsMainFabric &&
+                   (dbContext.Set<PickingOrder>()
+                       .Where(p => p.RecordId == cuttingOrder.PickingOrderId)
+                       .Select(p => p.PickingBomOrderId)
+                       .Contains(x.BomOrderId))
+                ).Select(b => b.ComponentMaterialId)
+                .Single();
+
+                if (cuttingOrder == null
+                        || cuttingOrder.OrderStatus != GlobalConstants.STATUS_ORDER_FINISHED
+                        || cuttingOrder.CuttingTableNo == GlobalConstants.TYPE_MATERIAL_KT //KT床次   
+                        || cuttingOrder.QtyActual <= 0
+                        || cuttingOrder.FabricMaterialId != materialId  //非主面料
+                    )
+                {
+                    return;
+                }
                 result = this.CreateProducitonWorkOrders(cuttingOrder, dbContext);
                 dbContext.SaveChanges();
             });
@@ -217,53 +223,57 @@ namespace Imms.Mes.Stitch
                 return null;
             }
 
-            ProductionWorkOrder[] productionWorkOrders = new ProductionWorkOrder[cuttingOrder.QtyActual];
+            List<ProductionWorkOrder> productionWorkOrders = new List<ProductionWorkOrder>();
             ProductionOrder productionOrder = dbContext.Set<ProductionOrder>()
-                               .Where(x => x.RecordId == cuttingOrder.ProductionOrderId)
-                               .Include(x => x.RoutingOrder).ThenInclude(x => x.Routings)
-                               .Single();
+              .Where(x => x.RecordId == cuttingOrder.ProductionOrderId)
+              .Include(x => x.RoutingOrder).ThenInclude(x => x.Routings)
+              .Single();
 
+            //获取领料的Bom
             long bomOrderId = dbContext.Set<PickingOrder>()
               .Where(x => x.RecordId == cuttingOrder.PickingOrderId)
               .Select(x => x.PickingBomOrderId)
               .Single();
             var pickingBoms = dbContext.Set<Bom>().Where(x => x.BomOrderId == bomOrderId);
 
-            for (int i = 0; i < cuttingOrder.Sizes.Count; i++)
+            foreach (CuttingOrderSize orderSize in cuttingOrder.Sizes)
             {
-                CuttingOrderSize orderSize = cuttingOrder.Sizes[i];
-                //创建作业单
-                ProductionWorkOrder productionWorkOrder = this.CreateProductionWorkOrder(cuttingOrder, productionOrder, orderSize);
-                productionWorkOrders[i] = productionWorkOrder;
-
-                //创建缝制BOM
-                BomOrder bomOrder = this.CreateWorkOrderBom(productionOrder, cuttingOrder, pickingBoms);  //生成BOM
-                dbContext.Set<BomOrder>().Add(bomOrder);
-
-                //创建缝制工艺报工单
-                ProductionWorkOrderRouting[] workOrderRoutings = this.CreateWorkOrderRoutings(productionOrder.RoutingOrder.Routings);
-                foreach (ProductionWorkOrderRouting routing in workOrderRoutings)
+                for (int j = 0; j < orderSize.QtyFinished; j++)
                 {
-                    routing.ProductionWorkOrder = productionWorkOrder;
-                    dbContext.Set<ProductionWorkOrderRouting>().Add(routing);
+                    //创建作业单
+                    ProductionWorkOrder productionWorkOrder = this.CreateProductionWorkOrder(cuttingOrder, orderSize);
+                    productionWorkOrder.ProductionOrder = productionOrder;
+                    productionWorkOrders.Add(productionWorkOrder);
+
+                    //创建缝制BOM
+                    BomOrder bomOrder = this.CreateWorkOrderBom(cuttingOrder, pickingBoms);  //生成BOM
+                    dbContext.Set<BomOrder>().Add(bomOrder);
+
+                    //创建缝制工艺报工单
+                    ProductionWorkOrderRouting[] workOrderRoutings = this.CreateWorkOrderRoutings(productionOrder.RoutingOrder.Routings);
+                    foreach (ProductionWorkOrderRouting routing in workOrderRoutings)
+                    {
+                        routing.ProductionWorkOrder = productionWorkOrder;
+                        dbContext.Set<ProductionWorkOrderRouting>().Add(routing);
+                    }
+                    dbContext.Set<ProductionWorkOrder>().Add(productionWorkOrder);
                 }
-                dbContext.Set<ProductionWorkOrder>().Add(productionWorkOrder);
             }
 
-            return productionWorkOrders;
+            return productionWorkOrders.ToArray();
         }
 
-        private ProductionWorkOrder CreateProductionWorkOrder(CuttingOrder cuttingOrder, ProductionOrder productionOrder, CuttingOrderSize orderSize)
+        private ProductionWorkOrder CreateProductionWorkOrder(CuttingOrder cuttingOrder, CuttingOrderSize orderSize)
         {
-            ProductionWorkOrder productionWorkOrder = new ProductionWorkOrder();
-            productionWorkOrder.CuttingOrderId = cuttingOrder.RecordId;
-            productionWorkOrder.Size = orderSize.Size;
-            productionWorkOrder.OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE;
-            productionWorkOrder.ProductionOrderId = productionOrder.RecordId;
-            return productionWorkOrder;
+            return new ProductionWorkOrder
+            {
+                CuttingOrderId = cuttingOrder.RecordId,
+                Size = orderSize.Size,
+                OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE,
+            };
         }
 
-        private BomOrder CreateWorkOrderBom(ProductionOrder productionOrder, CuttingOrder cuttingOrder, IQueryable<Bom> boms)
+        private BomOrder CreateWorkOrderBom(CuttingOrder cuttingOrder, IQueryable<Bom> boms)
         {
             BomOrder bomOrder = new BomOrder
             {
@@ -276,7 +286,7 @@ namespace Imms.Mes.Stitch
             {
                 bom.BomOrderId = 0;
                 bom.BomOrder = bomOrder;
-                bom.QtyComponent = (productionOrder.QtyPlanned / bom.QtyComponent) * cuttingOrder.QtyActual;
+                bom.QtyComponent = (cuttingOrder.QtyPlanned / bom.QtyComponent) * cuttingOrder.QtyActual;
 
                 bomOrder.Boms.Add(bom);
             }
@@ -291,9 +301,9 @@ namespace Imms.Mes.Stitch
             {
                 OperationRouting operationRouting = routings[i];
                 ProductionWorkOrderRouting workOrderRouting = new ProductionWorkOrderRouting();
+                workOrderRouting.QtyPlanned = 1; //单件流：数量为1，大扎流，则是一扎的件数
                 workOrderRoutings[i] = workOrderRouting;
                 workOrderRouting.OperationRoutingId = operationRouting.RecordId;
-                workOrderRouting.OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE;
             }
 
             return workOrderRoutings;

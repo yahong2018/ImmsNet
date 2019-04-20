@@ -7,7 +7,7 @@ using Imms.Mes.Organization;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Imms.Test
+namespace Imms.Test.Code
 {
     public class CodeTest: BaseTestClass
     {   

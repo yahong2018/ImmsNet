@@ -72,7 +72,7 @@ namespace Imms.Mes.WorkFlow
         private void DispatchWorkOrderRouting(DataChangedNotifyEvent e)
         {
             //派工:向MCS发送派工信息
-            if (!(e.Entity is ProductionWorkOrderRouting workOrderRouting) || workOrderRouting.OrderStatus != GlobalConstants.STATUS_ORDER_PLANNED)
+            if (!(e.Entity is ProductionWorkOrderRouting workOrderRouting) || workOrderRouting.TimeFinished != null)
             {
                 return;
             }

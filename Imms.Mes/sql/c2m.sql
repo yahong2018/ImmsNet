@@ -732,6 +732,7 @@ create table quality_check_detail
     index idx_quality_check_detail_01(quality_check_id)	
 );
 
+
 --
 -- 生产作业单
 --
@@ -744,27 +745,25 @@ create table production_work_order  (
   bom_order_id               bigint             not null,
   operation_routing_order_id bigint             not null,
   cutting_order_id           bigint             not null,
-  size_id                    bigint             not null,-- 尺码
+  size                       varchar(20)        not null,-- 尺码
   
-  planned_start_date         datetime           not null ,
-  planned_end_date           datetime           not null ,
+  time_start_planned         datetime           not null ,
+  time_end_planned           datetime           not null ,
 
-  actual_start_date          datetime           null ,
-  actual_end_date            datetime           null ,
-
-  syn_finish_status          tinyint              not null default 0     ,-- 同步完成状态
+  time_start_actual          datetime           null ,
+  time_end_actual            datetime           null ,
 
   create_by                   bigint              not null,
   create_date                 datetime            not null,
   update_by                   bigint              null,
   update_date                 datetime            null,
-  opt_flag                     int                 not null default 0,
+  opt_flag                    int                 not null default 0,
 
   primary key (record_id) ,
   index idx_pro_work_order_01(order_no) ,
   index idx_pro_work_order_02(production_order_id) ,
-  index idx_pro_work_order_03(planned_start_date) ,
-  index idx_pro_work_order_04(planned_end_date)
+  index idx_pro_work_order_03(time_start_planned) ,
+  index idx_pro_work_order_04(time_end_planned)
 );
 
 --
@@ -772,10 +771,9 @@ create table production_work_order  (
 --
 create table production_work_order_routing
 (
-  record_id                       bigint  auto_increment            not null,
-  operation_routing_order_id      bigint              not null,             -- 工艺路线单主键  
-  production_work_order_id        bigint              not null,
-  operation_routing_id            bigint              not null,  
+  record_id                       bigint  auto_increment            not null,  
+  production_work_order_id        bigint              not null,             -- 所属作业单
+  operation_routing_id            bigint              not null,             -- 所属工艺
 
   operator_id                     bigint              null,                 -- 操作员
   work_station_id                 bigint              null ,                -- 操作工位
@@ -783,20 +781,24 @@ create table production_work_order_routing
   scrap_qty                       int                 null default 0 ,      -- 报废数量
   complete_qty                    int                 null default 0 ,      -- 完工数量
 
-  start_time                      datetime            null  ,               -- 进站时间
-  complete_time                   datetime            null  ,               -- 出站时间  
-
-  order_status                    int                 not null,            
+  time_started                    datetime            null  ,               -- 开始时间
+  time_finished                   datetime            null  ,               -- 完工时间
+  time_scheduled                  datetime            null  ,               -- 派工时间
+  
+  time_pushed_in                  datetime            null  ,               -- 进站时间
+  time_pushed_out                 datetime            null  ,               -- 进站时间
   
   create_by                       bigint              not null,
   create_date                     datetime            not null,
   update_by                       bigint              null,
   update_date                     datetime            null,
-  opt_flag                         int                 not null default 0,
+  opt_flag                        int                 not null default 0,
 
   primary key(record_id),
-  index idx_production_work_order_routing_01(operation_routing_order_id) ,
-  index idx_production_work_order_routing_02(order_status)   
+  index idx_production_work_order_routing_01(production_work_order_id),
+  index idx_production_work_order_routing_02(operation_routing_id),
+  index idx_production_work_order_routing_03(work_station_id),
+  index idx_production_work_order_routing_04(operator_id)
 );
 
 --

@@ -1,0 +1,27 @@
+[
+    {
+        "cuttingOrderNo": "CUT000000021",
+        "containerNo": "SZ00001",
+        "operatorCode": "C00001",
+        "sizes": { "S160/84A": 1 }
+    },
+    {
+        "cuttingOrderNo": "CUT000000022",
+        "containerNo": "SZ00002",
+        "operatorCode": "C00001",
+        "sizes": { "S160/84A": 1 }
+    },
+    {
+        "cuttingOrderNo": "CUT000000023",
+        "containerNo": "SZ00003",
+        "operatorCode": "C00001",
+        "sizes": { "S160/84A": 2 }
+    },
+    {
+        "cuttingOrderNo": "CUT000000024",
+        "containerNo": "SZ00004",
+        "operatorCode": "C00001",
+        "sizes": { "S160/84A": 2 }
+    }
+
+]

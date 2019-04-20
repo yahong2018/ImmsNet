@@ -37,6 +37,7 @@ namespace Imms.Mes.Stitch
         public virtual List<ProductionOrderMeasure> Measures { get; set; } = new List<ProductionOrderMeasure>();
         public virtual List<ProductionOrderPatternRelation> PatternImages { get; set; } = new List<ProductionOrderPatternRelation>();
         public virtual List<QualityCheck> QualityChecks { get; set; } = new List<QualityCheck>();
+        public virtual List<ProductionWorkOrder> WorkOrders { get; set; } = new List<ProductionWorkOrder>();
     }
 
     public partial class ProductionOrderSize : TrackableEntity<long>
@@ -72,20 +73,23 @@ namespace Imms.Mes.Stitch
     {
         public long ProductionOrderId { get; set; }
         public long BomOrderId { get; set; }
-        public long OperationRoutingOrderId { get; set; }
+        public long OperationRoutingOrderId { get; set; } //工艺
         public long CuttingOrderId { get; set; }
         public string Size { get; set; }
-        public DateTime TimePlanStart { get; set; }
-        public DateTime TimePlanEnd { get; set; }
-        public DateTime? TimeActualStart { get; set; }
-        public DateTime? TimeActualEnd { get; set; }
+        public DateTime TimeStartPlanned { get; set; }
+        public DateTime TimeEndPlanned { get; set; }
+        public DateTime? TimeStartActual { get; set; }
+        public DateTime? TimeEndActual { get; set; }
 
-        public virtual BomOrder BomOrder { get; set; }
+        public virtual BomOrder WorkOrderBom { get; set; }
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual OperationRoutingOrder OperationRoutingOrder { get; set; }
         public virtual List<ProductionWorkOrderRouting> ProductionWorkOrderRoutings { get; set; } = new List<ProductionWorkOrderRouting>();
     }
 
+    //
+    //缝制工艺报工单
+    //
     public partial class ProductionWorkOrderRouting : TrackableEntity<long>
     {
         public long ProductionWorkOrderId { get; set; }
@@ -97,10 +101,12 @@ namespace Imms.Mes.Stitch
         public int QtyFinished { get; set; }  //单件流，数量则为1
         public DateTime? TimeScheduled { get; set; }
         public DateTime? TimeStarted { get; set; }
-        public DateTime? TimeFinished { get; set; }
-        public int OrderStatus { get; set; }
+        public DateTime? TimeFinished { get; set; }   
+        public DateTime? TimePushedIn { get; set; }
+        public DateTime? TimePushedOut { get; set; }        
 
         public virtual ProductionWorkOrder ProductionWorkOrder { get; set; }
+        public virtual OperationRouting OperationRouting { get; set; }
     }
 
     public partial class BaseOperation : TrackableEntity<long>
@@ -248,20 +254,26 @@ namespace Imms.Mes.Stitch
         {
             base.InternalConfigure(builder);
             builder.ToTable("production_work_order_routing");
-
-            builder.Property(e => e.WorkStationId).HasColumnName("work_station_id").HasColumnType("bigint(20)");
+            
             builder.Property(e => e.ProductionWorkOrderId).HasColumnName("production_work_order_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.OperationRoutingId).HasColumnName("operation_routing_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.OrderStatus).HasColumnName("order_status").HasColumnType("int(11)");
+            builder.Property(e => e.OperationRoutingId).HasColumnName("operation_routing_id").HasColumnType("bigint(20)");            
             builder.Property(e => e.OperatorId).HasColumnName("operator_id").HasColumnType("bigint(20)");
+            builder.Property(e => e.WorkStationId).HasColumnName("work_station_id").HasColumnType("bigint(20)");
 
+            builder.Property(e => e.QtyScrap).HasColumnName("qty_scrap").HasColumnType("int(11)").HasDefaultValueSql("0");
             builder.Property(e => e.QtyFinished).HasColumnName("qty_finished").HasColumnType("int(11)").HasDefaultValueSql("0");
+
             builder.Property(e => e.TimeFinished).HasColumnName("time_finished");
             builder.Property(e => e.TimeStarted).HasColumnName("time_started");
             builder.Property(e => e.TimeScheduled).HasColumnName("time_scheduled");
-            builder.Property(e => e.QtyScrap).HasColumnName("qty_scrap").HasColumnType("int(11)").HasDefaultValueSql("0");
+            builder.Property(e => e.TimePushedIn).HasColumnName("time_pushed_in");
+            builder.Property(e => e.TimePushedOut).HasColumnName("time_pushed_out");
 
-            builder.HasOne(e => e.ProductionWorkOrder).WithMany(e => e.ProductionWorkOrderRoutings).HasForeignKey(e => e.ProductionWorkOrderId);
+            builder.HasOne(e => e.ProductionWorkOrder).WithMany(e => e.ProductionWorkOrderRoutings)
+                .HasForeignKey(e => e.ProductionWorkOrderId).HasConstraintName("production_work_order_id");
+
+            builder.HasOne(e => e.OperationRouting).WithMany()
+                .HasForeignKey(e => e.OperationRoutingId).HasConstraintName("operation_routing_id");
         }
     }
 
@@ -272,18 +284,21 @@ namespace Imms.Mes.Stitch
             base.InternalConfigure(builder);
             builder.ToTable("production_work_order");
 
-            builder.Property(e => e.TimeActualEnd).HasColumnName("actual_end_date");
-            builder.Property(e => e.TimeActualStart).HasColumnName("actual_start_date");
             builder.Property(e => e.BomOrderId).HasColumnName("bom_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.OperationRoutingOrderId).HasColumnName("operation_routing_order_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.TimePlanEnd).HasColumnName("planned_end_date");
-            builder.Property(e => e.TimePlanStart).HasColumnName("planned_start_date");
+            builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
+            builder.Property(e => e.TimeStartPlanned).HasColumnName("time_end_planned");
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.Size).HasColumnName("size_id");
+            builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");
+            builder.Property(e => e.TimeStartActual).HasColumnName("time_start_actual");
+            builder.Property(e => e.Size).HasColumnName("size");
+
+            builder.HasOne(e => e.ProductionOrder).WithMany(e => e.WorkOrders).HasForeignKey(e => e.ProductionOrderId).HasConstraintName("production_order_id");
+            builder.HasOne(e => e.WorkOrderBom).WithMany().HasForeignKey(e => e.BomOrderId).HasConstraintName("bom_order_id");
+            builder.HasOne(e => e.OperationRoutingOrder).WithMany().HasForeignKey(e => e.OperationRoutingOrderId).HasConstraintName("operation_routing_order_id");
         }
     }
-
 
     public class ProductionOrderSizeConfigure : TrackableEntityConfigure<ProductionOrderSize>
     {
