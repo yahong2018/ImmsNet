@@ -276,7 +276,7 @@ namespace Imms.Mes.Stitch
         {
             BomOrder bomOrder = new BomOrder
             {
-                BomOrderType = GlobalConstants.TYPE_BOM_ORDER_PRODUCTION_ORDER,
+                BomOrderType = GlobalConstants.TYPE_BOM_ORDER_WORK_ORDER, //缝制作业单的BOM
                 MaterialId = cuttingOrder.FgMaterialId,
                 OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL
             };

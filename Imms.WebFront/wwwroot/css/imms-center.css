@@ -1,0 +1,75 @@
+html,body{
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    padding:0px;
+    overflow: hidden;
+    background-color: #0565e2;
+    color: white;
+    text-align: center;        
+}
+
+.portal-win{
+    width: 33vw;
+    height: 33vh;         
+    padding: 0px;
+    margin:0px;    
+    position: absolute;
+}
+.portal-win-top-left{
+    top: 2px;
+    left:0px;
+}
+
+.portal-win-top-center{
+    top:2px;
+    left: 50%;
+    margin-left: -16.60vw;
+}
+
+.portal-win-top-right{
+    top:2px;
+    right:3px;
+}
+
+.portal-win-middle-left{
+    top: 50%;
+    margin-top: -16.60vh;
+    left:0px;
+}
+
+.portal-win-middle-center{
+    top: 50%;
+    margin-top: -16.60vh;
+    left: 50%;
+    margin-left: -16.60vw;
+}
+
+.portal-win-middle-right{
+    top: 50%;
+    margin-top: -16.60vh;
+    right: 3px;
+}
+
+.portal-win-bottom-left{
+    bottom: 2px;
+    left:0px;
+}
+
+.portal-win-bottom-center{
+    bottom: 2px;
+    left: 50%;
+    margin-left: -16.60vw;
+}
+
+.portal-win-bottom-right{    
+    right: 3px;
+    bottom: 2px;
+}
+
+.portal-panel{
+    width: 100%;
+    height: 100%; 
+    border:1px solid white;
+    border-radius: 5px;
+}

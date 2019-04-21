@@ -52,6 +52,7 @@ namespace Imms.WebFront
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseWebSockets();
 
             app.UseMvc(routes =>
             {

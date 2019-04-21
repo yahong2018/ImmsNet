@@ -74,7 +74,7 @@ namespace Imms
         public const int TYPE_BOM_ORDER_STANDARD = 20;  //标准BOM
         public const int TYPE_BOM_ORDER_ORDER = 30;     //订单BOM
         public const int TYPE_BOM_ORDER_DESIGN = 40;    //设计BOM
-        public const int TYPE_BOM_ORDER_PRODUCTION_ORDER = 50; //生产订单BOM
+        public const int TYPE_BOM_ORDER_PRODUCTION_ORDER = 50; //生产订单BOM        
         public const int TYPE_BOM_ORDER_PICKING_ORDER = 60;   // 领料单BOM
         public const int TYPE_BOM_ORDER_WORK_ORDER = 70;    // 作业单BOM
         //BOM类型
