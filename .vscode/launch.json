@@ -1,47 +1,23 @@
 {
-    // Use IntelliSense to find out which attributes exist for C# debugging
-    // Use hover for the description of the existing attributes
-    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "name": "Test",
+            "name": ".NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Imms.Test/bin/Debug/netcoreapp2.2/Imms.Test.dll",
+            "program": "${workspaceFolder}/Imms.WebFront/bin/Debug/netcoreapp2.2/Imms.WebFront.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Imms.Test",
+            "cwd": "${workspaceFolder}/Imms.WebFront",
             "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
-                "enabled": true,
-                "args": "${auto-detect-url}",
-                "windows": {
-                    "command": "cmd.exe",
-                    "args": "/C start ${auto-detect-url}"
-                },
-                "osx": {
-                    "command": "open"
-                },
-                "linux": {
-                    "command": "xdg-open"
-                }
+                "enabled": true
             },
-            //关闭 “仅我的代码” 项，这样
-            "justMyCode": false,
-            "symbolOptions": {
-                //从Microsoft Symbol Server(https://msdl.microsoft.com/download/symbols)上查找并下载symbol文件
-                "searchMicrosoftSymbolServer": true
-            },
-            //取消jit编译器的优化（默认是false）
-            "suppressJITOptimizations": true,           
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development",
-                //这个环境变量告诉.Net RunTime 忽略已经提前编译的源码.Net框架程序集，用JIT编译器编译的程序集代替。
-                "COMPlus_ZapDisable": "1"
+                "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
@@ -52,6 +28,6 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
-        },
+        }
     ]
 }

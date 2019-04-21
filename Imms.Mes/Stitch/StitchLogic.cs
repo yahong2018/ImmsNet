@@ -67,7 +67,6 @@ namespace Imms.Mes.Stitch
             });
         }
 
-
         //
         //缝制作业单报工
         //

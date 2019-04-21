@@ -717,10 +717,10 @@ create table quality_check
 create table quality_check_detail
 (
     record_id              bigint                 not null auto_increment,
-	quality_check_id       bigint                 not null,
-	component_no           varchar(50)            not null,
-	component_name         varchar(50)            not null,
-	standard_value         varchar(50)            not null,
+	  quality_check_id       bigint                 not null,
+	  component_no           varchar(50)            not null,
+	  component_name         varchar(50)            not null,
+	  standard_value         varchar(50)            not null,
 
     create_by              bigint                       not null,
     create_date            datetime                     not null,
@@ -854,31 +854,6 @@ create table media_belong(
 );
 
 /* 
-create table quality_check  (
-  record_id                  bigint              not null auto_increment,
-  production_order_id        bigint              not null ,
-  size_id                    bigint              not null ,  
-  operator_id                bigint              not null,
-  check_time                 datetime            not null,
-
-  create_by                       bigint              not null,
-  create_date                     datetime            not null,
-  update_by                       bigint              null,
-  update_date                     datetime            null,
-  optlock                         int                 not null default 0,  
-
-  primary key (id) 
-) ;
-
-create table quality_check_detail  (
-  record_id                  bigint  not null auto_increment,
-  quality_check_id           bigint             not null ,
-  component_no               varchar(10)        null ,
-  component_name             varchar(20)        null ,
-  check_value                varchar(20)        null ,
-
-  primary key (id) 
-);
 
 create table quality_issue  (
   id                        bigint(20)          not null auto_increment,

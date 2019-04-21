@@ -7,9 +7,30 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Imms.Api/Imms.Api.csproj"
+                "${workspaceFolder}/Imms.WebFront/Imms.WebFront.csproj"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Imms.WebFront/Imms.WebFront.csproj"
+            ],
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "${workspaceFolder}/Imms.WebFront/Imms.WebFront.csproj"
+            ],
+            "problemMatcher": "$tsc"
         }
     ]
 }
