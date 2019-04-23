@@ -7,7 +7,6 @@ using Imms.Data.Domain;
 using Imms.Mes.Quality;
 using Imms.Mes.Organization;
 using Imms.Mes.Material;
-using Newtonsoft.Json;
 
 namespace Imms.Mes.Stitch
 {
@@ -100,13 +99,14 @@ namespace Imms.Mes.Stitch
         public long? OperatorId { get; set; }
         public long? WorkStationId { get; set; }
         public int QtyScrap { get; set; }
-        public int QtyPlanned { get; set; } 
+        public int QtyPlanned { get; set; }
         public int QtyFinished { get; set; }
+        public string ConatinerNo { get; set; }
         public DateTime? TimeScheduled { get; set; }
         public DateTime? TimeStarted { get; set; }
-        public DateTime? TimeFinished { get; set; }   
+        public DateTime? TimeFinished { get; set; }
         public DateTime? TimePushedIn { get; set; }
-        public DateTime? TimePushedOut { get; set; }        
+        public DateTime? TimePushedOut { get; set; }
 
         public virtual ProductionWorkOrder ProductionWorkOrder { get; set; }
         public virtual OperationRouting OperationRouting { get; set; }
@@ -153,13 +153,10 @@ namespace Imms.Mes.Stitch
         public string NextOpertionNo { get; set; }
         public long? NextRoutingId { get; set; }
 
-        [JsonIgnore]
         public virtual OperationRoutingOrder RoutingOrder { get; set; }
-        [JsonIgnore]
         public virtual OperationRouting NextRouting { get; set; }
-        [JsonIgnore]
         public virtual List<OperationRouting> PrevOpreatons { get; set; } = new List<OperationRouting>();
-        
+
         public virtual Operation Operation { get; set; }
     }
 
@@ -261,9 +258,9 @@ namespace Imms.Mes.Stitch
         {
             base.InternalConfigure(builder);
             builder.ToTable("production_work_order_routing");
-            
+
             builder.Property(e => e.ProductionWorkOrderId).HasColumnName("production_work_order_id").HasColumnType("bigint(20)");
-            builder.Property(e => e.OperationRoutingId).HasColumnName("operation_routing_id").HasColumnType("bigint(20)");            
+            builder.Property(e => e.OperationRoutingId).HasColumnName("operation_routing_id").HasColumnType("bigint(20)");
             builder.Property(e => e.OperatorId).HasColumnName("operator_id").HasColumnType("bigint(20)");
             builder.Property(e => e.WorkStationId).HasColumnName("work_station_id").HasColumnType("bigint(20)");
 
@@ -276,6 +273,8 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.TimeScheduled).HasColumnName("time_scheduled");
             builder.Property(e => e.TimePushedIn).HasColumnName("time_pushed_in");
             builder.Property(e => e.TimePushedOut).HasColumnName("time_pushed_out");
+            builder.Property(e => e.ConatinerNo).HasColumnName("container_no");
+
 
             builder.HasOne(e => e.ProductionWorkOrder).WithMany(e => e.ProductionWorkOrderRoutings)
                 .HasForeignKey(e => e.ProductionWorkOrderId).HasConstraintName("production_work_order_id");

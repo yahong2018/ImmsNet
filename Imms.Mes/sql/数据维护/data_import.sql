@@ -152,4 +152,97 @@ from c2m.machine m  join c2m.machine_type t on m.machine_type_id = t.id join pla
 ;
 
 
+-- 导入能力
 
+insert into imms_net.operator_capability(operator_id,operation_id,skill_level,create_by,create_date)
+SELECT op1.record_Id as operator_id,o1.record_id as operation_id,1,1,SYSDATE()
+FROM `capability` c join operation o  on c.operation_id = o.id
+                    join operator op on c.operator_id = op.id  
+									 join sec_user u on op.user_id = u.id
+									 join imms_net.system_user u1 on u.user_no = u1.user_code
+									  join imms_net.operator op1 on op1.user_id = u1.record_id
+										join imms_net.operation o1 on o.operation_no = o1.operation_no
+
+
+select * from operator_capability where operation_id in(
+6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+,6575
+,6493
+,6501
+,6466
+);

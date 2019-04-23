@@ -111,7 +111,7 @@ namespace Imms
         public const string TYPE_MATERIAL_PACKING = "Z007"; //包装材料
         public const string TYPE_MATERIAL_LINING = "Z008";//里布
         public const string TYPE_MATERIAL_INTER_LINING = "Z009";//衬布
-
+        
         //BOM状态
         public const int STATUS_DOCUMENT_NORMAL = 0;
         public const int STATUS_DOCUMENT_DEPRECATED = 1;

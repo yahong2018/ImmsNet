@@ -4,6 +4,7 @@ using System.Transactions;
 using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Cutting;
+using Imms.Mes.Organization;
 using Imms.Mes.Stitch;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -22,6 +23,29 @@ namespace Imms.Test.Stitch
         {
             this.Output = output;
         }
+        
+        [Fact]
+        public void HangingReportTest()
+        {
+            ProductionWorkOrderRouting hangRouting = StitchLogic.Instance.GetFirstRoutings("SZ00004")[0];
+            Assert.NotNull(hangRouting);
+            hangRouting.OperatorId = 1;
+            hangRouting.WorkStationId = 10;
+            hangRouting.ConatinerNo = "0123456789ABCDEFG";
+
+            StitchLogic.Instance.WorkOrderRoutingReport(hangRouting);
+        }
+
+        [Fact]
+        public void GetHangingRoutingsTest()
+        {
+            ProductionWorkOrderRouting[] routings = StitchLogic.Instance.GetFirstRoutings("SZ00004");
+            foreach(ProductionWorkOrderRouting routing in routings)
+            {
+                Console.WriteLine(routing.ToJson());
+            }
+        }
+
 
         [Fact]
         public void CreateStitchWorkOrderTest()

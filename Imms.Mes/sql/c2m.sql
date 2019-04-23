@@ -790,6 +790,8 @@ create table production_work_order_routing
   
   time_pushed_in                  datetime            null  ,               -- 进站时间
   time_pushed_out                 datetime            null  ,               -- 进站时间
+
+  container_no                    varchar(64)         null  ,               -- 衣架号
   
   create_by                       bigint              not null,
   create_date                     datetime            not null,

@@ -105,6 +105,10 @@ namespace Imms.Mes.Picking
                 {
                     this.UpdateCuttingOrder(pickingOrder, dbContext);
                 }
+                else if(pickingOrder.OrderType==GlobalConstants.TYPE_PICKING_ORDER_STITCH)
+                {
+                    //TODO:生成缝制物料投递单，也可以不管这个事情，由现场自己去处理。
+                }
 
                 //数据保存                
                 GlobalConstants.ModifyEntityStatus<PickingOrder>(pickingOrder, dbContext);
