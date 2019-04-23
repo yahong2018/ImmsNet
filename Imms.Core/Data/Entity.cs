@@ -85,7 +85,7 @@ namespace Imms.Data
         public override string ToString()
         {
             PropertyInfo[] properties = GetProperties(this.GetType());
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder builder = new StringBuilder("{");
             foreach (PropertyInfo property in properties)
             {
                 object value = property.GetValue(this);
@@ -93,10 +93,11 @@ namespace Imms.Data
                 {
                     value = "[null]";
                 }
-                stringBuilder.Append($"{property.Name}={value.ToString()};");
+                builder.Append($"{property.Name}={value.ToString()};");
             }
-            stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            return stringBuilder.ToString();
+            builder.Remove(builder.Length - 1, 1);
+            builder.Append("}");
+            return builder.ToString();
             //string result = stringBuilder.ToString();
 
             //if (string.IsNullOrEmpty(GlobalConstants.DEFAULT_CHARSET) || GlobalConstants.DEFAULT_CHARSET == Encoding.UTF8.BodyName)

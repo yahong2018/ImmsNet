@@ -190,6 +190,16 @@ namespace Imms
             {
                 DEFAULT_ENCODING = System.Text.Encoding.GetEncoding(DEFAULT_CHARSET);
             }
+
+            JsonConvert.DefaultSettings = ()=> new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
         }
 
         //
@@ -197,15 +207,7 @@ namespace Imms
         //
         public static string ToJson(this object obj)
         {
-            string result = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                },
-                Formatting = Formatting.Indented
-            });
-
+            string result = JsonConvert.SerializeObject(obj);
             return result;
         }
 
@@ -214,14 +216,7 @@ namespace Imms
         //
         public static T ToObject<T>(this string jsonStr)
         {
-            T result = JsonConvert.DeserializeObject<T>(jsonStr, new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                },
-                Formatting = Formatting.Indented
-            });
+            T result = JsonConvert.DeserializeObject<T>(jsonStr);
 
             return result;
         }
@@ -231,14 +226,7 @@ namespace Imms
         //
         public static object ToObject(this string jsonStr, Type type)
         {
-            object result = JsonConvert.DeserializeObject(jsonStr, type, new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                },
-                Formatting = Formatting.Indented
-            });
+            object result = JsonConvert.DeserializeObject(jsonStr, type);
 
             return result;
         }
@@ -248,16 +236,8 @@ namespace Imms
         //
         public static T LoadBeanFromFile<T>(this string fileName)
         {
-            string gstJson = System.IO.File.ReadAllText(fileName);
-            DefaultContractResolver contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            };
-            T result = JsonConvert.DeserializeObject<T>(gstJson, new JsonSerializerSettings
-            {
-                ContractResolver = contractResolver,
-                Formatting = Formatting.Indented
-            });
+            string gstJson = System.IO.File.ReadAllText(fileName);           
+            T result = JsonConvert.DeserializeObject<T>(gstJson);
             return result;
         }
     }

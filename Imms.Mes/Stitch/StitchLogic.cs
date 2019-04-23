@@ -242,10 +242,12 @@ namespace Imms.Mes.Stitch
                     //创建作业单
                     ProductionWorkOrder productionWorkOrder = this.CreateProductionWorkOrder(cuttingOrder, orderSize);
                     productionWorkOrder.ProductionOrder = productionOrder;
+                    productionWorkOrder.QtyPlanned = 1; //单件流，默认为1
                     productionWorkOrders.Add(productionWorkOrder);
 
                     //创建缝制BOM
                     BomOrder bomOrder = this.CreateWorkOrderBom(cuttingOrder, pickingBoms);  //生成BOM
+                    productionWorkOrder.WorkOrderBom = bomOrder;
                     dbContext.Set<BomOrder>().Add(bomOrder);
 
                     //创建缝制工艺报工单
@@ -267,12 +269,12 @@ namespace Imms.Mes.Stitch
             return new ProductionWorkOrder
             {
                 CuttingOrderId = cuttingOrder.RecordId,
-                Size = orderSize.Size,
+                Size = orderSize.Size,                
                 OrderStatus = GlobalConstants.STATUS_ORDER_INITIATE,
             };
         }
 
-        private BomOrder CreateWorkOrderBom(CuttingOrder cuttingOrder, IQueryable<Bom> boms)
+        private BomOrder CreateWorkOrderBom(CuttingOrder cuttingOrder, IQueryable<Bom> pickingBoms)
         {
             BomOrder bomOrder = new BomOrder
             {
@@ -281,28 +283,28 @@ namespace Imms.Mes.Stitch
                 OrderStatus = GlobalConstants.STATUS_DOCUMENT_NORMAL
             };
 
-            foreach (Bom bom in boms)
+            foreach (Bom pickingBom in pickingBoms)
             {
-                bom.BomOrderId = 0;
-                bom.BomOrder = bomOrder;
-                bom.QtyComponent = (cuttingOrder.QtyPlanned / bom.QtyComponent) * cuttingOrder.QtyActual;
+                Bom workOrderBom = new Bom();
+                workOrderBom.Clone(pickingBom);
+                workOrderBom.BomOrderId = 0;
+                workOrderBom.QtyComponent = (pickingBom.QtyComponent / cuttingOrder.QtyPlanned);
 
-                bomOrder.Boms.Add(bom);
+                bomOrder.Boms.Add(workOrderBom);
             }
 
             return bomOrder;
         }
 
-        private ProductionWorkOrderRouting[] CreateWorkOrderRoutings(List<OperationRouting> routings)
+        private ProductionWorkOrderRouting[] CreateWorkOrderRoutings(List<OperationRouting> productionRoutings)
         {
-            ProductionWorkOrderRouting[] workOrderRoutings = new ProductionWorkOrderRouting[routings.Count];
-            for (int i = 0; i < routings.Count; i++)
+            ProductionWorkOrderRouting[] workOrderRoutings = new ProductionWorkOrderRouting[productionRoutings.Count];
+            for (int i = 0; i < productionRoutings.Count; i++)
             {
-                OperationRouting operationRouting = routings[i];
                 ProductionWorkOrderRouting workOrderRouting = new ProductionWorkOrderRouting();
                 workOrderRouting.QtyPlanned = 1; //单件流：数量为1，大扎流，则是一扎的件数
                 workOrderRoutings[i] = workOrderRouting;
-                workOrderRouting.OperationRoutingId = operationRouting.RecordId;
+                workOrderRouting.OperationRoutingId = productionRoutings[i].RecordId;
             }
 
             return workOrderRoutings;

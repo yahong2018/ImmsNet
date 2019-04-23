@@ -7,6 +7,7 @@ using Imms.Data.Domain;
 using Imms.Mes.Quality;
 using Imms.Mes.Organization;
 using Imms.Mes.Material;
+using Newtonsoft.Json;
 
 namespace Imms.Mes.Stitch
 {
@@ -76,6 +77,8 @@ namespace Imms.Mes.Stitch
         public long OperationRoutingOrderId { get; set; } //工艺
         public long CuttingOrderId { get; set; }
         public string Size { get; set; }
+        public int QtyPlanned { get; set; }   //计划数量，针对单件流，则固定为1
+        public int QtyFinished { get; set; }  //单件流，数量则为1
         public DateTime TimeStartPlanned { get; set; }
         public DateTime TimeEndPlanned { get; set; }
         public DateTime? TimeStartActual { get; set; }
@@ -96,9 +99,9 @@ namespace Imms.Mes.Stitch
         public long OperationRoutingId { get; set; }
         public long? OperatorId { get; set; }
         public long? WorkStationId { get; set; }
-        public int QtyScrap { get; set; }  //
-        public int QtyPlanned { get; set; }   //计划数量，针对单件流，则固定为1
-        public int QtyFinished { get; set; }  //单件流，数量则为1
+        public int QtyScrap { get; set; }
+        public int QtyPlanned { get; set; } 
+        public int QtyFinished { get; set; }
         public DateTime? TimeScheduled { get; set; }
         public DateTime? TimeStarted { get; set; }
         public DateTime? TimeFinished { get; set; }   
@@ -150,9 +153,13 @@ namespace Imms.Mes.Stitch
         public string NextOpertionNo { get; set; }
         public long? NextRoutingId { get; set; }
 
+        [JsonIgnore]
         public virtual OperationRoutingOrder RoutingOrder { get; set; }
-        public virtual List<OperationRouting> PrevOpreatons { get; set; } = new List<OperationRouting>();
+        [JsonIgnore]
         public virtual OperationRouting NextRouting { get; set; }
+        [JsonIgnore]
+        public virtual List<OperationRouting> PrevOpreatons { get; set; } = new List<OperationRouting>();
+        
         public virtual Operation Operation { get; set; }
     }
 
@@ -248,7 +255,7 @@ namespace Imms.Mes.Stitch
         }
     }
 
-    public class ProductionWorkOrderRoutingConfigure : OrderEntityConfigure<ProductionWorkOrderRouting>
+    public class ProductionWorkOrderRoutingConfigure : TrackableEntityConfigure<ProductionWorkOrderRouting>
     {
         protected override void InternalConfigure(EntityTypeBuilder<ProductionWorkOrderRouting> builder)
         {
@@ -262,6 +269,7 @@ namespace Imms.Mes.Stitch
 
             builder.Property(e => e.QtyScrap).HasColumnName("qty_scrap").HasColumnType("int(11)").HasDefaultValueSql("0");
             builder.Property(e => e.QtyFinished).HasColumnName("qty_finished").HasColumnType("int(11)").HasDefaultValueSql("0");
+            builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned").HasColumnType("int(11)").HasDefaultValueSql("0");
 
             builder.Property(e => e.TimeFinished).HasColumnName("time_finished");
             builder.Property(e => e.TimeStarted).HasColumnName("time_started");
@@ -288,11 +296,13 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.CuttingOrderId).HasColumnName("cutting_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.OperationRoutingOrderId).HasColumnName("operation_routing_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.TimeEndPlanned).HasColumnName("time_end_planned");
-            builder.Property(e => e.TimeStartPlanned).HasColumnName("time_end_planned");
+            builder.Property(e => e.TimeStartPlanned).HasColumnName("time_start_planned");
             builder.Property(e => e.ProductionOrderId).HasColumnName("production_order_id").HasColumnType("bigint(20)");
             builder.Property(e => e.TimeEndActual).HasColumnName("time_end_actual");
             builder.Property(e => e.TimeStartActual).HasColumnName("time_start_actual");
             builder.Property(e => e.Size).HasColumnName("size");
+            builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned");
+            builder.Property(e => e.QtyFinished).HasColumnName("qty_finished");
 
             builder.HasOne(e => e.ProductionOrder).WithMany(e => e.WorkOrders).HasForeignKey(e => e.ProductionOrderId).HasConstraintName("production_order_id");
             builder.HasOne(e => e.WorkOrderBom).WithMany().HasForeignKey(e => e.BomOrderId).HasConstraintName("bom_order_id");

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Transactions;
 using Imms.Data;
 using Imms.Data.Domain;
 using Imms.Mes.Cutting;
@@ -26,10 +27,11 @@ namespace Imms.Test.Stitch
         public void CreateStitchWorkOrderTest()
         {
             CuttingOrder cuttingOrder = dbContext.Set<CuttingOrder>().Include(x => x.Sizes).Single(x => x.RecordId == 152);                
-            ProductionWorkOrder[] productionWorkOrders=StitchLogic.Instance.CreateStitchWorkOrder(cuttingOrder);
+            ProductionWorkOrder[] productionWorkOrders=StitchLogic.Instance.CreateStitchWorkOrder(cuttingOrder);            
             foreach(ProductionWorkOrder workOrder in productionWorkOrders)
             {
-                this.Output.WriteLine(workOrder.ToJson());
+                string str = workOrder.ToString();
+                this.Output.WriteLine(str);
             }
         }
 

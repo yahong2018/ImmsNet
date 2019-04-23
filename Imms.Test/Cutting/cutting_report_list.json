@@ -15,13 +15,13 @@
         "cuttingOrderNo": "CUT000000023",
         "containerNo": "SZ00003",
         "operatorCode": "C00001",
-        "sizes": { "S160/84A": 2 }
+        "sizes": { "S160/84A": 1 }
     },
     {
         "cuttingOrderNo": "CUT000000024",
         "containerNo": "SZ00004",
         "operatorCode": "C00001",
-        "sizes": { "S160/84A": 2 }
+        "sizes": { "S160/84A": 1 }
     }
 
 ]

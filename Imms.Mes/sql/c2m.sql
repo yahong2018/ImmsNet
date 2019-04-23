@@ -666,11 +666,11 @@ create table cutting_marker  (
   remark                      varchar(255)       null,
   marker_file_id              bigint             null,
 
-  create_by                            bigint                       not null,
-  create_date                          datetime                     not null,
-  update_by                            bigint                       null,
-  update_date                          datetime                     null,
-  opt_flag                             int                          not null default 0,
+  create_by                   bigint             not null,
+  create_date                 datetime           not null,
+  update_by                   bigint             null,
+  update_date                 datetime           null,
+  opt_flag                    int                not null default 0,
 
   primary key (record_id),
   index idx_cutting_marker_01(cutting_order_id),
@@ -717,10 +717,10 @@ create table quality_check
 create table quality_check_detail
 (
     record_id              bigint                 not null auto_increment,
-	  quality_check_id       bigint                 not null,
-	  component_no           varchar(50)            not null,
-	  component_name         varchar(50)            not null,
-	  standard_value         varchar(50)            not null,
+	quality_check_id       bigint                 not null,
+	component_no           varchar(50)            not null,
+	component_name         varchar(50)            not null,
+	standard_value         varchar(50)            not null,
 
     create_by              bigint                       not null,
     create_date            datetime                     not null,
@@ -746,18 +746,20 @@ create table production_work_order  (
   operation_routing_order_id bigint             not null,
   cutting_order_id           bigint             not null,
   size                       varchar(20)        not null,-- 尺码
+
+  qty_planned                int                not null,
+  qty_finished               int                null,
   
   time_start_planned         datetime           not null ,
   time_end_planned           datetime           not null ,
-
   time_start_actual          datetime           null ,
   time_end_actual            datetime           null ,
 
-  create_by                   bigint              not null,
-  create_date                 datetime            not null,
-  update_by                   bigint              null,
-  update_date                 datetime            null,
-  opt_flag                    int                 not null default 0,
+  create_by                   bigint            not null,
+  create_date                 datetime          not null,
+  update_by                   bigint            null,
+  update_date                 datetime          null,
+  opt_flag                    int               not null default 0,
 
   primary key (record_id) ,
   index idx_pro_work_order_01(order_no) ,
@@ -778,8 +780,9 @@ create table production_work_order_routing
   operator_id                     bigint              null,                 -- 操作员
   work_station_id                 bigint              null ,                -- 操作工位
 
-  scrap_qty                       int                 null default 0 ,      -- 报废数量
-  complete_qty                    int                 null default 0 ,      -- 完工数量
+  qty_scrap                       int                 null default 0 ,      -- 报废数量
+  qty_planned                     int                 null default 0 ,      -- 完工数量
+  qty_finished                    int                 null default 0 ,      -- 完工数量
 
   time_started                    datetime            null  ,               -- 开始时间
   time_finished                   datetime            null  ,               -- 完工时间
