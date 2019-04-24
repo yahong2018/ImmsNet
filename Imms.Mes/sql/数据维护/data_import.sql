@@ -246,3 +246,53 @@ select * from operator_capability where operation_id in(
 ,6501
 ,6466
 );
+
+--
+-- 工位与工人的配置脚本
+--
+
+select w.record_id,w.wip_max,w.wip_current,w.wip_in_transit,w.operator_id,c.operation_id
+from work_organization_unit w join operator_capability c on w.operator_id = c.operator_id
+where w.is_on_line = 1 and w.is_available = 1 
+  and w.machine_type_id = 20
+	and c.operation_id = 6557
+;	
+select  w.record_id, w.wip_max,w.wip_current,w.wip_in_transit,w.operator_id
+from work_organization_unit w
+where machine_type_id = 20
+;
+
+select * from operator_capability where operation_id = 6557
+;	
+
+select * from operator_capability where operator_id = 6;	
+
+
+select w.record_id, w.wip_max,w.wip_current,w.wip_in_transit
+from work_organization_unit w
+where w.organization_type = 'ORG_WORK_STATION' 
+;
+
+select w.record_id, w.wip_max,w.wip_current,w.wip_in_transit
+from work_organization_unit w 
+where record_id = 44;
+
+select current_routing_id from production_work_order;
+
+
+select  w.record_id, w.wip_max,w.wip_current,w.wip_in_transit,w.operator_id
+from work_organization_unit w
+where w.record_id=19;
+
+
+select * from production_work_order_routing
+where record_id in(
+  select current_routing_id from production_work_order
+)
+
+
+
+
+
+
+ 
