@@ -82,7 +82,9 @@ namespace Imms.Mes.Stitch
         public DateTime TimeEndPlanned { get; set; }
         public DateTime? TimeStartActual { get; set; }
         public DateTime? TimeEndActual { get; set; }
+        public long CurrentRoutingId { get; set; }
 
+        public virtual ProductionWorkOrderRouting CurrentRouting { get; set; }
         public virtual BomOrder WorkOrderBom { get; set; }
         public virtual ProductionOrder ProductionOrder { get; set; }
         public virtual OperationRoutingOrder OperationRoutingOrder { get; set; }
@@ -302,7 +304,9 @@ namespace Imms.Mes.Stitch
             builder.Property(e => e.Size).HasColumnName("size");
             builder.Property(e => e.QtyPlanned).HasColumnName("qty_planned");
             builder.Property(e => e.QtyFinished).HasColumnName("qty_finished");
+            builder.Property(e => e.CurrentRoutingId).HasColumnName("current_routing_id");
 
+            builder.HasOne(e => e.CurrentRouting).WithMany().HasForeignKey(e => e.CurrentRoutingId).HasConstraintName("current_routing_id");
             builder.HasOne(e => e.ProductionOrder).WithMany(e => e.WorkOrders).HasForeignKey(e => e.ProductionOrderId).HasConstraintName("production_order_id");
             builder.HasOne(e => e.WorkOrderBom).WithMany().HasForeignKey(e => e.BomOrderId).HasConstraintName("bom_order_id");
             builder.HasOne(e => e.OperationRoutingOrder).WithMany().HasForeignKey(e => e.OperationRoutingOrderId).HasConstraintName("operation_routing_order_id");

@@ -687,11 +687,11 @@ create table cutting_order_spread_ply
   length                    double(8,2)           not null, -- 拉布长度
   plies                     int                   not null, -- 层数
 
-  create_by                            bigint                       not null,
-  create_date                          datetime                     not null,
-  update_by                            bigint                       null,
-  update_date                          datetime                     null,
-  opt_flag                              int                         not null default 0,
+  create_by                 bigint                not null,
+  create_date               datetime              not null,
+  update_by                 bigint                null,
+  update_date               datetime              null,
+  opt_flag                  int                   not null default 0,
 
   primary key(record_id),
   index idx_cutting_order_spread_ply_01(cutting_order_id)
@@ -704,11 +704,11 @@ create table quality_check
   size_no                varchar(50)            not null,
   size_name              varchar(50)            not null,
 
-  create_by              bigint                       not null,
-  create_date            datetime                     not null,
-  update_by              bigint                       null,
-  update_date            datetime                     null,
-  opt_flag               int                         not null default 0,
+  create_by              bigint                 not null,
+  create_date            datetime               not null,
+  update_by              bigint                 null,
+  update_date            datetime               null,
+  opt_flag               int                    not null default 0,
 
   primary key(record_id),
   index idx_quality_check_01(production_order_id)	
@@ -722,11 +722,11 @@ create table quality_check_detail
 	component_name         varchar(50)            not null,
 	standard_value         varchar(50)            not null,
 
-    create_by              bigint                       not null,
-    create_date            datetime                     not null,
-    update_by              bigint                       null,
-    update_date            datetime                     null,
-    opt_flag               int                          not null default 0,
+    create_by              bigint                 not null,
+    create_date            datetime               not null,
+    update_by              bigint                 null,
+    update_date            datetime               null,
+    opt_flag               int                    not null default 0,
 
     primary key(record_id),
     index idx_quality_check_detail_01(quality_check_id)	
@@ -754,6 +754,8 @@ create table production_work_order  (
   time_end_planned           datetime           not null ,
   time_start_actual          datetime           null ,
   time_end_actual            datetime           null ,
+  
+  current_routing_id         bigint             null,
 
   create_by                   bigint            not null,
   create_date                 datetime          not null,
@@ -823,17 +825,17 @@ create table workstation_check_in  (
 
 create table media  (
   record_id                      bigint  auto_increment            not null,
-  media_format                   varchar(50)        not null,   
-  media_url                      varchar(255)        not null,
-  media_name                     varchar(100)        not null,
-  media_size                     int                 not null,
-  description                    varchar(250)        null ,
+  media_format                   varchar(50)                       not null,   
+  media_url                      varchar(255)                      not null,
+  media_name                     varchar(100)                      not null,
+  media_size                     int                               not null,
+  description                    varchar(250)                      null ,
 
-  create_by                       bigint              not null,
-  create_date                     datetime            not null,
-  update_by                       bigint              null,
-  update_date                     datetime            null,
-  opt_flag                        int                 not null default 0,  
+  create_by                       bigint                           not null,
+  create_date                     datetime                         not null,
+  update_by                       bigint                           null,
+  update_date                     datetime                         null,
+  opt_flag                        int                              not null default 0,  
 
   primary key (record_id),
   index idx_media_0 (media_name)  
@@ -846,11 +848,11 @@ create table media_belong(
   belong_to_record_type          int                               not null,
   media_type                     varchar(50)                       not null,
 
-  create_by                       bigint              not null,
-  create_date                     datetime            not null,
-  update_by                       bigint              null,
-  update_date                     datetime            null,
-  opt_flag                        int                 not null default 0,  
+  create_by                       bigint                           not null,
+  create_date                     datetime                         not null,
+  update_by                       bigint                           null,
+  update_date                     datetime                         null,
+  opt_flag                        int                              not null default 0,  
 
   primary key (record_id),
   index idx_media_belong_0 (media_id),  

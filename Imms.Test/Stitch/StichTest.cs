@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Transactions;
 using Imms.Data;
 using Imms.Data.Domain;
@@ -23,6 +24,31 @@ namespace Imms.Test.Stitch
         {
             this.Output = output;
         }
+
+
+        [Fact]
+        public void ProductionWorkOrderAllReport()
+        {
+            string productionWorkOrderNo = "WO0000000035";
+            while (true)
+            {
+                ProductionWorkOrder workOrder
+                    = GlobalConstants.DbContextFactory.GetContext().Set<ProductionWorkOrder>().Where(x => x.OrderNo == productionWorkOrderNo).Include(x=>x.CurrentRouting).First();
+                ProductionWorkOrderRouting currentWorkOrderRouting = workOrder.CurrentRouting;
+                if (currentWorkOrderRouting == null || workOrder.OrderStatus == GlobalConstants.STATUS_ORDER_FINISHED)
+                {
+                    break;
+                }
+
+                currentWorkOrderRouting.QtyFinished = 1;
+                long operatorId = dbContext.Set<WorkStation>().Where(x => x.RecordId == currentWorkOrderRouting.WorkStationId).Select(x => x.OperatorId).Single();
+                currentWorkOrderRouting.OperatorId = operatorId;
+                StitchLogic.Instance.WorkOrderRoutingReport(currentWorkOrderRouting);
+
+                Thread.Sleep(30);
+            }
+
+        }
         
         [Fact]
         public void HangingReportTest()
@@ -32,6 +58,7 @@ namespace Imms.Test.Stitch
             hangRouting.OperatorId = 1;
             hangRouting.WorkStationId = 10;
             hangRouting.ConatinerNo = "0123456789ABCDEFG";
+            hangRouting.QtyFinished = 1;
 
             StitchLogic.Instance.WorkOrderRoutingReport(hangRouting);
         }

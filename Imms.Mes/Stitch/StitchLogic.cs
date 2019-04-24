@@ -29,6 +29,18 @@ namespace Imms.Mes.Stitch
 
         public static readonly StitchLogic Instance = new StitchLogic();
 
+        //
+        //获取作业单的当前工序
+        //
+        public ProductionWorkOrderRouting GetProductionWorkOrderCurrentRouting(string productionWorkOrderNo)
+        {
+            DbContext dbContext = GlobalConstants.DbContextFactory.GetContext();
+            return dbContext.Set<ProductionWorkOrder>().Where(x => x.OrderNo == productionWorkOrderNo).Select(x => x.CurrentRouting).FirstOrDefault();
+        }
+
+        //
+        //获取某个RFID卡相关的所有的生产作业订单的第一道工序（上裁片）
+        //
         public ProductionWorkOrderRouting[] GetFirstRoutings(string containerNo)
         {
             ProductionWorkOrderRouting[] result = null;
@@ -107,7 +119,6 @@ namespace Imms.Mes.Stitch
             });
         }
 
-
         private void ProductionOrderReport(ProductionOrder productionOrder, DbContext dbContext)
         {
             if (productionOrder.QtyFinished == productionOrder.QtyActual)
@@ -133,7 +144,13 @@ namespace Imms.Mes.Stitch
             {
                 workOrderRouting.TimeFinished = DateTime.Now;
                 WorkStation workStation = dbContext.Set<WorkStation>().Single(x => x.RecordId == workOrderRouting.WorkStationId);
-                workStation.WipCurrent -= workOrderRouting.QtyFinished; //修改工位的WIP
+                if (workStation.WipCurrent >= workOrderRouting.QtyFinished)
+                {
+                    workStation.WipCurrent -= workOrderRouting.QtyFinished; //修改工位的WIP
+                    GlobalConstants.ModifyEntityStatus(workStation, dbContext);
+                }
+                GlobalConstants.ModifyEntityStatus(workOrderRouting, dbContext);
+                dbContext.SaveChanges();
 
                 //如果是最后一道工序则该作业单完成，否则派工到下一道工序
                 OperationRouting currentRouting = dbContext.Set<OperationRouting>().Where(x => x.RecordId == workOrderRouting.OperationRoutingId).Include(x => x.NextRouting).Single();
@@ -149,6 +166,8 @@ namespace Imms.Mes.Stitch
                     ProductionOrder productionOrder = dbContext.Set<ProductionOrder>().Where(x => x.RecordId == workOrder.ProductionOrderId).Single();
                     productionOrder.QtyFinished += workOrderRouting.QtyFinished;
                     this.ProductionOrderReport(productionOrder, dbContext);
+
+                    dbContext.SaveChanges();
                 }
                 else
                 {
@@ -166,8 +185,6 @@ namespace Imms.Mes.Stitch
                     //);
                     //
                 }
-                GlobalConstants.ModifyEntityStatus(workOrderRouting, dbContext);
-                dbContext.SaveChanges();
             });
         }
 
@@ -209,9 +226,16 @@ namespace Imms.Mes.Stitch
                     //
                     currentWorkStation.WipCurrent += currentWorkOrderRouting.QtyPlanned;
 
+                    //更新作业单的当前工序
+                    ProductionWorkOrder workOrder = dbContext.Set<ProductionWorkOrder>()
+                       .Where(x => x.RecordId == currentWorkOrderRouting.ProductionWorkOrderId)
+                       .Single();
+                    workOrder.CurrentRoutingId = currentWorkOrderRouting.RecordId;
+
                     //数据保存
                     GlobalConstants.ModifyEntityStatus(currentWorkOrderRouting, dbContext);
                     GlobalConstants.ModifyEntityStatus(currentWorkStation, dbContext);
+                    GlobalConstants.ModifyEntityStatus(workOrder, dbContext);
                     dbContext.SaveChanges();
                 }
             });
@@ -295,6 +319,7 @@ namespace Imms.Mes.Stitch
                         routing.ProductionWorkOrder = productionWorkOrder;
                         dbContext.Set<ProductionWorkOrderRouting>().Add(routing);
                     }
+
                     dbContext.Set<ProductionWorkOrder>().Add(productionWorkOrder);
                 }
             }
@@ -386,7 +411,7 @@ namespace Imms.Mes.Stitch
                 where w.IsOnLine        //工位已联线
                      && w.IsAvailable   //工位可用
                      && w.MachineTypeId == operationRouting.MachineTypeId  //机器类型匹配
-                     && (w.WipCurrent + w.WipInTransit) <= w.WipMax         //WIP
+                     && w.WipMax > (w.WipCurrent + w.WipInTransit)        //WIP
                      && c.OperationId == operationRouting.OperationId      //工艺
                                                                            // && c.SkillLevel >= operationRouting.RequiredLevel     //技能等级                        
                 select w
@@ -395,7 +420,7 @@ namespace Imms.Mes.Stitch
                                                          // .OrderByDescending(x => x.SkillLevel)   //技能最高  
             .ToList()
             ;
-            
+
             var workStationWrapper = (from w in candidateWorkStaitons
                                       select new
                                       {

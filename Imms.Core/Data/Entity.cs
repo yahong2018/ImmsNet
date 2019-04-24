@@ -88,6 +88,12 @@ namespace Imms.Data
             StringBuilder builder = new StringBuilder("{");
             foreach (PropertyInfo property in properties)
             {
+                Type propertyType = property.PropertyType;
+                if (!propertyType.IsPrimitive && propertyType != typeof(string))
+                {
+                    continue;
+                }
+
                 object value = property.GetValue(this);
                 if (value == null)
                 {

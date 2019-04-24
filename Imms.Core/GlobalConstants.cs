@@ -172,7 +172,7 @@ namespace Imms
 
         public static void ModifyEntityStatus<T>(T item, DbContext dbContext) where T : class
         {
-            EntityEntry<T> entry = dbContext.Attach<T>(item);
+            EntityEntry<T> entry = dbContext.Entry<T>(item); // dbContext.Attach<T>(item);
             entry.State = EntityState.Modified;
         }
 

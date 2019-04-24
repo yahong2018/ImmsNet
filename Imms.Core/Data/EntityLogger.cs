@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace Imms.Data
@@ -21,11 +22,13 @@ namespace Imms.Data
         {            
             if (categoryName == "Microsoft.EntityFrameworkCore.Database.Command"/* && logLevel == LogLevel.Information*/)
             {
-                var logContent = formatter(state, exception);                
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(logContent);
-                Console.ResetColor();
+                var logContent = formatter(state, exception)+"\n";
+                Debugger.Log(0, categoryName, logContent);                
+
+                //Console.WriteLine();
+                //Console.ForegroundColor = ConsoleColor.Green;
+                //Console.WriteLine(logContent);
+                //Console.ResetColor();
             }
         }
         public IDisposable BeginScope<TState>(TState state) => null;
