@@ -11,46 +11,205 @@
 </head>
 
 <body>
-    <div class="portal-win portal-win-top-left">
+    <div class="portal-win-order ">
         <div class="portal-panel">
-            <div class="portal-title" style="padding-left:10px;">
+            <div class="portal-title">
                 订&nbsp;&nbsp;&nbsp;单
+            </div>
+            <div class="portal-win-order-list">
+                <div class="portal-body">
+                    <table width="100%" border=0>
+                        <thead>
+                            <tr class="table-row-header">
+                                <th colspan="2" style="padding-left:20px;">生产订单</th>
+                                <th>款号</th>
+                                <th>数量</th>
+                                <th>交期</th>
+                                <th>阶段</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-tr-finished">
+                                <td>&nbsp;</td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>120</td>
+                                <td>05.03 08:45</td>
+                                <td>完工</td>
+                            </tr>
+                            <tr class="table-tr-finished">
+                                <td>&nbsp;</td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>120</td>
+                                <td>05.03 08:50</td>
+                                <td>完工</td>
+                            </tr>
+                            <tr class=" table-tr-urgent table-tr-finished">
+                                <td><img class="img-priority" src="~/css/images/flag.png"></td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>1</td>
+                                <td>05.03 09:30</td>
+                                <td>完工</td>
+                            </tr>
+                            <tr class="table-tr-urgent table-tr-delay table-tr-in-process">
+                                <td class="table-col-priority">
+                                    <img class="img-priority" src="~/css/images/flag.png">
+                                </td>
+                                <td class="table-col-order-no">3819-50032861</td>
+                                <td class="table-col-production-no">A913-FCC33669</td>
+                                <td>1</td>
+                                <td>05.03 10:15</td>
+                                <td>领料</td>
+                            </tr>
+                            <tr class="table-tr-urgent table-tr-in-process">
+                                <td><img class="img-priority" src="~/css/images/flag.png"></td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>1</td>
+                                <td>05.03 10:35</td>
+                                <td>缝制</td>
+                            </tr>
+
+                            <tr class="table-tr-in-process">
+                                <td class="table-col-priority"></td>
+                                <td class="table-col-order-no">3893-20180530</td>
+                                <td class="table-col-production-no">B531-FCC3366R</td>
+                                <td>120</td>
+                                <td>05.03 11:15</td>
+                                <td>缝制</td>
+                            </tr>
+                            <tr class="table-tr-in-process">
+                                <td></td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>120</td>
+                                <td>05.03 11:30</td>
+                                <td>裁剪</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td class="table-col-order-no">2596-0318A4F3</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>100</td>
+                                <td>05.03 11:45</td>
+                                <td>裁剪</td>
+                            </tr>
+
+                            <tr style="color: white !important;">
+                                <td>&nbsp;</td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>100</td>
+                                <td>05.03 11:50</td>
+                                <td>计划</td>
+                            </tr>
+                            <tr  style="color: white !important;">
+                                <td>&nbsp;</td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">B531-6CAF9323</td>
+                                <td>100</td>
+                                <td>05.03 12:45</td>
+                                <td>计划</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <img class="img-win-order_border" src="~/css/images/vsplitter.png">
+            </div>
+            <div class="portal-win-order-details">
+                <table class="table-order-details" style="text-align:left;vertical-align: middle;line-height: 21px;"
+                    cellspacing="0">
+                    <thead>
+                        <tr>
+                            <td style="width:80px;text-align: right;">需求订单号:</td>
+                            <td>FC96-68389012</td>
+                            <td style="text-align:right">优先级:</td>
+                            <td>急单<img style="width:20px;height:16px;" src="~/css/images/flag.png"></td>
+                            <td style="text-align:right; width: 60px;">订单数量:</td>
+                            <td>1</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right;">生产订单号:</td>
+                            <td>3819-50032861</td>
+                            <td style="text-align:right;">订单交期:</td>
+                            <td>2019/05/03 10:15</td>
+                            <td style="text-align:right;">生产阶段:</td>
+                            <td>领料</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;">产品:</td>
+                            <td colspan="5">A913-FCC33669，女半裙，灰色，红带</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;">客户:</td>
+                            <td colspan="5">深圳衣全球联合设计有限公司</td>
+                        </tr>
+                    </thead>
+                </table>
+
+                <table class="table-order-details" cellspacing="0" cellpadding="0">
+                    <thead>
+                        <tr>
+                            <td style="width:50%;">
+                                <img style="width: 15vw; height: 17vh;" src="~/css/images/A913-FCC33669.png">
+                            </td>
+                            <td style="width:50%;">
+                                <img style="width:15vw;height: 17vh;" src="~/css/images/A913-FCC33669-cad.jpg">
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="portal-win-plan">
+        <div class="portal-panel">
+            <div class="portal-title">
+                计&nbsp;&nbsp;&nbsp;划
+            </div>
+            <canvas id="canvas_plan">
+
+            </canvas>
+        </div>
+    </div>
+    <div class="portal-win-picking">
+        <div class="portal-panel">
+            <div class="portal-title" style="padding-left:6px;">
+                领&nbsp;&nbsp;&nbsp;料
             </div>
             <div class="portal-body">
                 <table width="100%" border=0>
                     <thead>
                         <tr class="table-row-header">
-                            <th colspan="2">单号</th>
-                            <th>款号</th>
+                            <th colspan="2" style="padding-left:20px;">生产订单</th>
+                            <th>领料单号</th>
                             <th>数量</th>
-                            <th>交期</th>
-                            <th>阶段</th>
+                            <th>操作时间</th>
+                            <th>操作员</th>
+                            <th>料站</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="table-tr-finished">
-                            <td>&nbsp;</td>
-                            <td class="table-col-order-no">3826-A4391265</td>
-                            <td class="table-col-production-no">B531-6CAF9323</td>
+                            <td class="table-col-priority"></td>
+                            <td class="table-col-order-no">3893-20180530</td>
+                            <td class="table-col-production-no">B531-FCC3366R</td>
                             <td>120</td>
-                            <td>05.03 08:45</td>
-                            <td>完工</td>
+                            <td>05.03 09:50</td>
+                            <td>刘博威</td>
+                            <td>1#</td>
                         </tr>
                         <tr class="table-tr-finished">
-                            <td>&nbsp;</td>
+                            <td></td>
                             <td class="table-col-order-no">3826-A4391265</td>
                             <td class="table-col-production-no">B531-6CAF9323</td>
                             <td>120</td>
-                            <td>05.03 08:50</td>
-                            <td>完工</td>
-                        </tr>
-                        <tr class=" table-tr-urgent table-tr-finished">
-                            <td><img class="img-priority" src="~/css/images/flag.png"></td>
-                            <td class="table-col-order-no">3826-A4391265</td>
-                            <td class="table-col-production-no">B531-6CAF9323</td>
-                            <td>1</td>
-                            <td>05/03 09:30</td>
-                            <td>完工</td>
+                            <td>05.03 10:02</td>
+                            <td>刘孝清</td>
+                            <td>1#</td>
                         </tr>
                         <tr class="table-tr-urgent table-tr-delay table-tr-in-process">
                             <td class="table-col-priority">
@@ -59,41 +218,18 @@
                             <td class="table-col-order-no">3819-50032861</td>
                             <td class="table-col-production-no">A913-FCC33669</td>
                             <td>1</td>
-                            <td>05/03 10:15</td>
-                            <td>领料</td>
-                        </tr>
-                        <tr class="table-tr-urgent table-tr-in-process">
-                            <td><img class="img-priority" src="~/css/images/flag.png"></td>
-                            <td class="table-col-order-no">3826-A4391265</td>
-                            <td class="table-col-production-no">B531-6CAF9323</td>
-                            <td>1</td>
-                            <td>05.03 10:35</td>
-                            <td>缝制</td>
-                        </tr>
-
-                        <tr class="table-tr-in-process">
-                            <td class="table-col-priority"></td>
-                            <td class="table-col-order-no">3893-20180530</td>
-                            <td class="table-col-production-no">B531-FCC3366R</td>
-                            <td>120</td>
-                            <td>05.03 11:15</td>
-                            <td>裁剪</td>
-                        </tr>
-                        <tr class="table-tr-in-process">
-                            <td></td>
-                            <td class="table-col-order-no">3826-A4391265</td>
-                            <td class="table-col-production-no">B531-6CAF9323</td>
-                            <td>120</td>
-                            <td>05.03 11:30</td>
-                            <td>上裁片</td>
+                            <td>05.03 09:25</td>
+                            <td>刘永红</td>
+                            <td>2#</td>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
                             <td class="table-col-order-no">2596-0318A4F3</td>
                             <td class="table-col-production-no">B531-6CAF9323</td>
                             <td>100</td>
-                            <td>05.03 11:45</td>
-                            <td>计划</td>
+                            <td>05.03 10:30</td>
+                            <td>贺训中</td>
+                            <td>3#</td>
                         </tr>
 
                         <tr>
@@ -101,194 +237,185 @@
                             <td class="table-col-order-no">3826-A4391265</td>
                             <td class="table-col-production-no">B531-6CAF9323</td>
                             <td>100</td>
-                            <td>05.03 11:50</td>
-                            <td>计划</td>
+                            <td>05.03 10:30</td>
+                            <td>贺训中</td>
+                            <td>3#</td>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
                             <td class="table-col-order-no">3826-A4391265</td>
                             <td class="table-col-production-no">B531-6CAF9323</td>
                             <td>100</td>
-                            <td>05.03 12:45</td>
-                            <td>计划</td>
+                            <td>05.03 10:30</td>
+                            <td>贺训中</td>
+                            <td>2#</td>
                         </tr>
-
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <div class="portal-win portal-win-top-center" style="position:relative !important">
-        <div class="portal-panel">
-            <div class="portal-title" style="margin-left:-23px;">
-                计&nbsp;&nbsp;&nbsp;划
-            </div>
-            <canvas id="canvas_plan">
 
-            </canvas>
-        </div>
-    </div>
-    <div class="portal-win portal-win-top-right">
+
+    <div class="portal-win-cutting">
         <div class="portal-panel">
-            <div class="portal-title" style="padding-left:6px;">
-                物&nbsp;&nbsp;&nbsp;料
+            <div class="portal-title">
+                裁&nbsp;&nbsp;&nbsp;剪
             </div>
             <div class="portal-body">
                 <table width="100%" border=0>
                     <thead>
                         <tr class="table-row-header">
-                            <th colspan="2">单号</th>
-                            <th>款号</th>
+                            <th colspan="2" style="padding-left:20px;">生产订单</th>
+                            <th>裁剪单号</th>
                             <th>数量</th>
                             <th>操作时间</th>
-                            <th>操作员</th>
-                            <th>状态</th>
+                            <th>床次/总数</th>
+                            <th>机号</th>
                         </tr>
                     </thead>
                     <tbody>
-                            <tr class="table-tr-finished">
-                                    <td>&nbsp;</td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>120</td>
-                                    <td>05.03 08:10</td>
-                                    <td>刘博威</td>
-                                    <td>已领料</td>
-                                </tr>
-                                <tr class="table-tr-finished">
-                                    <td>&nbsp;</td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>120</td>
-                                    <td>05.03 08:18</td>
-                                    <td>刘孝清</td>
-                                    <td>已领料</td>
-                                </tr>
-                                <tr class=" table-tr-urgent table-tr-finished">
-                                    <td><img class="img-priority" src="~/css/images/flag.png"></td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>1</td>
-                                    <td>05/03 08:21</td>
-                                    <td>刘博威</td>
-                                    <td>已领料</td>
-                                </tr>
-                                <tr class="table-tr-urgent table-tr-finished">
-                                    <td><img class="img-priority" src="~/css/images/flag.png"></td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>1</td>
-                                    <td>05.03 09:33</td>
-                                    <td>徐斯珍</td>
-                                    <td>已领料</td>
-                                </tr>
-        
-                                <tr class="table-tr-finished">
-                                    <td class="table-col-priority"></td>
-                                    <td class="table-col-order-no">3893-20180530</td>
-                                    <td class="table-col-production-no">B531-FCC3366R</td>
-                                    <td>120</td>
-                                    <td>05.03 09:50</td>
-                                    <td>刘博威</td>
-                                    <td>已领料</td>
-                                </tr>
-                                <tr class="table-tr-finished">
-                                    <td></td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>120</td>
-                                    <td>05.03 10:02</td>
-                                    <td>刘孝清</td>
-                                    <td>已领料</td>
-                                </tr>
-                                <tr class="table-tr-urgent table-tr-delay table-tr-in-process">
-                                        <td class="table-col-priority">
-                                            <img class="img-priority" src="~/css/images/flag.png">
-                                        </td>
-                                        <td class="table-col-order-no">3819-50032861</td>
-                                        <td class="table-col-production-no">A913-FCC33669</td>
-                                        <td>1</td>
-                                        <td>05/03 09:25</td>
-                                        <td>刘永红</td>
-                                        <td>已齐料</td>
-                                    </tr>                                
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td class="table-col-order-no">2596-0318A4F3</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>100</td>
-                                    <td>05.03 10:30</td>
-                                    <td>贺训中</td>
-                                    <td>已计划</td>
-                                </tr>
-        
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>100</td>
-                                    <td>05.03 10:30</td>
-                                    <td>贺训中</td>
-                                    <td>已计划</td>
-                                </tr>
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td class="table-col-order-no">3826-A4391265</td>
-                                    <td class="table-col-production-no">B531-6CAF9323</td>
-                                    <td>100</td>
-                                    <td>05.03 10:30</td>
-                                    <td>贺训中</td>
-                                    <td>已计划</td>
-                                </tr>
+                        <tr class="table-tr-finished">
+                            <td class="table-col-priority"></td>
+                            <td class="table-col-order-no">3893-20180530</td>
+                            <td class="table-col-production-no">5984-ER90P761</td>
+                            <td>480</td>
+                            <td>05.03 10:00</td>
+                            <td>3/3</td>
+                            <td>1#</td>
+                        </tr>
+                        <tr class="table-tr-finished">
+                            <td></td>
+                            <td class="table-col-order-no">3826-A4391265</td>
+                            <td class="table-col-production-no">1390-8924PYU0</td>
+                            <td>230.55</td>
+                            <td>05.03 10:15</td>
+                            <td>3/3</td>
+                            <td>1#</td>
+                        </tr>
+                        <tr class="table-tr-urgent table-tr-finished">
+                            <td class="table-col-priority">
+                                <img class="img-priority" src="~/css/images/flag.png">
+                            </td>
+                            <td class="table-col-order-no">3819-50032861</td>
+                            <td class="table-col-production-no">A380-XQ76003B</td>
+                            <td>1.5</td>
+                            <td>05.03 10:30</td>
+                            <td>3/3</td>
+                            <td>2#</td>
+                        </tr>
+                        <tr class="table-tr-finished">
+                            <td></td>
+                            <td class="table-col-order-no">3826-A4391265</td>
+                            <td>C0IW-IE54UR72</td>
+                            <td>200</td>
+                            <td>05.03 10:40</td>
+                            <td>3/3</td>
+                            <td>2#</td>
+                        </tr>
+                        <tr class="table-tr-in-process">
+                            <td></td>
+                            <td class="table-col-order-no">3893-20180530</td>
+                            <td>G063-IQ54SR72</td>
+                            <td>330</td>
+                            <td>05.03 10:40</td>
+                            <td>2/3</td>
+                            <td>1#</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td class="table-col-order-no">2596-0318A4F3</td>
+                            <td>G063-IQ54SR72</td>
+                            <td>330</td>
+                            <td>05.03 10:40</td>
+                            <td>0/5</td>
+                            <td>2#</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <div class="portal-win portal-win-middle-left">
+
+    <div class="portal-win-hanging">
         <div class="portal-panel">
             <div class="portal-title">
-                工&nbsp;&nbsp;&nbsp;程
+                上裁片
             </div>
+            <div class="portal-body">
+                    <table width="100%" border=0>
+                        <thead>
+                            <tr class="table-row-header">
+                                <th colspan="2" style="padding-left:20px;">生产订单</th>
+                                <th>作业单号</th>
+                                <th>数量</th>
+                                <th>操作时间</th>
+                                <th>件数/总数</th>
+                                <th>工位</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-tr-finished">
+                                <td class="table-col-priority"></td>
+                                <td class="table-col-order-no">3893-20180530</td>
+                                <td class="table-col-production-no">5984-ER90P761</td>
+                                <td>1</td>
+                                <td>05.03 10:00</td>
+                                <td>1/1</td>
+                                <td>1#</td>
+                            </tr>
+                            <tr class="table-tr-finished">
+                                <td></td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td class="table-col-production-no">1390-8924PYU0</td>
+                                <td>120</td>
+                                <td>05.03 10:15</td>
+                                <td>120/120</td>
+                                <td>1#</td>
+                            </tr>
+                            <tr class="table-tr-urgent table-tr-finished">
+                                <td class="table-col-priority">
+                                    <img class="img-priority" src="~/css/images/flag.png">
+                                </td>
+                                <td class="table-col-order-no">3819-50032861</td>
+                                <td class="table-col-production-no">A380-XQ76003B</td>
+                                <td>1</td>
+                                <td>05.03 10:30</td>
+                                <td>1/1</td>
+                                <td>2#</td>
+                            </tr>
+                            <tr class="table-tr-finished">
+                                <td></td>
+                                <td class="table-col-order-no">3826-A4391265</td>
+                                <td>C0IW-IE54UR72</td>
+                                <td>200</td>
+                                <td>05.03 10:40</td>
+                                <td>3/3</td>
+                                <td>2#</td>
+                            </tr>
+                            <tr class="table-tr-finished">
+                                <td></td>
+                                <td  class="table-col-order-no">3893-20180530</td>
+                                <td>G063-IQ54SR72</td>
+                                <td>120</td>
+                                <td>05.03 10:40</td>
+                                <td>120/120</td>
+                                <td>1#</td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
         </div>
     </div>
-    <div class="portal-win portal-win-middle-center">
+
+    <div class="portal-win-sew-line">
         <div class="portal-panel">
             <div class="portal-title">
                 缝&nbsp;&nbsp;&nbsp;制
             </div>
         </div>
     </div>
-    <div class="portal-win portal-win-middle-right">
-        <div class="portal-panel">
-            <div class="portal-title">
-                裁&nbsp;&nbsp;&nbsp;剪
-            </div>
-        </div>
-    </div>
-    <div class="portal-win portal-win-bottom-left">
-        <div class="portal-panel">
-            <div class="portal-title">
-                效&nbsp;&nbsp;&nbsp;率
-            </div>
-        </div>
-    </div>
-    <div class="portal-win portal-win-bottom-center">
-        <div class="portal-panel">
-            <div class="portal-title">
-                监&nbsp;&nbsp;&nbsp;控
-            </div>
-        </div>
-    </div>
-    <div class="portal-win portal-win-bottom-right">
-        <div class="portal-panel">
-            <div class="portal-title">
-                裁&nbsp;&nbsp;&nbsp;片
-            </div>
-        </div>
-    </div>
 </body>
-
 
 <script type="text/javascript">
     var c = document.getElementById("canvas_plan");
@@ -326,28 +453,29 @@
 
         ctx.moveTo(curLeft, theTop);
         if ((i % 2) == 0) {
-            ctx.lineTo(curLeft, theTop + 10);
-        } else {
             ctx.lineTo(curLeft, theTop + 8);
+        } else {
+            ctx.lineTo(curLeft, theTop + 6);
         }
         ctx.stroke();
     }
 
     ctx.moveTo(width - theLeft, theTop);
-    ctx.lineTo(width - theLeft, theTop + 10);
+    ctx.lineTo(width - theLeft, theTop + 8);
     ctx.stroke();
     ctx.fillText(labels[i], width - theGap / 2, theTop - 5);
 
-    var vGap = 2;
-    var theHeight = 22;
+    var vGap = 4;
+    var theHeight = 20;
     var theWidth = theGap * 1.5;
-    var progressColor = "#FFA500";
+    var progressColor = "green";
     var textColor = "black";
+    var radius = 8;
 
     ctx.lineWidth = 2;
     theTop += theHeight - 13
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);    
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight,5, progressColor);
+    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
+    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight, radius, progressColor);
     ctx.fillStyle = textColor;
     ctx.fillText('100%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
 
@@ -355,23 +483,23 @@
     theLeft += theGap / 4;
     theWidth += 5;
     fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight,5, progressColor);
+    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight, radius, progressColor);
     ctx.fillStyle = textColor;
     ctx.fillText('100%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-    
+
     theTop += theHeight + vGap;
     theLeft += 10;
     theWidth += theWidth * 0.6;
     fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight,5, progressColor);
+    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight, radius, progressColor);
     ctx.fillStyle = textColor;
     ctx.fillText('100%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
 
     theTop += theHeight + vGap;
     theLeft += theWidth * 0.3;
     theWidth = theGap * 3;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight,5,"red");
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.15, theHeight,5, progressColor);    
+    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
+    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.15, theHeight, radius, "red");
     ctx.fillStyle = textColor;
     ctx.fillText('10%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
 
@@ -380,29 +508,28 @@
     theLeft += theGap * 0.8;
     theWidth = theGap * 3 + 5;
     fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.9, theHeight,5, progressColor);    
+    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.9, theHeight, radius, progressColor);
     ctx.fillStyle = textColor;
     ctx.fillText('90%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
 
     theTop += theHeight + vGap;
     theLeft += theGap / 3;
     theWidth = theGap * 4;
     fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.25, theHeight,5, progressColor);  
+    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.6, theHeight, radius, progressColor);
     ctx.fillStyle = textColor;
-    ctx.fillText('25%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-  
-    
+    ctx.fillText('60%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
+
+
     theTop += theHeight + vGap;
     theLeft += theGap / 3;
     theWidth = theGap * 4.25;
     fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.4, theHeight,5, progressColor);     
+    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.4, theHeight, radius, progressColor);
     ctx.fillStyle = textColor;
     ctx.fillText('40%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-   
-    
+
+
     theTop += theHeight + vGap;
     theWidth = theGap * 3;
     theLeft += theGap * 1.75;
@@ -410,12 +537,12 @@
     ctx.fillStyle = textColor;
     ctx.fillText('0%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
 
-    
-    theTop += theHeight + vGap;    
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);  
+
+    theTop += theHeight + vGap;
+    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
     ctx.fillStyle = textColor;
     ctx.fillText('0%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-  
+
 
     theTop += theHeight + vGap;
     theLeft += theWidth / 2 - 10;
@@ -424,10 +551,9 @@
     ctx.fillStyle = textColor;
     ctx.fillText('0%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
 
-    
     function fillRoundRect(cxt, x, y, width, height, radius, /*optional*/ fillColor) {
         //圆的直径必然要小于矩形的宽高     
-        radius = radius || 5;
+        radius = radius || 8;
         if (2 * radius > width || 2 * radius > height) { return false; }
 
         cxt.save();
@@ -435,13 +561,16 @@
         //绘制圆角矩形的各个边  
         drawRoundRectPath(cxt, width, height, radius);
         cxt.fillStyle = fillColor || "#3ED9EE"; //若是给定了值就用给定的值否则给予默认值  
+        var oldGlobalAlpha = ctx.globalAlpha;
+        ctx.globalAlpha = 0.9;
         cxt.fill();
+        ctx.globalAlpha = oldGlobalAlpha;
         cxt.restore();
     }
 
     function strokeRoundRect(cxt, x, y, width, height, radius, /*optional*/ lineWidth, /*optional*/ strokeColor) {
         //圆的直径必然要小于矩形的宽高          
-        radius = radius || 2;
+        radius = radius || 8;
         if (2 * radius > width || 2 * radius > height) { return false; }
 
         cxt.save();

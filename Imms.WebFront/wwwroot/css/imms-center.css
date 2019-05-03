@@ -18,62 +18,115 @@ html,body{
     margin:0px;    
     position: absolute;
 }
-.portal-win-top-left{
+
+.portal-win-order{    
+    position: absolute;    
+    padding: 0px;
+    margin:0px;        
     top: 0px;
+    bottom: 2px;    
     left:0px;
+    height: 33vh;
+    right: 33.60vw       
 }
 
-.portal-win-top-center{
-    top:0px;
+.img-win-order_border{    
+    left: 33vw;
+    top: 0px;
+    height: 33vh;
+    padding-left: 3px;
+    position: absolute;
+}
+
+.portal-win-order-list{    
+    padding: 0px;
+    margin:0px;  
+    width: 33vw;
+    height: 33vh;            
+}
+
+.portal-win-order-details{
+    top:20px;
     left: 50%;
     margin-left: -16.60vw;
+    position: absolute;
+    padding-left: 5px;
+    margin:0px;    
+    width: 32vw;
+    height: 33vh;    
 }
 
-.portal-win-top-right{
-    top:0px;
-    right:3px;
+.table-order-details{
+    /* border-bottom: 1px solid rgb(3, 106, 118); */
+    margin-top:3px;    
+    color: #3ED9EE;   
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
 }
 
-.portal-win-middle-left{
-    top: 50%;
-    margin-top: -16.60vh;
-    left:0px;
-}
-
-.portal-win-middle-center{
-    top: 50%;
-    margin-top: -16.60vh;
-    left: 50%;
-    margin-left: -16.60vw;
-}
-
-.portal-win-middle-right{
-    top: 50%;
-    margin-top: -16.60vh;
+.portal-win-plan{
+    position: absolute;
+    padding: 0px;
+    margin:0px;
+    top: 0px;
     right: 3px;
+    width: 33vw;
+    height: 33vh;
 }
 
-.portal-win-bottom-left{
-    bottom: 2px;
-    left:0px;
+.portal-win-picking{
+    position: absolute;
+    padding: 0px;
+    margin:0px;
+    top:50%;
+    margin-top: -16.60vh;
+    right:3px;        
+    width: 33vw;        
+    height: 22vh;
 }
 
-.portal-win-bottom-center{
-    bottom: 2px;
-    left: 50%;
-    margin-left: -16.60vw;
+.portal-win-cutting{
+    position: absolute;
+    padding: 0px;
+    margin:0px;
+    top: 50%;    
+    right: 3px;
+    margin-top: 6vh;
+    height: 22vh;
+    width: 33vw;
 }
 
-.portal-win-bottom-right{    
+.portal-win-hanging{    
+    position: absolute;
+    padding: 0px;
+    margin:0px;    
+    height: 21.30vh;
+    width: 33vw;    
     right: 3px;
     bottom: 2px;
 }
+
+
+.portal-win-sew-line{
+    position: absolute;    
+    padding: 0px;
+    margin:0px;        
+    top: 50%;
+    bottom: 2px;
+    margin-top: -16.60vh;
+    left:0px;
+    right: 33.60vw       
+}
+
 
 .portal-panel{
     width: 100%;
     height: 100%; 
     border:1px solid white;
     border-radius: 5px;    
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;    
 }
 .portal-title{
@@ -84,6 +137,8 @@ html,body{
     height: 20px;
     line-height: 20px;
     vertical-align: middle;
+    padding: 0px;
+    margin: 0px;    
     /* background-color: #ECFFFF;
     color: black; */
 }
@@ -111,6 +166,7 @@ tbody > tr {
     vertical-align: middle;    
 }
 
+
 .img-priority{
     width:20px;
     height:16px;
@@ -124,7 +180,7 @@ tbody > tr {
 }
 
 .table-col-order-no{
-    width: 120px;    
+    width: 100px;    
     text-align: left;
 }
 
@@ -140,7 +196,10 @@ tbody > tr {
 }
 
 .table-tr-in-process{
-    background-color: 	#E0FFFF;    
+    background-color:	#E0FFFF;    
     color: black;
     font-weight: bolder;
+    opacity:0.65;
 }
+
+
