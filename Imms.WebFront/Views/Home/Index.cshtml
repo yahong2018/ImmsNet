@@ -11,10 +11,13 @@
 </head>
 
 <body>
+    <img style="position:absolute;top:0px;left:0px; margin:0px;padding:0px;border:none;height:100%;width:100%;"
+        src="~/css/images/background.jpg">
+
     <div class="portal-win-order ">
         <div class="portal-panel">
             <div class="portal-title">
-                订&nbsp;&nbsp;&nbsp;单
+                订&nbsp;单
             </div>
             <div class="portal-win-order-list">
                 <div class="portal-body">
@@ -46,7 +49,8 @@
                                 <td>完工</td>
                             </tr>
                             <tr class=" table-tr-urgent table-tr-finished">
-                                <td><img class="img-priority" src="~/css/images/flag.png"></td>
+                                <td class="table-col-priority"><img class="img-priority" src="~/css/images/flag.png">
+                                </td>
                                 <td class="table-col-order-no">3826-A4391265</td>
                                 <td class="table-col-production-no">B531-6CAF9323</td>
                                 <td>1</td>
@@ -105,7 +109,7 @@
                                 <td>05.03 11:50</td>
                                 <td>计划</td>
                             </tr>
-                            <tr  style="color: white !important;">
+                            <tr style="color: white !important;">
                                 <td>&nbsp;</td>
                                 <td class="table-col-order-no">3826-A4391265</td>
                                 <td class="table-col-production-no">B531-6CAF9323</td>
@@ -117,17 +121,19 @@
                         </tbody>
                     </table>
                 </div>
-                <img class="img-win-order_border" src="~/css/images/vsplitter.png">
+
             </div>
+
+            <!-- <img class="img-win-order_border" src="~/css/images/vsplitter.png"> -->
+
             <div class="portal-win-order-details">
-                <table class="table-order-details" style="text-align:left;vertical-align: middle;line-height: 21px;"
-                    cellspacing="0">
+                <table class="table-order-details" style="text-align:left;" cellspacing="0">
                     <thead>
                         <tr>
                             <td style="width:80px;text-align: right;">需求订单号:</td>
                             <td>FC96-68389012</td>
                             <td style="text-align:right">优先级:</td>
-                            <td>急单<img style="width:20px;height:16px;" src="~/css/images/flag.png"></td>
+                            <td>急单 &nbsp;&nbsp;<img class="img-priority" src="~/css/images/flag.png"></td>
                             <td style="text-align:right; width: 60px;">订单数量:</td>
                             <td>1</th>
                         </tr>
@@ -154,10 +160,10 @@
                     <thead>
                         <tr>
                             <td style="width:50%;">
-                                <img style="width: 15vw; height: 17vh;" src="~/css/images/A913-FCC33669.png">
+                                <img style="width: 15vw; height: 19vh;" src="~/css/images/A913-FCC33669.png">
                             </td>
                             <td style="width:50%;">
-                                <img style="width:15vw;height: 17vh;" src="~/css/images/A913-FCC33669-cad.jpg">
+                                <img style="width:15vw;height: 19vh;" src="~/css/images/A913-FCC33669-cad.jpg">
                             </td>
                         </tr>
                     </thead>
@@ -165,10 +171,15 @@
             </div>
         </div>
     </div>
+
+    <img class="img-win-border" style="height:33.33vh !important;" src="~/css/images/vsplitter.png">
+
     <div class="portal-win-plan">
         <div class="portal-panel">
             <div class="portal-title">
-                计&nbsp;&nbsp;&nbsp;划
+
+                计&nbsp;划
+
             </div>
             <canvas id="canvas_plan">
 
@@ -178,7 +189,7 @@
     <div class="portal-win-picking">
         <div class="portal-panel">
             <div class="portal-title" style="padding-left:6px;">
-                领&nbsp;&nbsp;&nbsp;料
+                领&nbsp;料
             </div>
             <div class="portal-body">
                 <table width="100%" border=0>
@@ -260,7 +271,7 @@
     <div class="portal-win-cutting">
         <div class="portal-panel">
             <div class="portal-title">
-                裁&nbsp;&nbsp;&nbsp;剪
+                裁&nbsp;剪
             </div>
             <div class="portal-body">
                 <table width="100%" border=0>
@@ -343,217 +354,212 @@
                 上裁片
             </div>
             <div class="portal-body">
-                    <table width="100%" border=0>
-                        <thead>
-                            <tr class="table-row-header">
-                                <th colspan="2" style="padding-left:20px;">生产订单</th>
-                                <th>作业单号</th>
-                                <th>数量</th>
-                                <th>操作时间</th>
-                                <th>件数/总数</th>
-                                <th>工位</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="table-tr-finished">
-                                <td class="table-col-priority"></td>
-                                <td class="table-col-order-no">3893-20180530</td>
-                                <td class="table-col-production-no">5984-ER90P761</td>
-                                <td>1</td>
-                                <td>05.03 10:00</td>
-                                <td>1/1</td>
-                                <td>1#</td>
-                            </tr>
-                            <tr class="table-tr-finished">
-                                <td></td>
-                                <td class="table-col-order-no">3826-A4391265</td>
-                                <td class="table-col-production-no">1390-8924PYU0</td>
-                                <td>120</td>
-                                <td>05.03 10:15</td>
-                                <td>120/120</td>
-                                <td>1#</td>
-                            </tr>
-                            <tr class="table-tr-urgent table-tr-finished">
-                                <td class="table-col-priority">
-                                    <img class="img-priority" src="~/css/images/flag.png">
-                                </td>
-                                <td class="table-col-order-no">3819-50032861</td>
-                                <td class="table-col-production-no">A380-XQ76003B</td>
-                                <td>1</td>
-                                <td>05.03 10:30</td>
-                                <td>1/1</td>
-                                <td>2#</td>
-                            </tr>
-                            <tr class="table-tr-finished">
-                                <td></td>
-                                <td class="table-col-order-no">3826-A4391265</td>
-                                <td>C0IW-IE54UR72</td>
-                                <td>200</td>
-                                <td>05.03 10:40</td>
-                                <td>3/3</td>
-                                <td>2#</td>
-                            </tr>
-                            <tr class="table-tr-finished">
-                                <td></td>
-                                <td  class="table-col-order-no">3893-20180530</td>
-                                <td>G063-IQ54SR72</td>
-                                <td>120</td>
-                                <td>05.03 10:40</td>
-                                <td>120/120</td>
-                                <td>1#</td>
-                            </tr>                            
-                        </tbody>
-                    </table>
-                </div>
+                <table width="100%" border=0>
+                    <thead>
+                        <tr class="table-row-header">
+                            <th colspan="2" style="padding-left:20px;">生产订单</th>
+                            <th>作业单号</th>
+                            <th>数量</th>
+                            <th>操作时间</th>
+                            <th>件数/总数</th>
+                            <th>工位</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-tr-finished">
+                            <td class="table-col-priority"></td>
+                            <td class="table-col-order-no">3893-20180530</td>
+                            <td class="table-col-production-no">5984-ER90P761</td>
+                            <td>1</td>
+                            <td>05.03 10:00</td>
+                            <td>1/1</td>
+                            <td>1#</td>
+                        </tr>
+                        <tr class="table-tr-finished">
+                            <td></td>
+                            <td class="table-col-order-no">3826-A4391265</td>
+                            <td class="table-col-production-no">1390-8924PYU0</td>
+                            <td>120</td>
+                            <td>05.03 10:15</td>
+                            <td>120/120</td>
+                            <td>1#</td>
+                        </tr>
+                        <tr class="table-tr-urgent table-tr-finished">
+                            <td class="table-col-priority">
+                                <img class="img-priority" src="~/css/images/flag.png">
+                            </td>
+                            <td class="table-col-order-no">3819-50032861</td>
+                            <td class="table-col-production-no">A380-XQ76003B</td>
+                            <td>1</td>
+                            <td>05.03 10:30</td>
+                            <td>1/1</td>
+                            <td>2#</td>
+                        </tr>
+                        <tr class="table-tr-finished">
+                            <td></td>
+                            <td class="table-col-order-no">3826-A4391265</td>
+                            <td>C0IW-IE54UR72</td>
+                            <td>200</td>
+                            <td>05.03 10:40</td>
+                            <td>3/3</td>
+                            <td>2#</td>
+                        </tr>
+                        <tr class="table-tr-finished">
+                            <td></td>
+                            <td class="table-col-order-no">3893-20180530</td>
+                            <td>G063-IQ54SR72</td>
+                            <td>120</td>
+                            <td>05.03 10:40</td>
+                            <td>120/120</td>
+                            <td>1#</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <img class="img-win-border" style="top:33.33vh !important;height:66.66vh !important;"
+        src="~/css/images/vsplitter.png">
 
     <div class="portal-win-sew-line">
         <div class="portal-panel">
             <div class="portal-title">
-                缝&nbsp;&nbsp;&nbsp;制
+                缝&nbsp;制
             </div>
+            <canvas id="canvas_sew_line"></canvas>
         </div>
     </div>
 </body>
 
 <script type="text/javascript">
-    var c = document.getElementById("canvas_plan");
-    var width = c.parentElement.clientWidth;
-    var height = c.parentElement.clientHeight - 30;
-    var theTop = 18;
-    var theLeft = 5;
-    var theGap = (width - theLeft) / 8;
-    var labels = [
-        "08:00", "08:30",
-        "09:00", "09:30",
-        "10:00", "10:30",
-        "11:00", "11:30",
-        "12:00"
-    ];
+    setTimeout(drawPlan, 50);
+    setTimeout(drawSewLine, 50);
 
-    c.setAttribute("width", width + "px");
-    c.setAttribute("height", height + "px");
+    function drawPlan() {
+        var c = document.getElementById("canvas_plan");
+        var width = c.parentElement.clientWidth;
+        var height = c.parentElement.clientHeight - 30;
+        c.setAttribute("width", width + "px");
+        c.setAttribute("height", height + "px");
 
-    var ctx = c.getContext("2d");
-    ctx.strokeStyle = "#3ED9EE";
-    ctx.lineWidth = 1;
-    ctx.moveTo(theLeft, theTop);
-    ctx.lineTo(width - theLeft, theTop);
-    ctx.stroke();
-    ctx.fillStyle = '#3ED9EE';
+        var theTop = 18;
+        var theLeft = 5;
+        var theGap = (width - theLeft) / 8;
+        var labels = [
+            "08:00", "08:30",
+            "09:00", "09:30",
+            "10:00", "10:30",
+            "11:00", "11:30",
+            "12:00"
+        ];
 
-    for (var i = 0; i < 8; i++) {
-        var curLeft = theGap * i + theLeft;
-        if (i == 0) {
-            ctx.fillText(labels[i], curLeft, theTop - 5);
-        } else {
-            ctx.fillText(labels[i], (curLeft - 12), theTop - 5);
-        }
+        setTimeout(function () {
+            var ctx = c.getContext("2d");
+            ctx.strokeStyle = "#3ED9EE";
+            ctx.lineWidth = 1;
+            ctx.moveTo(theLeft, theTop);
+            ctx.lineTo(width - theLeft, theTop);
+            ctx.stroke();
+            ctx.fillStyle = '#3ED9EE';
 
-        ctx.moveTo(curLeft, theTop);
-        if ((i % 2) == 0) {
-            ctx.lineTo(curLeft, theTop + 8);
-        } else {
-            ctx.lineTo(curLeft, theTop + 6);
-        }
-        ctx.stroke();
+            for (var i = 0; i < 8; i++) {
+                var curLeft = theGap * i + theLeft;
+                if (i == 0) {
+                    ctx.fillText(labels[i], curLeft, theTop - 5);
+                } else {
+                    ctx.fillText(labels[i], (curLeft - 12), theTop - 5);
+                }
+
+                ctx.moveTo(curLeft, theTop);
+                if ((i % 2) == 0) {
+                    ctx.lineTo(curLeft, theTop + 8);
+                } else {
+                    ctx.lineTo(curLeft, theTop + 6);
+                }
+                ctx.stroke();
+            }
+
+            ctx.moveTo(width - theLeft, theTop);
+            ctx.lineTo(width - theLeft, theTop + 8);
+            ctx.stroke();
+            ctx.fillText(labels[i], width - theGap / 2, theTop - 5);
+
+            var vGap = 4;
+            var theHeight = 25;
+            var theWidth = theGap * 1.5;
+
+            ctx.lineWidth = 2;
+            theTop += theHeight - 13
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 1);
+
+            theTop += theHeight + vGap;
+            theLeft += theGap / 4;
+            theWidth += 5;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 1);
+
+            theTop += theHeight + vGap;
+            theLeft += 10;
+            theWidth += theWidth * 0.6;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 1);
+
+            theTop += theHeight + vGap;
+            theLeft += theWidth * 0.3;
+            theWidth = theGap * 3;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0.1, true);
+
+            theTop += theHeight + vGap;
+            theLeft += theGap * 0.8;
+            theWidth = theGap * 3 + 5;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0.9);
+
+            theTop += theHeight + vGap;
+            theLeft += theGap / 3;
+            theWidth = theGap * 4;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0.6);
+
+            theTop += theHeight + vGap;
+            theLeft += theGap / 3;
+            theWidth = theGap * 4.25;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0.4);
+
+            theTop += theHeight + vGap;
+            theWidth = theGap * 3;
+            theLeft += theGap * 1.75;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0);
+
+            theTop += theHeight + vGap;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0);
+
+            theTop += theHeight + vGap;
+            theLeft += theWidth / 2 - 10;
+            theWidth = theGap * 2.25;
+            drawProgress(ctx, theLeft, theTop, theWidth, theHeight, 0);
+        }, 50);
     }
 
-    ctx.moveTo(width - theLeft, theTop);
-    ctx.lineTo(width - theLeft, theTop + 8);
-    ctx.stroke();
-    ctx.fillText(labels[i], width - theGap / 2, theTop - 5);
+    function drawProgress(ctx, x, y, width, height, percent, isDelay) {
+        var progressColor = "green";
+        var textColor = "black";
+        var radius = 10;
+        percent = percent || 0;
+        isDelay = isDelay || false;
 
-    var vGap = 4;
-    var theHeight = 20;
-    var theWidth = theGap * 1.5;
-    var progressColor = "green";
-    var textColor = "black";
-    var radius = 8;
+        if (isDelay) {
+            progressColor = "red";
+        }
 
-    ctx.lineWidth = 2;
-    theTop += theHeight - 13
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight, radius, progressColor);
-    ctx.fillStyle = textColor;
-    ctx.fillText('100%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-    theTop += theHeight + vGap;
-    theLeft += theGap / 4;
-    theWidth += 5;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight, radius, progressColor);
-    ctx.fillStyle = textColor;
-    ctx.fillText('100%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-    theTop += theHeight + vGap;
-    theLeft += 10;
-    theWidth += theWidth * 0.6;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight, radius, progressColor);
-    ctx.fillStyle = textColor;
-    ctx.fillText('100%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-    theTop += theHeight + vGap;
-    theLeft += theWidth * 0.3;
-    theWidth = theGap * 3;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.15, theHeight, radius, "red");
-    ctx.fillStyle = textColor;
-    ctx.fillText('10%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-
-    theTop += theHeight + vGap;
-    theLeft += theGap * 0.8;
-    theWidth = theGap * 3 + 5;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.9, theHeight, radius, progressColor);
-    ctx.fillStyle = textColor;
-    ctx.fillText('90%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-    theTop += theHeight + vGap;
-    theLeft += theGap / 3;
-    theWidth = theGap * 4;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.6, theHeight, radius, progressColor);
-    ctx.fillStyle = textColor;
-    ctx.fillText('60%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-
-    theTop += theHeight + vGap;
-    theLeft += theGap / 3;
-    theWidth = theGap * 4.25;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    fillRoundRect(ctx, theLeft, theTop, theWidth * 0.4, theHeight, radius, progressColor);
-    ctx.fillStyle = textColor;
-    ctx.fillText('40%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-
-    theTop += theHeight + vGap;
-    theWidth = theGap * 3;
-    theLeft += theGap * 1.75;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    ctx.fillStyle = textColor;
-    ctx.fillText('0%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-
-    theTop += theHeight + vGap;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    ctx.fillStyle = textColor;
-    ctx.fillText('0%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
-
-
-    theTop += theHeight + vGap;
-    theLeft += theWidth / 2 - 10;
-    theWidth = theGap * 2.25;
-    fillRoundRect(ctx, theLeft, theTop, theWidth, theHeight);
-    ctx.fillStyle = textColor;
-    ctx.fillText('0%', theLeft + theWidth / 2 - 15, theTop + theHeight / 2 + 3);
+        fillRoundRect(ctx, x, y, width, height);
+        if (percent != 0) {
+            fillRoundRect(ctx, x, y, width * percent, height, radius, progressColor);
+        }
+        ctx.fillStyle = textColor;
+        ctx.fillText((percent * 100) + '%', x + width / 2 - 15, y + height / 2 + 3);
+    }
 
     function fillRoundRect(cxt, x, y, width, height, radius, /*optional*/ fillColor) {
         //圆的直径必然要小于矩形的宽高     
-        radius = radius || 8;
+        radius = radius || 10;
         if (2 * radius > width || 2 * radius > height) { return false; }
 
         cxt.save();
@@ -561,10 +567,10 @@
         //绘制圆角矩形的各个边  
         drawRoundRectPath(cxt, width, height, radius);
         cxt.fillStyle = fillColor || "#3ED9EE"; //若是给定了值就用给定的值否则给予默认值  
-        var oldGlobalAlpha = ctx.globalAlpha;
-        ctx.globalAlpha = 0.9;
+        var oldGlobalAlpha = cxt.globalAlpha;
+        cxt.globalAlpha = 0.9;
         cxt.fill();
-        ctx.globalAlpha = oldGlobalAlpha;
+        cxt.globalAlpha = oldGlobalAlpha;
         cxt.restore();
     }
 
@@ -609,7 +615,128 @@
         //右边线  
         cxt.lineTo(width, height - radius);
         cxt.closePath();
-    }       
+    }
+
+    function drawSewLine() {
+        var c = document.getElementById("canvas_sew_line");
+        var ctx = c.getContext("2d");
+        var width = c.parentElement.clientWidth;
+        var height = c.parentElement.clientHeight - 30;
+
+        c.setAttribute("width", width + "px");
+        c.setAttribute("height", height + "px");
+
+        ctx.strokeStyle = "#3ED9EE";
+        ctx.fillStyle = "#3ED9EE";
+        ctx.lineWidth = 1;
+
+        ctx.strokeRect(1, 22, width - 2, 30);
+        ctx.strokeRect(1, height - 52, width - 2, 30);
+
+        var lineWidth = 60;
+        var theLeft = 15;
+        var theTop = 130 - 50;
+        var theWidth = lineWidth * 1.2;
+        var theHeight = (height - 103) / 4 - 25;
+
+        ///------------------------- Line 1 -----------------------------------------------------
+        theLeft = 15;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        theLeft = lineWidth + 35;
+        ctx.strokeRect(theLeft, 52, lineWidth, height - 103);
+
+        theLeft += lineWidth + 10;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        ///------------------------- Line  2 -----------------------------------------------------
+        theLeft += theWidth + 30;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        theLeft += theWidth + 10;
+        ctx.strokeRect(theLeft, 52, lineWidth, height - 103);
+
+        theLeft += lineWidth + 10;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        ///------------------------- Line  3 -----------------------------------------------------
+        theLeft += theWidth + 30;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        theLeft += theWidth + 10;
+        ctx.strokeRect(theLeft, 52, lineWidth, height - 103);
+
+        theLeft += lineWidth + 10;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        ///------------------------- Line  4 -----------------------------------------------------
+        theLeft += theWidth + 30;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        theLeft += theWidth + 10;
+        ctx.strokeRect(theLeft, 52, lineWidth, height - 103);
+
+        theLeft += lineWidth + 10;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        ///------------------------- Line  5 -----------------------------------------------------
+        theLeft += theWidth + 30;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        theLeft += theWidth + 10;
+        ctx.strokeRect(theLeft, 52, lineWidth, height - 103);
+
+        theLeft += lineWidth + 10;
+        ctx.strokeRect(theLeft, theTop - 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight + 10, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 2 + 30, theWidth, theHeight);
+        ctx.strokeRect(theLeft, theTop + theHeight * 3 + 50, theWidth, theHeight);
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        ctx.save();     
+        theLeft = 15 + theWidth + lineWidth * 0.5;
+        ctx.font = '18px 微软雅黑';
+        ctx.fillStyle = "#3ED9EE";          
+        ctx.rotate(90 * Math.PI / 180);
+
+        var y = -theLeft, x = theHeight * 2.5;
+        ctx.fillText("Line 1", x, y);        
+        ctx.fillText("Line 2", x, y * 3.2);
+        ctx.fillText("Line 3", x, y * 5.35);
+        ctx.fillText("Line 4", x, y * 7.5);
+        ctx.fillText("Line 5", x, y * 9.7);
+
+        ctx.restore();
+
+        /////////////////////////////////////////////////////////////////////////////////////////        
+    }  
 </script>
 
 </html>

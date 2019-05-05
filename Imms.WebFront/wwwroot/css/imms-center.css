@@ -5,9 +5,10 @@ html,body{
     padding:0px;
     overflow: hidden;
     /* background-color: #0565e2; */
-    background-image: url("images/background.jpg");
+    /* background-image: url("images/background.jpg"); */
     color: white;
-    text-align: center;           
+    text-align: center;       
+    font-family: '微软雅黑';
     background-size:contain;
 }
 
@@ -60,9 +61,16 @@ html,body{
     /* border-bottom: 1px solid rgb(3, 106, 118); */
     margin-top:3px;    
     color: #3ED9EE;   
-    width: 100%;
-    height: 100%;
+    width: 100%;    
     font-size: 12px;
+}
+
+.img-win-border{    
+    left: 66.37vw;
+    top: 0px;
+    height: 100%;
+    padding-left: 3px;
+    position: absolute;
 }
 
 .portal-win-plan{
@@ -70,8 +78,8 @@ html,body{
     padding: 0px;
     margin:0px;
     top: 0px;
-    right: 3px;
-    width: 33vw;
+    right: 0px;
+    width: 33.3vw;
     height: 33vh;
 }
 
@@ -81,8 +89,8 @@ html,body{
     margin:0px;
     top:50%;
     margin-top: -16.60vh;
-    right:3px;        
-    width: 33vw;        
+    right:0px;        
+    width: 33.3vw;        
     height: 22vh;
 }
 
@@ -91,10 +99,10 @@ html,body{
     padding: 0px;
     margin:0px;
     top: 50%;    
-    right: 3px;
+    right: 0px;
     margin-top: 6vh;
     height: 22vh;
-    width: 33vw;
+    width: 33.3vw;
 }
 
 .portal-win-hanging{    
@@ -102,8 +110,8 @@ html,body{
     padding: 0px;
     margin:0px;    
     height: 21.30vh;
-    width: 33vw;    
-    right: 3px;
+    width: 33.3vw;    
+    right: 0px;
     bottom: 2px;
 }
 
@@ -113,18 +121,17 @@ html,body{
     padding: 0px;
     margin:0px;        
     top: 50%;
-    bottom: 2px;
+    bottom: 0px;
     margin-top: -16.60vh;
     left:0px;
     right: 33.60vw       
 }
 
-
 .portal-panel{
     width: 100%;
     height: 100%; 
-    border:1px solid white;
-    border-radius: 5px;    
+    /* border:1px solid white; */
+    /* border-radius: 5px;     */
     padding: 0px;
     margin: 0px;
     overflow: hidden;    
@@ -133,14 +140,15 @@ html,body{
     width: 100%;
     border:none;
     font-weight: bolder;
-    font-size: 14px;
-    height: 20px;
-    line-height: 20px;
+    font-size: 12px;
+    height: 25px;
+    line-height: 25px;
     vertical-align: middle;
     padding: 0px;
     margin: 0px;    
-    /* background-color: #ECFFFF;
-    color: black; */
+    box-sizing: border-box;
+    background-color: #012A55;
+    opacity:0.6;    
 }
 
 .portal-body{
@@ -153,26 +161,28 @@ html,body{
 .table-row-header{
     font-size: 14px;
     color: #3ED9EE;    
+    
 }
 
-tbody > tr {
-    height:22px;    
+tr{
+    height:25px;    
+    line-height: 25px;
+    vertical-align:middle;
+}
+
+tbody > tr {    
     color: yellow;
 }
 
 .table-col-priority{
-    width: 30px;   
-    line-height: 20px;  
-    vertical-align: middle;    
+    width: 30px;    
 }
 
 
 .img-priority{
-    width:20px;
-    height:16px;
-    margin-top: -6px; 
-    margin-left: -8px; 
-    position: absolute;
+    width:25px;    
+    left: 50%;       
+    vertical-align: middle;
 }
 
 .table-col-production-no{
@@ -181,7 +191,7 @@ tbody > tr {
 
 .table-col-order-no{
     width: 100px;    
-    text-align: left;
+    text-align: center;
 }
 
 .table-tr-delay{    
@@ -195,11 +205,10 @@ tbody > tr {
     font-style: italic;    
 }
 
-.table-tr-in-process{
-    background-color:	#E0FFFF;    
-    color: black;
-    font-weight: bolder;
-    opacity:0.65;
+.table-tr-in-process{    
+    border:1px dashed #3ED9EE;
+    font-weight: bolder;        
 }
 
 
+table{border-collapse: collapse;}
