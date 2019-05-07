@@ -12,143 +12,74 @@ html,body{
     background-size:contain;
 }
 
-.portal-win{
-    width: 33vw;
-    height: 33vh;         
-    padding: 0px;
-    margin:0px;    
-    position: absolute;
-}
-
-.portal-win-order{    
+.portal-win-sew-line{
     position: absolute;    
     padding: 0px;
     margin:0px;        
-    top: 0px;
-    bottom: 2px;    
+    top:0px;
     left:0px;
-    height: 33vh;
-    right: 33.60vw       
+    right: 33.60vw;
+    height: 66.60vh;     
 }
 
-.img-win-order_border{    
-    left: 33vw;
-    top: 0px;
-    height: 33vh;
-    padding-left: 3px;
+.portal-win-video{
     position: absolute;
+    top:0px;
+    right:0px;    
+    margin-top:20px;    
+    padding:0px;
+    width: 33.3vw;
+    height: 26vh;    
 }
 
-.portal-win-order-list{    
+.portal-efficiency{
+    position: absolute;
     padding: 0px;
-    margin:0px;  
-    width: 33vw;
-    height: 33vh;            
+    margin:0px;
+    top: 27.5vh;
+    right:0px;   
+    overflow: hidden; 
+    width: 33.33vw;
+    height: 17vh;    
 }
 
-.portal-win-order-details{
-    top:20px;
-    left: 50%;
-    margin-left: -16.60vw;
+.portal-qty{
     position: absolute;
-    padding-left: 5px;
-    margin:0px;    
-    width: 32vw;
-    height: 33vh;    
-}
-
-.table-order-details{
-    /* border-bottom: 1px solid rgb(3, 106, 118); */
-    margin-top:3px;    
-    color: #3ED9EE;   
-    width: 100%;    
-    font-size: 12px;
+    padding: 0px;
+    margin:0px;
+    top: 44.5vh;
+    right:0px;   
+    overflow: hidden; 
+    width: 33.33vw;
+    height: 19vh; 
 }
 
 .img-win-border{    
-    left: 66.37vw;
+    left: 66.4vw;
     top: 0px;
     height: 100%;
-    padding-left: 3px;
+    padding-left: 5px;
     position: absolute;
 }
 
 .portal-win-plan{
     position: absolute;
     padding: 0px;
-    margin:0px;
-    top: 0px;
-    right: 0px;
-    width: 33.3vw;
-    height: 33vh;
-}
-
-.portal-win-picking{
-    position: absolute;
-    padding: 0px;
-    margin:0px;
-    top:50%;
-    margin-top: -16.60vh;
-    right:0px;        
-    width: 33.3vw;        
-    height: 22vh;
-}
-
-.portal-win-cutting{
-    position: absolute;
-    padding: 0px;
-    margin:0px;
-    top: 50%;    
-    right: 0px;
-    margin-top: 6vh;
-    height: 22vh;
-    width: 33.3vw;
-}
-
-.portal-win-hanging{    
-    position: absolute;
-    padding: 0px;
-    margin:0px;    
-    height: 21.30vh;
-    width: 33.3vw;    
-    right: 0px;
-    bottom: 2px;
-}
-
-
-.portal-win-sew-line{
-    position: absolute;    
-    padding: 0px;
-    margin:0px;        
-    top: 50%;
-    bottom: 0px;
-    margin-top: -16.60vh;
-    left:0px;
-    right: 33.60vw       
-}
-
-.portal-panel{
-    width: 100%;
-    height: 100%; 
-    /* border:1px solid white; */
-    /* border-radius: 5px;     */
-    padding: 0px;
     margin: 0px;
-    overflow: hidden;    
+    bottom: 0px;
+    right: 0px;
+    width: 33.3vw;
+    height: 36vh;      
 }
-.portal-title{
-    width: 100%;
-    border:none;
-    font-weight: bolder;
-    font-size: 12px;
-    height: 25px;
-    line-height: 25px;
-    vertical-align: middle;
+
+.portal-win-manufacture{
+    position: absolute;
     padding: 0px;
-    margin: 0px;    
-    box-sizing: border-box;
-    background-color: #012A55;
-    opacity:0.6;    
+    margin:0px;
+    bottom: 0px;
+    left:0px;    
+    width: 66vw;        
+    height: 36vh;
 }
 
 .portal-body{
@@ -158,19 +89,17 @@ html,body{
     overflow: hidden;
 }
 
+
 .table-row-header{
-    font-size: 14px;
-    color: #3ED9EE;    
-    
+    font-size: 16px;
+    color: #3ED9EE;     
+    background-color:#012A55;        
 }
 
 tr{
     height:25px;    
     line-height: 25px;
     vertical-align:middle;
-}
-
-tbody > tr {    
     color: yellow;
 }
 
@@ -178,6 +107,9 @@ tbody > tr {
     width: 30px;    
 }
 
+.table-tr-planned{
+    color: white
+}
 
 .img-priority{
     width:25px;    
@@ -194,21 +126,29 @@ tbody > tr {
     text-align: center;
 }
 
-.table-tr-delay{    
-    color: red !important;
-}
+/* .table-tr-delay{        
+    color:red; 
+} */
+
+
 .table-tr-finished{
     color:green !important;
 }
 
 .table-tr-urgent{    
     font-style: italic;    
+    background-color:	#000000 !important;    
 }
 
-.table-tr-in-process{    
-    border:1px dashed #3ED9EE;
-    font-weight: bolder;        
+.table-tr-urgent > td, .table-tr-delay > td{
+    border:1px dashed red;
 }
 
+.portal-table-manufacture{
+    border:none;
+    width: 100%;
+}
 
-table{border-collapse: collapse;}
+tbody>tr>td:nth-of-type(2),tbody>tr>td:nth-of-type(3){
+    text-align: left;
+}
